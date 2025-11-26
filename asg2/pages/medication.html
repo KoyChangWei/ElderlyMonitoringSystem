@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medication & Nutrition - Elderly Care Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .timeline-view {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .timeline-hours {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-lg) 0;
+            overflow-x: auto;
+            padding-bottom: var(--spacing-sm);
+        }
+
+        .hour-slot {
+            min-width: 80px;
+            padding: var(--spacing-md);
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .hour-slot.has-medication {
+            border-color: var(--primary-color);
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .hour-slot.completed {
+            background: rgba(39, 174, 96, 0.1);
+            border-color: var(--success-color);
+        }
+
+        .hour-slot.upcoming {
+            background: rgba(243, 156, 18, 0.1);
+            border-color: var(--warning-color);
+            animation: pulse 2s infinite;
+        }
+
+        .medication-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .med-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid;
+        }
+
+        .med-card.active {
+            border-left-color: var(--primary-color);
+        }
+
+        .med-card.completed {
+            border-left-color: var(--success-color);
+            opacity: 0.7;
+        }
+
+        .med-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .med-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .smart-dispenser {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .dispenser-visual {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .dispenser-icon {
+            font-size: 80px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .meal-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .meal-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            background: linear-gradient(135deg, #F39C12, #E67E22);
+            color: white;
+        }
+
+        .nutrition-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .nutrition-stat {
+            background: var(--bg-primary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: var(--spacing-sm) 0;
+        }
+
+        .smart-fridge {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .fridge-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .fridge-item {
+            background: var(--bg-primary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .fridge-item i {
+            font-size: 32px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .expiry-warning {
+            background: #FFF3CD;
+            color: #856404;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .hydration-tracker {
+            background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .water-glasses {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .water-glass {
+            width: 40px;
+            height: 50px;
+            border: 3px solid white;
+            border-radius: 8px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .water-glass.filled {
+            background: white;
+        }
+
+        .adherence-chart {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-heart-pulse"></i>
+                <h1>ElderCare AI</h1>
+            </div>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+        <div class="header-center">
+            <h1><i class="fas fa-pills"></i> Medication & Nutrition Management</h1>
+        </div>
+        <div class="header-right">
+            <div class="alert-status">
+                <i class="fas fa-check-circle"></i>
+                <span>All Systems Normal</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-main">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="health-analytics.html" class="nav-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Analytics</span>
+                </a>
+                <a href="robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Robot Control</span>
+                </a>
+                <a href="smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Smart Home</span>
+                </a>
+                <a href="emergency.html" class="nav-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Safety & Emergency</span>
+                </a>
+                <a href="medication.html" class="nav-item active">
+                    <i class="fas fa-pills"></i>
+                    <span>Medication & Nutrition</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area" style="padding: var(--spacing-xl);">
+        <!-- Smart Medication Dispenser -->
+        <section class="smart-dispenser">
+            <h2><i class="fas fa-capsules"></i> AI Smart Medication Dispenser</h2>
+            <div class="dispenser-visual">
+                <div class="dispenser-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h3>Next Medication Due</h3>
+                <p style="font-size: 32px; font-weight: 700; margin: var(--spacing-md) 0;">
+                    2:00 PM - in 15 minutes
+                </p>
+                <p style="font-size: 18px; opacity: 0.9;">Blood Pressure Medicine - Amlodipine 5mg</p>
+                <button style="background: white; color: #667eea; border: none; padding: var(--spacing-md) var(--spacing-xl); border-radius: var(--radius-md); font-size: 16px; font-weight: 700; cursor: pointer; margin-top: var(--spacing-lg);">
+                    <i class="fas fa-bell"></i> Set Reminder
+                </button>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                <div style="background: rgba(255,255,255,0.15); padding: var(--spacing-md); border-radius: var(--radius-md);">
+                    <h4>Compliance Rate</h4>
+                    <p style="font-size: 28px; font-weight: 700;">98%</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: var(--spacing-md); border-radius: var(--radius-md);">
+                    <h4>Medications Today</h4>
+                    <p style="font-size: 28px; font-weight: 700;">4 doses</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: var(--spacing-md); border-radius: var(--radius-md);">
+                    <h4>Dispenser Status</h4>
+                    <p style="font-size: 28px; font-weight: 700;">Ready</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Daily Timeline -->
+        <section class="timeline-view">
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Today's Medication Schedule</h2>
+                <div style="display: flex; gap: var(--spacing-md); font-size: 14px;">
+                    <div><span style="width: 12px; height: 12px; background: var(--success-color); display: inline-block; border-radius: 50%; margin-right: 4px;"></span>Completed</div>
+                    <div><span style="width: 12px; height: 12px; background: var(--warning-color); display: inline-block; border-radius: 50%; margin-right: 4px;"></span>Upcoming</div>
+                    <div><span style="width: 12px; height: 12px; background: var(--bg-primary); display: inline-block; border-radius: 50%; margin-right: 4px;"></span>No medication</div>
+                </div>
+            </div>
+            <div class="timeline-hours">
+                <div class="hour-slot completed has-medication">
+                    <div style="font-weight: 700;">08:00</div>
+                    <div style="font-size: 12px; margin-top: 4px;">AM</div>
+                    <i class="fas fa-check" style="color: var(--success-color); margin-top: 4px;"></i>
+                </div>
+                <div class="hour-slot">
+                    <div style="font-weight: 700;">10:00</div>
+                    <div style="font-size: 12px; margin-top: 4px;">AM</div>
+                </div>
+                <div class="hour-slot completed has-medication">
+                    <div style="font-weight: 700;">12:00</div>
+                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
+                    <i class="fas fa-check" style="color: var(--success-color); margin-top: 4px;"></i>
+                </div>
+                <div class="hour-slot upcoming has-medication">
+                    <div style="font-weight: 700;">02:00</div>
+                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
+                    <i class="fas fa-bell" style="color: var(--warning-color); margin-top: 4px;"></i>
+                </div>
+                <div class="hour-slot">
+                    <div style="font-weight: 700;">04:00</div>
+                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
+                </div>
+                <div class="hour-slot">
+                    <div style="font-weight: 700;">06:00</div>
+                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
+                </div>
+                <div class="hour-slot has-medication">
+                    <div style="font-weight: 700;">08:00</div>
+                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
+                    <i class="fas fa-clock" style="color: var(--primary-color); margin-top: 4px;"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Medication List -->
+        <section>
+            <h2 style="margin-bottom: var(--spacing-lg);"><i class="fas fa-prescription-bottle-alt"></i> Current Medications</h2>
+            <div class="medication-grid">
+                <div class="med-card completed">
+                    <div class="med-header">
+                        <div class="med-icon">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <i class="fas fa-check-circle" style="font-size: 32px; color: var(--success-color);"></i>
+                    </div>
+                    <h3>Amlodipine</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Blood Pressure Medicine</p>
+                    <div style="background: var(--bg-primary); padding: var(--spacing-sm); border-radius: var(--radius-sm); margin: var(--spacing-sm) 0;">
+                        <p style="font-size: 14px;"><strong>Dosage:</strong> 5mg</p>
+                        <p style="font-size: 14px;"><strong>Frequency:</strong> 2x daily</p>
+                        <p style="font-size: 14px;"><strong>Times:</strong> 8:00 AM, 2:00 PM</p>
+                    </div>
+                    <p style="font-size: 13px; color: var(--success-color);"><i class="fas fa-check"></i> Last taken: 8:00 AM today</p>
+                </div>
+
+                <div class="med-card completed">
+                    <div class="med-header">
+                        <div class="med-icon">
+                            <i class="fas fa-capsules"></i>
+                        </div>
+                        <i class="fas fa-check-circle" style="font-size: 32px; color: var(--success-color);"></i>
+                    </div>
+                    <h3>Metformin</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Diabetes Medication</p>
+                    <div style="background: var(--bg-primary); padding: var(--spacing-sm); border-radius: var(--radius-sm); margin: var(--spacing-sm) 0;">
+                        <p style="font-size: 14px;"><strong>Dosage:</strong> 500mg</p>
+                        <p style="font-size: 14px;"><strong>Frequency:</strong> 2x daily</p>
+                        <p style="font-size: 14px;"><strong>Times:</strong> 12:00 PM, 8:00 PM</p>
+                    </div>
+                    <p style="font-size: 13px; color: var(--success-color);"><i class="fas fa-check"></i> Last taken: 12:00 PM today</p>
+                </div>
+
+                <div class="med-card active">
+                    <div class="med-header">
+                        <div class="med-icon">
+                            <i class="fas fa-tablets"></i>
+                        </div>
+                        <i class="fas fa-exclamation-circle" style="font-size: 32px; color: var(--warning-color);"></i>
+                    </div>
+                    <h3>Atorvastatin</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Cholesterol Medication</p>
+                    <div style="background: var(--bg-primary); padding: var(--spacing-sm); border-radius: var(--radius-sm); margin: var(--spacing-sm) 0;">
+                        <p style="font-size: 14px;"><strong>Dosage:</strong> 20mg</p>
+                        <p style="font-size: 14px;"><strong>Frequency:</strong> 1x daily</p>
+                        <p style="font-size: 14px;"><strong>Time:</strong> 8:00 PM</p>
+                    </div>
+                    <p style="font-size: 13px; color: var(--warning-color);"><i class="fas fa-clock"></i> Due at 8:00 PM</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Nutrition Tracking -->
+        <section class="nutrition-grid">
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-utensils"></i> Today's Meals</h2>
+                </div>
+                <div class="meal-card">
+                    <div class="meal-icon">
+                        <i class="fas fa-mug-hot"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4>Breakfast - 7:30 AM</h4>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Oatmeal, Banana, Green Tea</p>
+                        <p style="font-size: 13px; margin-top: 4px;"><strong>Calories:</strong> 380 | <strong>Protein:</strong> 12g</p>
+                    </div>
+                    <i class="fas fa-check-circle" style="font-size: 24px; color: var(--success-color);"></i>
+                </div>
+                <div class="meal-card">
+                    <div class="meal-icon" style="background: linear-gradient(135deg, #E74C3C, #C0392B);">
+                        <i class="fas fa-drumstick-bite"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4>Lunch - 12:30 PM</h4>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Grilled Chicken, Rice, Vegetables</p>
+                        <p style="font-size: 13px; margin-top: 4px;"><strong>Calories:</strong> 650 | <strong>Protein:</strong> 35g</p>
+                    </div>
+                    <i class="fas fa-check-circle" style="font-size: 24px; color: var(--success-color);"></i>
+                </div>
+                <div class="meal-card" style="opacity: 0.7;">
+                    <div class="meal-icon" style="background: linear-gradient(135deg, #9B59B6, #8E44AD);">
+                        <i class="fas fa-bowl-rice"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4>Dinner - 7:00 PM</h4>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Planned: Fish, Soup, Brown Rice</p>
+                        <p style="font-size: 13px; margin-top: 4px;"><strong>Est. Calories:</strong> 580</p>
+                    </div>
+                    <i class="fas fa-clock" style="font-size: 24px; color: var(--text-secondary);"></i>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-pie"></i> Nutrition Stats</h2>
+                </div>
+                <div class="nutrition-stats">
+                    <div class="nutrition-stat">
+                        <i class="fas fa-fire" style="font-size: 32px; color: #E74C3C;"></i>
+                        <div class="stat-value">1,030</div>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Calories Today</p>
+                        <p style="font-size: 12px; color: var(--text-secondary);">Goal: 1,800</p>
+                    </div>
+                    <div class="nutrition-stat">
+                        <i class="fas fa-egg" style="font-size: 32px; color: #F39C12;"></i>
+                        <div class="stat-value">47g</div>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Protein</p>
+                        <p style="font-size: 12px; color: var(--text-secondary);">Goal: 60g</p>
+                    </div>
+                    <div class="nutrition-stat">
+                        <i class="fas fa-carrot" style="font-size: 32px; color: #27AE60;"></i>
+                        <div class="stat-value">3/5</div>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Veggie Servings</p>
+                        <p style="font-size: 12px; color: var(--text-secondary);">Goal: 5 servings</p>
+                    </div>
+                    <div class="nutrition-stat">
+                        <i class="fas fa-apple-alt" style="font-size: 32px; color: #E74C3C;"></i>
+                        <div class="stat-value">2/3</div>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Fruit Servings</p>
+                        <p style="font-size: 12px; color: var(--text-secondary);">Goal: 3 servings</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hydration Tracker -->
+        <section class="hydration-tracker">
+            <h2><i class="fas fa-tint"></i> Daily Hydration Tracker</h2>
+            <p style="font-size: 18px; margin: var(--spacing-md) 0; opacity: 0.9;">
+                Stay hydrated! Track your water intake throughout the day
+            </p>
+            <div class="water-glasses">
+                <div class="water-glass filled"></div>
+                <div class="water-glass filled"></div>
+                <div class="water-glass filled"></div>
+                <div class="water-glass filled"></div>
+                <div class="water-glass filled"></div>
+                <div class="water-glass"></div>
+                <div class="water-glass"></div>
+                <div class="water-glass"></div>
+            </div>
+            <p style="font-size: 24px; font-weight: 700; margin-top: var(--spacing-lg);">5 / 8 glasses</p>
+            <p style="font-size: 16px; opacity: 0.9;">1,250ml / 2,000ml daily goal</p>
+            <button style="background: white; color: #3498DB; border: none; padding: var(--spacing-md) var(--spacing-xl); border-radius: var(--radius-md); font-size: 16px; font-weight: 700; cursor: pointer; margin-top: var(--spacing-lg);">
+                <i class="fas fa-plus"></i> Add Glass
+            </button>
+        </section>
+
+        <!-- Smart Fridge Monitoring -->
+        <section class="smart-fridge">
+            <div class="section-header">
+                <h2><i class="fas fa-refrigerator"></i> Smart Fridge Monitoring</h2>
+                <button class="view-all-btn"><i class="fas fa-shopping-cart"></i> Generate Shopping List</button>
+            </div>
+            <div class="fridge-items">
+                <div class="fridge-item">
+                    <i class="fas fa-cheese" style="color: #F39C12;"></i>
+                    <p style="font-weight: 600; font-size: 14px; margin: var(--spacing-sm) 0;">Dairy</p>
+                    <p style="font-size: 12px;">8 items</p>
+                    <div class="expiry-warning">2 expiring soon</div>
+                </div>
+                <div class="fridge-item">
+                    <i class="fas fa-drumstick-bite" style="color: #E74C3C;"></i>
+                    <p style="font-weight: 600; font-size: 14px; margin: var(--spacing-sm) 0;">Meat</p>
+                    <p style="font-size: 12px;">5 items</p>
+                    <span class="status-badge active" style="font-size: 10px;">Fresh</span>
+                </div>
+                <div class="fridge-item">
+                    <i class="fas fa-leaf" style="color: #27AE60;"></i>
+                    <p style="font-weight: 600; font-size: 14px; margin: var(--spacing-sm) 0;">Vegetables</p>
+                    <p style="font-size: 12px;">12 items</p>
+                    <span class="status-badge active" style="font-size: 10px;">Fresh</span>
+                </div>
+                <div class="fridge-item">
+                    <i class="fas fa-apple-alt" style="color: #E74C3C;"></i>
+                    <p style="font-weight: 600; font-size: 14px; margin: var(--spacing-sm) 0;">Fruits</p>
+                    <p style="font-size: 12px;">7 items</p>
+                    <span class="status-badge active" style="font-size: 10px;">Fresh</span>
+                </div>
+                <div class="fridge-item">
+                    <i class="fas fa-bread-slice" style="color: #D4A574;"></i>
+                    <p style="font-weight: 600; font-size: 14px; margin: var(--spacing-sm) 0;">Bread</p>
+                    <p style="font-size: 12px;">3 items</p>
+                    <div class="expiry-warning">1 expiring today</div>
+                </div>
+                <div class="fridge-item">
+                    <i class="fas fa-fish" style="color: #3498DB;"></i>
+                    <p style="font-weight: 600; font-size: 14px; margin: var(--spacing-sm) 0;">Fish</p>
+                    <p style="font-size: 12px;">4 items</p>
+                    <span class="status-badge active" style="font-size: 10px;">Fresh</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Medication Adherence Chart -->
+        <section class="adherence-chart">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-bar"></i> 7-Day Medication Adherence</h2>
+            </div>
+            <canvas id="adherenceChart"></canvas>
+        </section>
+        </div>
+    </main>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeClock();
+            initializeAdherenceChart();
+        });
+
+        function initializeAdherenceChart() {
+            const ctx = document.getElementById('adherenceChart');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Medications Taken',
+                        data: [4, 4, 3, 4, 4, 4, 3],
+                        backgroundColor: 'rgba(74, 144, 226, 0.8)',
+                        borderColor: '#4A90E2',
+                        borderWidth: 2
+                    }, {
+                        label: 'Medications Scheduled',
+                        data: [4, 4, 4, 4, 4, 4, 4],
+                        backgroundColor: 'rgba(231, 76, 60, 0.3)',
+                        borderColor: '#E74C3C',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('en-MY');
+        }
+
+        function initializeClock() {
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+    </script>
+</body>
+</html>

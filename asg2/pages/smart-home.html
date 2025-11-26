@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home IoT Control - Elderly Care Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .room-selector {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            overflow-x: auto;
+            padding-bottom: var(--spacing-sm);
+        }
+
+        .room-btn {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .room-btn:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .room-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .device-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+        }
+
+        .device-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .device-icon-large {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .device-controls {
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 2px solid var(--border-color);
+        }
+
+        .slider-control {
+            margin: var(--spacing-md) 0;
+        }
+
+        .slider-control label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .slider-control input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: var(--bg-primary);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .slider-control input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .environment-monitor {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .env-card {
+            background: var(--bg-secondary);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+
+        .env-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin: var(--spacing-sm) 0;
+        }
+
+        .env-icon {
+            font-size: 40px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .automation-rules {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .rule-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .voice-control-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .voice-btn {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: var(--spacing-lg) auto;
+            display: block;
+        }
+
+        .voice-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .voice-btn.active {
+            animation: pulse 1.5s infinite;
+            background: rgba(231, 76, 60, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-heart-pulse"></i>
+                <h1>ElderCare AI</h1>
+            </div>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+        <div class="header-center">
+            <h1><i class="fas fa-home"></i> Smart Home IoT Control</h1>
+        </div>
+        <div class="header-right">
+            <div class="alert-status">
+                <i class="fas fa-check-circle"></i>
+                <span>All Systems Normal</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-main">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="health-analytics.html" class="nav-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Analytics</span>
+                </a>
+                <a href="robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Robot Control</span>
+                </a>
+                <a href="smart-home.html" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Smart Home</span>
+                </a>
+                <a href="emergency.html" class="nav-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Safety & Emergency</span>
+                </a>
+                <a href="medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i>
+                    <span>Medication & Nutrition</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area" style="padding: var(--spacing-xl);">
+        <!-- Voice Control Section -->
+        <section class="voice-control-section">
+            <h2><i class="fas fa-microphone"></i> Voice Control Assistant</h2>
+            <p style="font-size: 18px; margin: var(--spacing-md) 0; opacity: 0.9;">
+                Say "Hey Assistant" or tap the button below to control devices with your voice
+            </p>
+            <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceControl()">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <p id="voiceStatus" style="font-size: 16px;">Click to activate voice control</p>
+        </section>
+
+        <!-- Room Selector -->
+        <div class="room-selector">
+            <button class="room-btn active" onclick="switchRoom(this, 'all')">
+                <i class="fas fa-home"></i> All Rooms
+            </button>
+            <button class="room-btn" onclick="switchRoom(this, 'living')">
+                <i class="fas fa-couch"></i> Living Room
+            </button>
+            <button class="room-btn" onclick="switchRoom(this, 'bedroom')">
+                <i class="fas fa-bed"></i> Bedroom
+            </button>
+            <button class="room-btn" onclick="switchRoom(this, 'kitchen')">
+                <i class="fas fa-utensils"></i> Kitchen
+            </button>
+            <button class="room-btn" onclick="switchRoom(this, 'bathroom')">
+                <i class="fas fa-bath"></i> Bathroom
+            </button>
+        </div>
+
+        <!-- Environment Monitoring -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-wind"></i> Environmental Monitoring</h2>
+            </div>
+            <div class="environment-monitor">
+                <div class="env-card">
+                    <div class="env-icon" style="color: #F39C12;">
+                        <i class="fas fa-temperature-high"></i>
+                    </div>
+                    <div class="status-label">Temperature</div>
+                    <div class="env-value" style="color: #F39C12;">24°C</div>
+                    <span class="status-badge active">Comfortable</span>
+                </div>
+                <div class="env-card">
+                    <div class="env-icon" style="color: #3498DB;">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="status-label">Humidity</div>
+                    <div class="env-value" style="color: #3498DB;">55%</div>
+                    <span class="status-badge active">Optimal</span>
+                </div>
+                <div class="env-card">
+                    <div class="env-icon" style="color: #27AE60;">
+                        <i class="fas fa-wind"></i>
+                    </div>
+                    <div class="status-label">Air Quality (AQI)</div>
+                    <div class="env-value" style="color: #27AE60;">45</div>
+                    <span class="status-badge active">Excellent</span>
+                </div>
+                <div class="env-card">
+                    <div class="env-icon" style="color: #F39C12;">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="status-label">Light Level</div>
+                    <div class="env-value" style="color: #F39C12;">650 lx</div>
+                    <span class="status-badge active">Good</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- IoT Devices -->
+        <section>
+            <h2 style="margin-bottom: var(--spacing-lg);"><i class="fas fa-plug"></i> Connected Devices</h2>
+            <div class="devices-grid" id="devicesGrid">
+                <!-- Smart Lights -->
+                <div class="device-card" data-room="living">
+                    <div class="device-header">
+                        <h3>Smart Lights</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDeviceStatus(this, 'Smart Lights')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Living Room</p>
+                    <div class="device-controls">
+                        <div class="slider-control">
+                            <label>Brightness: <span id="brightnessValue">75%</span></label>
+                            <input type="range" min="0" max="100" value="75" onchange="updateBrightness(this)">
+                        </div>
+                        <div class="slider-control">
+                            <label>Color Temperature</label>
+                            <div style="display: flex; gap: var(--spacing-sm);">
+                                <button class="action-btn" style="flex: 1;" onclick="setColorTemp('warm')">Warm</button>
+                                <button class="action-btn" style="flex: 1;" onclick="setColorTemp('neutral')">Neutral</button>
+                                <button class="action-btn" style="flex: 1;" onclick="setColorTemp('cool')">Cool</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Air Conditioning -->
+                <div class="device-card" data-room="living">
+                    <div class="device-header">
+                        <h3>Air Conditioning</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDeviceStatus(this, 'AC')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);">
+                        <i class="fas fa-snowflake"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Living Room</p>
+                    <div class="device-controls">
+                        <div class="slider-control">
+                            <label>Temperature: <span id="acTempValue">24°C</span></label>
+                            <input type="range" min="18" max="30" value="24" onchange="updateAcTemp(this)">
+                        </div>
+                        <div class="slider-control">
+                            <label>Mode</label>
+                            <div style="display: flex; gap: var(--spacing-sm);">
+                                <button class="action-btn" style="flex: 1;" onclick="setAcMode('auto')">Auto</button>
+                                <button class="action-btn" style="flex: 1;" onclick="setAcMode('cool')">Cool</button>
+                                <button class="action-btn" style="flex: 1;" onclick="setAcMode('fan')">Fan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Door Lock -->
+                <div class="device-card" data-room="all">
+                    <div class="device-header">
+                        <h3>Smart Door Lock</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDeviceStatus(this, 'Door Lock')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Main Door</p>
+                    <div class="device-controls">
+                        <div style="display: flex; gap: var(--spacing-sm);">
+                            <button class="action-btn" style="flex: 1;"><i class="fas fa-lock"></i> Lock</button>
+                            <button class="action-btn" style="flex: 1;"><i class="fas fa-unlock"></i> Unlock</button>
+                        </div>
+                        <p style="font-size: 13px; margin-top: var(--spacing-sm); color: var(--text-secondary);">
+                            <i class="fas fa-info-circle"></i> Auto-lock enabled at 10:00 PM
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Security Camera -->
+                <div class="device-card" data-room="all">
+                    <div class="device-header">
+                        <h3>AI Security Camera</h3>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDeviceStatus(this, 'Camera')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">4 Cameras Active</p>
+                    <div class="device-controls">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
+                            <div style="padding: var(--spacing-sm); background: var(--bg-primary); border-radius: var(--radius-sm); text-align: center;">
+                                <div style="font-size: 13px; color: var(--text-secondary);">Living</div>
+                                <div style="font-weight: 700; color: var(--success-color);">Active</div>
+                            </div>
+                            <div style="padding: var(--spacing-sm); background: var(--bg-primary); border-radius: var(--radius-sm); text-align: center;">
+                                <div style="font-size: 13px; color: var(--text-secondary);">Bedroom</div>
+                                <div style="font-weight: 700; color: var(--success-color);">Active</div>
+                            </div>
+                            <div style="padding: var(--spacing-sm); background: var(--bg-primary); border-radius: var(--radius-sm); text-align: center;">
+                                <div style="font-size: 13px; color: var(--text-secondary);">Kitchen</div>
+                                <div style="font-weight: 700; color: var(--success-color);">Active</div>
+                            </div>
+                            <div style="padding: var(--spacing-sm); background: var(--bg-primary); border-radius: var(--radius-sm); text-align: center;">
+                                <div style="font-size: 13px; color: var(--text-secondary);">Entrance</div>
+                                <div style="font-weight: 700; color: var(--success-color);">Active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Bed -->
+                <div class="device-card" data-room="bedroom">
+                    <div class="device-header">
+                        <h3>Smart Bed Monitor</h3>
+                        <div class="status-badge active">Active</div>
+                    </div>
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #1ABC9C 0%, #16A085 100%);">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Bedroom</p>
+                    <div class="device-controls">
+                        <div style="font-size: 14px;">
+                            <p><strong>Last Night's Sleep:</strong></p>
+                            <p>Duration: 7.5 hours</p>
+                            <p>Quality: Good (85%)</p>
+                            <p>Heart Rate Avg: 68 bpm</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Toilet -->
+                <div class="device-card" data-room="bathroom">
+                    <div class="device-header">
+                        <h3>Smart Toilet Sensor</h3>
+                        <div class="status-badge active">Active</div>
+                    </div>
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #34495E 0%, #2C3E50 100%);">
+                        <i class="fas fa-toilet"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Bathroom</p>
+                    <div class="device-controls">
+                        <div style="font-size: 14px;">
+                            <p><strong>Health Monitoring:</strong></p>
+                            <p>Hydration: Good</p>
+                            <p>Last used: 2 hours ago</p>
+                            <p>Auto-flush: Enabled</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Automation Rules -->
+        <section class="automation-rules">
+            <div class="section-header">
+                <h2><i class="fas fa-magic"></i> Smart Automation Rules</h2>
+                <button class="view-all-btn"><i class="fas fa-plus"></i> Add New Rule</button>
+            </div>
+            <div class="rule-item">
+                <div class="rule-icon"><i class="fas fa-moon"></i></div>
+                <div style="flex: 1;">
+                    <p style="font-weight: 600;">Bedtime Routine</p>
+                    <p style="font-size: 14px; color: var(--text-secondary);">
+                        At 9:00 PM: Dim lights, lock doors, adjust AC to 23°C
+                    </p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="rule-item">
+                <div class="rule-icon"><i class="fas fa-sun"></i></div>
+                <div style="flex: 1;">
+                    <p style="font-weight: 600;">Morning Routine</p>
+                    <p style="font-size: 14px; color: var(--text-secondary);">
+                        At 7:00 AM: Gradual light brightening, open curtains
+                    </p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="rule-item">
+                <div class="rule-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div style="flex: 1;">
+                    <p style="font-weight: 600;">Fall Detection Response</p>
+                    <p style="font-size: 14px; color: var(--text-secondary);">
+                        On fall detected: Turn on all lights, unlock door, alert emergency contacts
+                    </p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="rule-item">
+                <div class="rule-icon"><i class="fas fa-thermometer"></i></div>
+                <div style="flex: 1;">
+                    <p style="font-weight: 600;">Temperature Comfort</p>
+                    <p style="font-size: 14px; color: var(--text-secondary);">
+                        Maintain room temperature between 22-25°C automatically
+                    </p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </section>
+        </div>
+    </main>
+
+    <script src="../js/script.js"></script>
+    <script>
+        let voiceActive = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeClock();
+        });
+
+        function toggleVoiceControl() {
+            const btn = document.getElementById('voiceBtn');
+            const status = document.getElementById('voiceStatus');
+
+            voiceActive = !voiceActive;
+
+            if (voiceActive) {
+                btn.classList.add('active');
+                status.textContent = 'Listening... Say your command';
+                if (window.dashboardUtils) {
+                    window.dashboardUtils.showNotification('Voice control activated', 'info');
+                }
+
+                // Simulate voice recognition
+                setTimeout(() => {
+                    status.textContent = 'Command received: "Turn on living room lights"';
+                    setTimeout(() => {
+                        toggleVoiceControl();
+                    }, 2000);
+                }, 3000);
+            } else {
+                btn.classList.remove('active');
+                status.textContent = 'Click to activate voice control';
+            }
+        }
+
+        function switchRoom(element, room) {
+            // Update active button
+            document.querySelectorAll('.room-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+
+            // Filter devices
+            const devices = document.querySelectorAll('.device-card');
+            devices.forEach(device => {
+                if (room === 'all' || device.dataset.room === room || device.dataset.room === 'all') {
+                    device.style.display = 'block';
+                } else {
+                    device.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleDeviceStatus(checkbox, deviceName) {
+            const status = checkbox.checked ? 'ON' : 'OFF';
+            if (window.dashboardUtils) {
+                window.dashboardUtils.showNotification(`${deviceName} turned ${status}`, 'info');
+            }
+        }
+
+        function updateBrightness(slider) {
+            document.getElementById('brightnessValue').textContent = slider.value + '%';
+        }
+
+        function updateAcTemp(slider) {
+            document.getElementById('acTempValue').textContent = slider.value + '°C';
+        }
+
+        function setColorTemp(temp) {
+            const temps = {
+                'warm': 'Warm White (2700K)',
+                'neutral': 'Neutral White (4000K)',
+                'cool': 'Cool White (5500K)'
+            };
+            if (window.dashboardUtils) {
+                window.dashboardUtils.showNotification(`Color temperature set to ${temps[temp]}`, 'info');
+            }
+        }
+
+        function setAcMode(mode) {
+            if (window.dashboardUtils) {
+                window.dashboardUtils.showNotification(`AC mode set to ${mode.toUpperCase()}`, 'info');
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('en-MY');
+        }
+
+        function initializeClock() {
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+    </script>
+</body>
+</html>

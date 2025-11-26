@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety & Emergency - Elderly Care Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .emergency-header {
+            background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .sos-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: white;
+            color: #E74C3C;
+            border: 8px solid rgba(255, 255, 255, 0.5);
+            font-size: 48px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: var(--spacing-lg) auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .sos-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+        }
+
+        .sos-button:active {
+            transform: scale(0.95);
+        }
+
+        .safety-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .safety-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .safety-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .safety-status-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .fall-detection-visual {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            color: white;
+            margin: var(--spacing-md) 0;
+        }
+
+        .fall-icon {
+            font-size: 80px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .location-map {
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: var(--spacing-md) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .location-pin {
+            font-size: 60px;
+            color: #E74C3C;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .contact-quick-dial {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .quick-dial-btn {
+            background: var(--bg-primary);
+            border: 2px solid var(--primary-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .quick-dial-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .quick-dial-btn i {
+            font-size: 40px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .alert-history {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .alert-history-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            border-left: 4px solid;
+        }
+
+        .alert-history-item.resolved {
+            border-left-color: var(--success-color);
+        }
+
+        .alert-history-item.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .wearable-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .wearable-item {
+            background: var(--bg-primary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .wearable-item i {
+            font-size: 36px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .geofencing-map {
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            margin: var(--spacing-md) 0;
+        }
+
+        .geofence-status {
+            display: inline-block;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: var(--success-color);
+            color: white;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-top: var(--spacing-md);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-heart-pulse"></i>
+                <h1>ElderCare AI</h1>
+            </div>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+        <div class="header-center">
+            <h1><i class="fas fa-shield-alt"></i> Safety & Emergency Management</h1>
+        </div>
+        <div class="header-right">
+            <div class="alert-status">
+                <i class="fas fa-check-circle"></i>
+                <span>All Systems Normal</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-main">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="health-analytics.html" class="nav-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Analytics</span>
+                </a>
+                <a href="robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Robot Control</span>
+                </a>
+                <a href="smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Smart Home</span>
+                </a>
+                <a href="emergency.html" class="nav-item active">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Safety & Emergency</span>
+                </a>
+                <a href="medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i>
+                    <span>Medication & Nutrition</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area" style="padding: var(--spacing-xl);">
+        <!-- Emergency SOS Section -->
+        <section class="emergency-header">
+            <h2 style="font-size: 32px; margin-bottom: var(--spacing-md);"><i class="fas fa-ambulance"></i> Emergency SOS</h2>
+            <p style="font-size: 18px; opacity: 0.9;">Press and hold the button below in case of emergency</p>
+
+            <button class="sos-button" onclick="triggerSOS()">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span style="font-size: 24px; margin-top: var(--spacing-sm);">SOS</span>
+            </button>
+
+            <p style="font-size: 16px; opacity: 0.9;">This will immediately:</p>
+            <ul style="list-style: none; padding: 0; font-size: 16px; margin-top: var(--spacing-md);">
+                <li><i class="fas fa-check"></i> Call Emergency Services (999)</li>
+                <li><i class="fas fa-check"></i> Alert all family members & caregivers</li>
+                <li><i class="fas fa-check"></i> Activate all cameras & unlock doors</li>
+                <li><i class="fas fa-check"></i> Send GPS location to responders</li>
+                <li><i class="fas fa-check"></i> Activate robot for assistance</li>
+            </ul>
+        </section>
+
+        <!-- Safety Status Grid -->
+        <div class="safety-grid">
+            <!-- Fall Detection -->
+            <div class="safety-card">
+                <h3><i class="fas fa-running"></i> AI Fall Detection</h3>
+                <div class="fall-detection-visual">
+                    <div class="fall-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h4>No Falls Detected</h4>
+                    <p style="font-size: 14px; opacity: 0.9;">Monitoring 24/7 with AI cameras</p>
+                </div>
+                <div class="safety-status">
+                    <div class="safety-status-icon" style="background: var(--success-color);">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div>
+                        <p style="font-weight: 600;">System Status</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">All 4 cameras active</p>
+                    </div>
+                </div>
+                <div style="margin-top: var(--spacing-md);">
+                    <p style="font-size: 14px;"><strong>Last 7 Days:</strong></p>
+                    <p style="font-size: 14px;">0 Falls | 3 Near-fall warnings</p>
+                    <p style="font-size: 14px; color: var(--success-color);">95% stability score</p>
+                </div>
+            </div>
+
+            <!-- GPS Location Tracking -->
+            <div class="safety-card">
+                <h3><i class="fas fa-map-marker-alt"></i> GPS Location Tracking</h3>
+                <div class="location-map">
+                    <div>
+                        <div class="location-pin"><i class="fas fa-map-marker-alt"></i></div>
+                        <p style="margin-top: var(--spacing-sm); color: var(--text-primary);">Current Location</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Living Room, Home</p>
+                    </div>
+                </div>
+                <div class="safety-status">
+                    <div class="safety-status-icon" style="background: var(--success-color);">
+                        <i class="fas fa-signal"></i>
+                    </div>
+                    <div>
+                        <p style="font-weight: 600;">Tracking Active</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Smart watch connected</p>
+                    </div>
+                </div>
+                <div class="geofencing-map">
+                    <i class="fas fa-home" style="font-size: 48px; color: var(--primary-color);"></i>
+                    <p style="margin-top: var(--spacing-sm); font-weight: 600;">Geofencing Status</p>
+                    <div class="geofence-status">Within Safe Zone</div>
+                </div>
+            </div>
+
+            <!-- Wearable Devices Status -->
+            <div class="safety-card">
+                <h3><i class="fas fa-heartbeat"></i> Wearable Safety Devices</h3>
+                <div class="wearable-status">
+                    <div class="wearable-item">
+                        <i class="fas fa-clock" style="color: #E74C3C; font-size: 24px;"></i>
+                        <p style="font-weight: 600;">Smart Watch</p>
+                        <span class="status-badge active">Connected</span>
+                        <p style="font-size: 12px; margin-top: 4px;">Battery: 78%</p>
+                    </div>
+                    <div class="wearable-item">
+                        <i class="fas fa-shoe-prints" style="color: #3498DB;"></i>
+                        <p style="font-weight: 600;">Smart Shoes</p>
+                        <span class="status-badge active">Connected</span>
+                        <p style="font-size: 12px; margin-top: 4px;">Battery: 92%</p>
+                    </div>
+                    <div class="wearable-item">
+                        <i class="fas fa-star" style="color: #F39C12;"></i>
+                        <p style="font-weight: 600;">Emergency Pendant</p>
+                        <span class="status-badge active">Connected</span>
+                        <p style="font-size: 12px; margin-top: 4px;">Battery: 85%</p>
+                    </div>
+                </div>
+                <div style="margin-top: var(--spacing-lg); padding: var(--spacing-md); background: #D4EDDA; border-radius: var(--radius-md);">
+                    <p style="font-weight: 600; color: #155724;"><i class="fas fa-check-circle"></i> All Devices Operational</p>
+                    <p style="font-size: 13px; color: #155724; margin-top: 4px;">Last sync: Just now</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contacts -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-phone-alt"></i> Emergency Quick Dial</h2>
+            </div>
+            <div class="contact-quick-dial">
+                <div class="quick-dial-btn" onclick="quickDial('999')">
+                    <i class="fas fa-ambulance" style="color: #E74C3C;"></i>
+                    <h4>Emergency 999</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Ambulance & Emergency</p>
+                </div>
+                <div class="quick-dial-btn" onclick="quickDial('doctor')">
+                    <i class="fas fa-user-md" style="color: #3498DB;"></i>
+                    <h4>Dr. Ahmad Hassan</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Primary Physician</p>
+                </div>
+                <div class="quick-dial-btn" onclick="quickDial('family')">
+                    <i class="fas fa-users" style="color: #9B59B6;"></i>
+                    <h4>Siti Tan</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Daughter</p>
+                </div>
+                <div class="quick-dial-btn" onclick="quickDial('nurse')">
+                    <i class="fas fa-heartbeat" style="color: #27AE60;"></i>
+                    <h4>Nurse Maya</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Home Care Nurse</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Safety Monitoring -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-shield-check"></i> Active Safety Monitoring</h2>
+            </div>
+            <div class="safety-grid">
+                <div class="safety-status">
+                    <div class="safety-status-icon" style="background: linear-gradient(135deg, #27AE60, #2ECC71);">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Computer Vision Monitoring</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">AI analyzing movements & detecting anomalies</p>
+                    </div>
+                    <span class="status-badge active">Active</span>
+                </div>
+                <div class="safety-status">
+                    <div class="safety-status-icon" style="background: linear-gradient(135deg, #3498DB, #2980B9);">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Behavior Pattern Analysis</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">ML detecting unusual activity patterns</p>
+                    </div>
+                    <span class="status-badge active">Active</span>
+                </div>
+                <div class="safety-status">
+                    <div class="safety-status-icon" style="background: linear-gradient(135deg, #F39C12, #E67E22);">
+                        <i class="fas fa-fire-alt"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Smoke & Fire Detection</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Smart sensors in all rooms</p>
+                    </div>
+                    <span class="status-badge active">Active</span>
+                </div>
+                <div class="safety-status">
+                    <div class="safety-status-icon" style="background: linear-gradient(135deg, #9B59B6, #8E44AD);">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Water Leak Detection</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Kitchen & bathroom sensors</p>
+                    </div>
+                    <span class="status-badge active">Active</span>
+                </div>
+                <div class="safety-status">
+                    <div class="safety-status-icon" style="background: linear-gradient(135deg, #E74C3C, #C0392B);">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Inactivity Alert System</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Alert if no movement for 2+ hours</p>
+                    </div>
+                    <span class="status-badge active">Active</span>
+                </div>
+                <div class="safety-status">
+                    <div class="safety-status-icon" style="background: linear-gradient(135deg, #1ABC9C, #16A085);">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Door & Window Sensors</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">All entry points monitored</p>
+                    </div>
+                    <span class="status-badge active">Active</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alert History -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-history"></i> Recent Safety Alerts</h2>
+            </div>
+            <div class="alert-history">
+                <div class="alert-history-item resolved">
+                    <i class="fas fa-check-circle" style="font-size: 24px; color: var(--success-color);"></i>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Near-fall Detected</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">
+                            Stumble detected in bathroom, recovered safely
+                        </p>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                            2025-11-24, 14:30 - Resolved
+                        </p>
+                    </div>
+                </div>
+                <div class="alert-history-item resolved">
+                    <i class="fas fa-check-circle" style="font-size: 24px; color: var(--success-color);"></i>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Medication Missed Alert</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">
+                            2:00 PM medication delayed - Taken at 2:15 PM
+                        </p>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                            2025-11-25, 14:15 - Resolved
+                        </p>
+                    </div>
+                </div>
+                <div class="alert-history-item warning">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 24px; color: var(--warning-color);"></i>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Low Activity Alert</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">
+                            Steps today below 50% of daily goal
+                        </p>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                            2025-11-25, 13:00 - Monitoring
+                        </p>
+                    </div>
+                </div>
+                <div class="alert-history-item resolved">
+                    <i class="fas fa-check-circle" style="font-size: 24px; color: var(--success-color);"></i>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 600;">Geofence Alert</p>
+                        <p style="font-size: 14px; color: var(--text-secondary);">
+                            Left home zone - Returned within 2 hours (Doctor visit)
+                        </p>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                            2025-11-22, 10:00 - Resolved
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </div>
+    </main>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeClock();
+        });
+
+        function triggerSOS() {
+            const confirmation = confirm(
+                '🚨 EMERGENCY SOS ACTIVATION 🚨\n\n' +
+                'This will:\n' +
+                '• Call Emergency Services (999)\n' +
+                '• Alert all family members\n' +
+                '• Activate all cameras\n' +
+                '• Unlock all doors\n' +
+                '• Send GPS location\n' +
+                '• Dispatch robot assistance\n\n' +
+                'Proceed with emergency activation?'
+            );
+
+            if (confirmation) {
+                // Simulate emergency activation
+                if (window.dashboardUtils) {
+                    window.dashboardUtils.showNotification(
+                        '🚨 EMERGENCY SERVICES ACTIVATED! Help is on the way.',
+                        'warning'
+                    );
+                } else {
+                    alert('🚨 EMERGENCY SERVICES ACTIVATED!\n\nHelp is on the way!\n- Calling 999\n- Alerting family\n- Sending location');
+                }
+
+                // In real application, this would:
+                // - Call emergency API
+                // - Send SMS to emergency contacts
+                // - Activate emergency protocols
+                // - Stream camera feeds
+                // - Unlock doors
+                console.log('EMERGENCY SOS ACTIVATED');
+            }
+        }
+
+        function quickDial(contact) {
+            const contacts = {
+                '999': 'Calling Emergency Services (999)...',
+                'doctor': 'Calling Dr. Ahmad Hassan...',
+                'family': 'Calling Siti Tan (Daughter)...',
+                'nurse': 'Calling Nurse Maya...'
+            };
+
+            if (window.dashboardUtils) {
+                window.dashboardUtils.showNotification(contacts[contact], 'info');
+            } else {
+                alert(contacts[contact]);
+            }
+
+            console.log(`Quick dial: ${contact}`);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('en-MY');
+        }
+
+        function initializeClock() {
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+    </script>
+</body>
+</html>
