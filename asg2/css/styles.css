@@ -15,26 +15,30 @@
 }
 
 :root {
-    /* Warm & Humanized Color Palette - Research-based for human comfort */
-    --primary-color: #FA7268; /* Warm coral - friendly and inviting */
+    /* Modern Blue Color Palette - Professional and Trustworthy */
+    --primary-color: #3B82F6; /* Bright blue - modern and professional */
+    --primary-dark: #1E40AF; /* Dark blue - emphasis and hover states */
+    --primary-light: #60A5FA; /* Light blue - subtle accents */
+    --primary-lighter: #DBEAFE; /* Very light blue - backgrounds */
+
     --secondary-color: #94C9A9; /* Soft sage green - calming and natural */
-    --warning-color: #FFB347; /* Warm amber - noticeable but gentle */
-    --danger-color: #E76F51; /* Soft coral red - alert but not harsh */
-    --success-color: #6BCB77; /* Warm green - positive and encouraging */
-    --info-color: #5FA8D3; /* Warm blue - trustworthy with warmth */
+    --warning-color: #F59E0B; /* Amber - noticeable warnings */
+    --danger-color: #DC2626; /* Red - emergency and critical alerts */
+    --success-color: #10B981; /* Green - positive and success */
+    --info-color: #3B82F6; /* Blue - informational */
 
-    /* Health Status Colors - Warm Tones */
-    --health-normal: #6BCB77; /* Warm green */
-    --health-warning: #FFB347; /* Warm amber */
-    --health-critical: #E76F51; /* Soft coral red */
+    /* Health Status Colors */
+    --health-normal: #10B981; /* Green - healthy status */
+    --health-warning: #F59E0B; /* Amber - warning status */
+    --health-critical: #DC2626; /* Red - critical status */
 
-    /* Neutral Colors - Warm & Inviting */
-    --bg-primary: #FFF8F3; /* Warm cream - softer than white */
-    --bg-secondary: #FFFBF7; /* Pure white with warm undertone */
-    --bg-dark: #3D3D3D; /* Warm charcoal */
-    --text-primary: #3D3D3D; /* Warm dark gray */
-    --text-secondary: #757575; /* Medium warm gray */
-    --border-color: #F5E6DB; /* Warm beige border */
+    /* Neutral Colors - Clean & Modern */
+    --bg-primary: #F8FAFC; /* Light gray-blue - clean background */
+    --bg-secondary: #FFFFFF; /* Pure white */
+    --bg-dark: #1E293B; /* Dark slate */
+    --text-primary: #1E293B; /* Dark slate text */
+    --text-secondary: #64748B; /* Medium gray text */
+    --border-color: #E2E8F0; /* Light gray border */
 
     /* Shadows for Depth (Figure-Ground) */
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
@@ -74,7 +78,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 248, 243, 0.92) 0%, rgba(255, 251, 247, 0.94) 100%);
+    background: rgba(248, 250, 252, 0.95);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     z-index: -1;
@@ -95,31 +99,54 @@ body::before {
     width: 100%;
     height: 200px;
     overflow: hidden;
-    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+    background: var(--primary-color);
 }
 
 /* ===================================
    HEADER - Gestalt: Proximity & Continuity
    =================================== */
 .dashboard-header {
-    background: linear-gradient(135deg, #FA7268 0%, #FF9A76 50%, #FFB996 100%); /* Warm sunset gradient */
-    color: white;
-    padding: var(--spacing-lg);
+    background: #FFFFFF; /* Clean white background */
+    color: var(--text-primary);
+    padding: 0 var(--spacing-lg);
+    height: 80px; /* Fixed height for consistency across all pages with better spacing */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 20px rgba(250, 114, 104, 0.25);
-    position: sticky;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(0);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06); /* Subtle bottom border */
+}
+
+.dashboard-header.header-hidden {
+    transform: translateY(-100%);
 }
 
 .header-left, .header-center, .header-right {
     display: flex;
     align-items: center;
     gap: var(--spacing-lg);
+}
+
+.header-center h1 {
+    color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.header-center h1 i {
+    color: var(--primary-color); /* Coral icon */
 }
 
 .logo {
@@ -130,45 +157,46 @@ body::before {
 
 .logo i {
     font-size: 32px;
+    color: var(--primary-color); /* Coral icon */
 }
 
 .logo h1 {
     font-size: 24px;
     font-weight: 700;
+    color: var(--primary-color); /* Coral text */
 }
 
 .current-time {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 500;
+    color: var(--text-secondary);
     padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(255, 255, 255, 0.2);
+    background: #F8F9FA;
     border-radius: var(--radius-md);
 }
 
 .elderly-info {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-sm) var(--spacing-lg);
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: var(--radius-lg);
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: #F8F9FA; /* Light gray background */
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--primary-color); /* Coral accent border */
 }
 
 .elder-avatar {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 3px solid white;
+    border: 2px solid var(--primary-color); /* Coral border */
 }
 
 .elderly-info h2 {
-    font-size: 20px;
-    margin-bottom: 4px;
-}
-
-.elderly-info p {
-    font-size: 14px;
-    opacity: 0.9;
+    font-size: 16px;
+    margin: 0; /* Remove margin since no paragraph below */
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .alert-status {
@@ -188,7 +216,7 @@ body::before {
 }
 
 .emergency-btn {
-    background: var(--danger-color);
+    background: #E74C3C; /* Strong emergency red */
     color: white;
     border: none;
     padding: var(--spacing-md) var(--spacing-lg);
@@ -200,13 +228,17 @@ body::before {
     align-items: center;
     gap: var(--spacing-sm);
     transition: all 0.3s ease;
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
 .emergency-btn:hover {
     background: #C0392B;
     transform: scale(1.05);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+.emergency-btn:active {
+    transform: scale(0.98);
 }
 
 /* ===================================
@@ -214,7 +246,8 @@ body::before {
    =================================== */
 .dashboard-main {
     display: flex;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 80px);
+    padding-top: 80px; /* Space for fixed header */
 }
 
 /* ===================================
@@ -228,6 +261,17 @@ body::before {
     padding: var(--spacing-lg);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
     border-right: 1px solid rgba(255, 255, 255, 0.18);
+    height: calc(100vh - 80px); /* Full height minus header */
+    position: sticky;
+    top: 80px; /* Stick below header */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    transition: top 0.3s ease-in-out, height 0.3s ease-in-out; /* Smooth transition */
+}
+
+/* When header is hidden, move sidebar to top */
+.dashboard-header.header-hidden ~ .dashboard-main .sidebar {
+    top: 0;
+    height: 100vh; /* Full viewport height when header is hidden */
 }
 
 .sidebar nav {
@@ -260,7 +304,7 @@ body::before {
 }
 
 .nav-item.active {
-    background: linear-gradient(135deg, #FA7268 0%, #FF9A76 100%); /* Warm coral gradient */
+    background: var(--primary-color);
     color: white;
     box-shadow: var(--shadow-md);
 }
@@ -342,11 +386,14 @@ body::before {
     border: 1px solid rgba(255, 255, 255, 0.3);
     overflow: hidden;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 550px; /* Consistent card height */
 }
 
 .status-card:hover {
     transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 12px 48px rgba(250, 114, 104, 0.25);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.25);
     border-color: var(--primary-color);
 }
 
@@ -375,12 +422,12 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(250, 114, 104, 0.4) 0%, rgba(255, 154, 118, 0.3) 100%);
+    background: rgba(59, 130, 246, 0.35);
     transition: all 0.3s ease;
 }
 
 .status-card:hover .card-overlay {
-    background: linear-gradient(135deg, rgba(250, 114, 104, 0.3) 0%, rgba(255, 154, 118, 0.2) 100%);
+    background: rgba(59, 130, 246, 0.25);
 }
 
 .status-card .card-icon {
@@ -398,6 +445,9 @@ body::before {
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    flex: 1; /* Takes up available space, pushes buttons to bottom */
+    display: flex;
+    flex-direction: column;
 }
 
 .card-icon {
@@ -413,23 +463,15 @@ body::before {
 }
 
 .card-icon.health {
-    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+    background: var(--primary-color);
 }
 
 .card-icon.robot {
-    background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);
+    background: var(--primary-dark);
 }
 
 .card-icon.activity {
-    background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
-}
-
-.card-icon.health {
-    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
-}
-
-.card-icon.robot {
-    background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);
+    background: var(--primary-light);
 }
 
 .card-content h3 {
@@ -452,18 +494,21 @@ body::before {
 .vital {
     display: flex;
     flex-direction: column;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: rgba(255, 255, 255, 0.95);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: var(--radius-sm);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.08); /* Visible border */
+    border-left: 3px solid var(--primary-color); /* Coral accent */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* Subtle shadow */
     transition: all 0.2s ease;
 }
 
 .vital:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+    border-left-color: var(--primary-light);
 }
 
 .vital-label {
@@ -501,17 +546,39 @@ body::before {
     align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-sm) var(--spacing-md);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-color);
     color: white;
     border-radius: var(--radius-md);
     font-weight: 600;
+    margin-top: auto; /* Push to bottom of card */
 }
 
 /* Robot Info */
+.robot-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Takes up available space */
+}
+
 .robot-display {
     display: flex;
     gap: var(--spacing-lg);
     margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-left: 3px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+}
+
+.robot-display:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+    border-left-color: var(--primary-light);
 }
 
 .robot-visual {
@@ -543,12 +610,13 @@ body::before {
 .quick-actions {
     display: flex;
     gap: var(--spacing-sm);
+    margin-top: auto; /* Push buttons to bottom of robot-info container */
 }
 
 .action-btn {
     flex: 1;
     padding: var(--spacing-sm);
-    background: linear-gradient(135deg, var(--primary-color) 0%, #FF9A76 100%);
+    background: var(--primary-color);
     color: white;
     border: none;
     border-radius: var(--radius-sm);
@@ -582,9 +650,9 @@ body::before {
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #FF9A76 0%, var(--primary-color) 100%);
+    background: var(--primary-dark);
     transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 4px 12px rgba(250, 114, 104, 0.4);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 /* Activity Monitor - Gestalt: Proximity */
@@ -593,6 +661,7 @@ body::before {
     flex-direction: column;
     gap: var(--spacing-sm);
     padding: var(--spacing-xs);
+    margin-top: auto; /* Push to bottom of card */
 }
 
 .activity-item {
@@ -600,17 +669,20 @@ body::before {
     align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-xs) var(--spacing-sm);
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: var(--radius-sm);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.08); /* Visible border */
+    border-left: 3px solid var(--primary-color); /* Coral accent */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* Subtle shadow */
     transition: all 0.2s ease;
 }
 
 .activity-item:hover {
-    transform: translateX(3px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+    border-left-color: var(--primary-light);
 }
 
 .activity-item i {
@@ -657,87 +729,86 @@ body::before {
 
 /* Comfortable Color Schemes for Each Section - Research-based for Elderly Comfort */
 
-/* Smart Home Section - Warm Home Colors (Beige/Cream) */
+/* Smart Home Section - Clean Blue */
 .smart-home-section {
-    background: linear-gradient(135deg, rgba(255, 250, 245, 0.98) 0%, rgba(255, 248, 240, 0.98) 100%);
-    border-left: 4px solid #FFB996;
-    box-shadow: 0 8px 32px rgba(255, 185, 150, 0.15);
+    background: rgba(255, 255, 255, 0.98);
+    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
 }
 
 .smart-home-section:hover {
-    box-shadow: 0 12px 48px rgba(255, 185, 150, 0.2);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.12);
     transform: translateY(-2px);
 }
 
-/* Health Chart Section - Medical Blue-Green (Calming) */
+/* Health Chart Section - Clean Blue */
 .health-chart-section {
-    background: linear-gradient(135deg, rgba(245, 255, 250, 0.98) 0%, rgba(240, 252, 248, 0.98) 100%);
-    border-left: 4px solid #94C9A9;
-    box-shadow: 0 8px 32px rgba(148, 201, 169, 0.15);
+    background: rgba(255, 255, 255, 0.98);
+    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
 }
 
 .health-chart-section:hover {
-    box-shadow: 0 12px 48px rgba(148, 201, 169, 0.2);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.12);
     transform: translateY(-2px);
 }
 
-/* Medication Section - Soft Lavender (Soothing) */
+/* Medication Section - Clean Blue */
 .medication-section {
-    background: linear-gradient(135deg, rgba(255, 250, 255, 0.98) 0%, rgba(250, 245, 255, 0.98) 100%);
-    border-left: 4px solid #D4B3E8;
-    box-shadow: 0 8px 32px rgba(212, 179, 232, 0.15);
+    background: rgba(255, 255, 255, 0.98);
+    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
 }
 
 .medication-section:hover {
-    box-shadow: 0 12px 48px rgba(212, 179, 232, 0.2);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.12);
     transform: translateY(-2px);
 }
 
-/* AI Insights Section - Soft Purple (Trustworthy) */
+/* AI Insights Section - Clean Blue */
 .ai-insights-section {
-    background: linear-gradient(135deg, rgba(250, 245, 255, 0.98) 0%, rgba(245, 240, 255, 0.98) 100%);
-    border-left: 4px solid #B8A9D9;
-    box-shadow: 0 8px 32px rgba(184, 169, 217, 0.15);
+    background: rgba(255, 255, 255, 0.98);
+    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
 }
 
 .ai-insights-section:hover {
-    box-shadow: 0 12px 48px rgba(184, 169, 217, 0.2);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.12);
     transform: translateY(-2px);
 }
 
-/* Mental Health Section - Calming Teal-Green (Peaceful) */
+/* Mental Health Section - Clean Blue */
 .mental-health-section {
-    background: linear-gradient(135deg, rgba(245, 255, 252, 0.98) 0%, rgba(240, 252, 250, 0.98) 100%);
-    border-left: 4px solid #7FD4C1;
-    box-shadow: 0 8px 32px rgba(127, 212, 193, 0.15);
+    background: rgba(255, 255, 255, 0.98);
+    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
 }
 
 .mental-health-section:hover {
-    box-shadow: 0 12px 48px rgba(127, 212, 193, 0.2);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.12);
     transform: translateY(-2px);
 }
 
-/* Emergency Contacts Section - Soft Coral (Alert but Comforting) */
+/* Emergency Contacts Section - Clean Blue */
 .emergency-contacts-section {
-    background: linear-gradient(135deg, rgba(255, 250, 245, 0.98) 0%, rgba(255, 245, 240, 0.98) 100%);
-    border-left: 4px solid #FF9A76;
-    box-shadow: 0 8px 32px rgba(255, 154, 118, 0.15);
+    background: rgba(255, 255, 255, 0.98);
+    /* border-left: 4px solid var(--primary-color); */
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
 }
 
 .emergency-contacts-section:hover {
-    box-shadow: 0 12px 48px rgba(255, 154, 118, 0.2);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.12);
     transform: translateY(-2px);
 }
 
-/* Activity Feed Section - Warm Peach (Energetic but Soft) */
+/* Activity Feed Section - Clean Blue */
 .activity-feed-section {
-    background: linear-gradient(135deg, rgba(255, 250, 245, 0.98) 0%, rgba(255, 248, 240, 0.98) 100%);
-    border-left: 4px solid #FFC896;
-    box-shadow: 0 8px 32px rgba(255, 200, 150, 0.15);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
 }
 
 .activity-feed-section:hover {
-    box-shadow: 0 12px 48px rgba(255, 200, 150, 0.2);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.12);
     transform: translateY(-2px);
 }
 
@@ -820,7 +891,7 @@ body::before {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(250, 114, 104, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
     transition: left 0.5s ease;
 }
 
@@ -831,7 +902,7 @@ body::before {
 .iot-device:hover {
     border-color: var(--primary-color);
     transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 8px 24px rgba(250, 114, 104, 0.2);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
     background: rgba(255, 255, 255, 1);
 }
 
@@ -847,27 +918,27 @@ body::before {
 }
 
 .device-icon.lights {
-    background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
+    background: var(--primary-light);
 }
 
 .device-icon.temperature {
-    background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+    background: var(--primary-color);
 }
 
 .device-icon.camera {
-    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+    background: var(--primary-dark);
 }
 
 .device-icon.door {
-    background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);
+    background: #2563EB;
 }
 
 .device-icon.air {
-    background: linear-gradient(135deg, #1ABC9C 0%, #16A085 100%);
+    background: #60A5FA;
 }
 
 .device-icon.voice {
-    background: linear-gradient(135deg, #34495E 0%, #2C3E50 100%);
+    background: #1E40AF;
 }
 
 .device-info h4 {
@@ -990,7 +1061,7 @@ input:checked + .slider:before {
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-md);
-    background: rgba(255, 255, 255, 0.95);
+    background: #F3F4F6;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: var(--radius-md);
@@ -1223,14 +1294,16 @@ input:checked + .slider:before {
 }
 
 .contact-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: var(--radius-md);
     padding: var(--spacing-lg);
     text-align: center;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-left: 3px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -1244,7 +1317,7 @@ input:checked + .slider:before {
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(250, 114, 104, 0.1);
+    background: rgba(59, 130, 246, 0.1);
     transform: translate(-50%, -50%);
     transition: width 0.6s ease, height 0.6s ease;
 }
@@ -1255,10 +1328,14 @@ input:checked + .slider:before {
 }
 
 .contact-card:hover {
-    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    /* border-color: var(--primary-color); */
     transform: translateY(-5px) scale(1.03);
-    box-shadow: 0 12px 48px rgba(250, 114, 104, 0.2);
+    box-shadow: 0 12px 48px rgba(59, 130, 246, 0.2);
     background: rgba(255, 255, 255, 1);
+
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+    border-left-color: var(--primary-light);
 }
 
 .contact-avatar {
@@ -1326,12 +1403,13 @@ input:checked + .slider:before {
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-md);
-    background: rgba(255, 255, 255, 0.95);
+    background: #F3F4F6;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: var(--radius-md);
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-left: 4px solid var(--primary-color);
 }
 
 .feed-item:hover {
@@ -1573,12 +1651,12 @@ button,
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-    background: rgba(250, 114, 104, 0.3);
+    background: rgba(59, 130, 246, 0.3);
     border-radius: 3px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
-    background: rgba(250, 114, 104, 0.5);
+    background: rgba(59, 130, 246, 0.5);
 }
 
 .chat-message {
@@ -1609,12 +1687,12 @@ button,
 }
 
 .chat-message.robot .message-avatar {
-    background: linear-gradient(135deg, var(--primary-color), #FF9A76);
+    background: var(--primary-color);
     color: white;
 }
 
 .chat-message.elderly .message-avatar {
-    background: linear-gradient(135deg, var(--secondary-color), var(--success-color));
+    background: var(--success-color);
     color: white;
 }
 
@@ -1712,7 +1790,7 @@ button,
 .start-chat-btn {
     width: 100%;
     padding: var(--spacing-sm) var(--spacing-md);
-    background: linear-gradient(135deg, var(--primary-color), #FF9A76);
+    background: var(--primary-color);
     color: white;
     border: none;
     border-radius: var(--radius-md);
@@ -1807,19 +1885,19 @@ button,
 }
 
 .emotion-fill.happiness {
-    background: linear-gradient(90deg, var(--success-color), #8FD694);
+    background: var(--success-color);
 }
 
 .emotion-fill.anxiety {
-    background: linear-gradient(90deg, var(--warning-color), #FFCB7F);
+    background: var(--warning-color);
 }
 
 .emotion-fill.sadness {
-    background: linear-gradient(90deg, var(--info-color), #8FC4E0);
+    background: var(--info-color);
 }
 
 .emotion-fill.engagement {
-    background: linear-gradient(90deg, var(--secondary-color), #A8D6B8);
+    background: var(--secondary-color);
 }
 
 .emotion-value {
@@ -2103,12 +2181,12 @@ button,
 }
 
 .mood-indicator.neutral {
-    background: linear-gradient(135deg, rgba(255, 179, 71, 0.2), rgba(255, 203, 127, 0.2));
+    background: rgba(59, 130, 246, 0.2);
     color: var(--warning-color);
 }
 
 .mood-indicator.warning {
-    background: linear-gradient(135deg, rgba(231, 111, 81, 0.2), rgba(255, 138, 101, 0.2));
+    background: rgba(220, 38, 38, 0.2);
     color: var(--danger-color);
 }
 
@@ -2229,19 +2307,19 @@ button,
 }
 
 .adjustment-icon.lighting {
-    background: linear-gradient(135deg, #FFB347, #FFC870);
+    background: var(--warning-color);
 }
 
 .adjustment-icon.temperature {
-    background: linear-gradient(135deg, #5FA8D3, #7FBCE0);
+    background: var(--primary-color);
 }
 
 .adjustment-icon.music {
-    background: linear-gradient(135deg, #94C9A9, #A8D6B8);
+    background: var(--secondary-color);
 }
 
 .adjustment-icon.security {
-    background: linear-gradient(135deg, #FA7268, #FF9A76);
+    background: var(--primary-dark);
 }
 
 .adjustment-info {
@@ -2289,7 +2367,7 @@ button,
 
 /* Safety Protocol Banner */
 .safety-protocol-banner {
-    background: linear-gradient(135deg, rgba(231, 111, 81, 0.1), rgba(255, 179, 71, 0.1));
+    background: rgba(59, 130, 246, 0.1);
     border: 2px solid var(--danger-color);
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
@@ -2395,19 +2473,19 @@ button,
 }
 
 .rule-header.positive {
-    background: linear-gradient(135deg, var(--success-color), #8FD694);
+    background: var(--success-color);
 }
 
 .rule-header.neutral {
-    background: linear-gradient(135deg, var(--warning-color), #FFCB7F);
+    background: var(--warning-color);
 }
 
 .rule-header.warning {
-    background: linear-gradient(135deg, #FF9A76, #FFB996);
+    background: var(--primary-color);
 }
 
 .rule-header.critical {
-    background: linear-gradient(135deg, var(--danger-color), #FF8A65);
+    background: var(--danger-color);
 }
 
 .rule-header i {

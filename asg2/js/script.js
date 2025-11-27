@@ -6,6 +6,8 @@
 // Global Variables
 let healthChart = null;
 let currentChartType = 'heartRate';
+let lastScrollTop = 0;
+let scrollThreshold = 5; // Minimum scroll distance to trigger hide/show
 
 // ===================================
 // INITIALIZATION
@@ -15,12 +17,13 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeHealthChart();
     startRealTimeUpdates();
     initializeNotifications();
-    
+    initializeAutoHideHeader();
+
     // For prototype: Messages are static in HTML, just update mental health UI
     if (document.getElementById('chatMessages')) {
         updateMentalHealthUI();
         simulateMentalHealthUpdates();
-        
+
         // Update last chat time for display
         const lastChatTime = document.getElementById('lastChatTime');
         if (lastChatTime) {
@@ -28,6 +31,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// ===================================
+// AUTO-HIDE HEADER ON SCROLL
+// ===================================
+function initializeAutoHideHeader() {
+    const header = document.querySelector('.dashboard-header');
+
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Prevent negative values when scrolling past the top
+        if (scrollTop < 0) return;
+
+        // Check if scrolled enough to trigger
+        if (Math.abs(scrollTop - lastScrollTop) < scrollThreshold) return;
+
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            // Scrolling DOWN - Hide header
+            header.classList.add('header-hidden');
+        } else {
+            // Scrolling UP - Show header
+            header.classList.remove('header-hidden');
+        }
+
+        lastScrollTop = scrollTop;
+    }, { passive: true }); // Use passive for better scroll performance
+}
 
 // ===================================
 // CLOCK UPDATE
@@ -39,16 +69,25 @@ function initializeClock() {
 
 function updateClock() {
     const now = new Date();
-    const options = {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    };
-    document.getElementById('currentTime').textContent = now.toLocaleDateString('en-MY', options);
+
+    // Format date as dd/mm/yyyy
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+
+    // Format time as h:mm AM/PM (no seconds)
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Convert 0 to 12
+
+    // Combine: "27/11/2025, 4:03 PM"
+    const formattedDateTime = `${day}/${month}/${year}, ${hours}:${minutes} ${ampm}`;
+
+    document.getElementById('currentTime').textContent = formattedDateTime;
 }
 
 // ===================================

@@ -630,7 +630,25 @@
 
         function updateClock() {
             const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleString('en-MY');
+
+            // Format date as dd/mm/yyyy
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+
+            // Format time as h:mm AM/PM (no seconds)
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            // Convert to 12-hour format
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            // Combine: "27/11/2025, 4:03 PM"
+            const formattedDateTime = `${day}/${month}/${year}, ${hours}:${minutes} ${ampm}`;
+
+            document.getElementById('currentTime').textContent = formattedDateTime;
         }
 
         function initializeClock() {
