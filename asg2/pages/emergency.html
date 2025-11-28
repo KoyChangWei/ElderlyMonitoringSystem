@@ -441,6 +441,68 @@
             align-items: center;
             gap: var(--spacing-sm);
         }
+
+        /* Smart Bed Monitoring Styles */
+        .bed-detection-item {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
+        }
+
+        .bed-detection-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .bed-alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: var(--radius-md);
+            border-left: 4px solid;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .bed-alert-item.alert-critical {
+            border-left-color: var(--danger-color);
+            background: linear-gradient(to right, rgba(220, 38, 38, 0.05), rgba(255, 255, 255, 0.98));
+        }
+
+        .bed-alert-item.alert-warning {
+            border-left-color: var(--warning-color);
+            background: linear-gradient(to right, rgba(245, 158, 11, 0.05), rgba(255, 255, 255, 0.98));
+        }
+
+        .bed-alert-item.alert-info {
+            border-left-color: var(--info-color);
+            background: linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(255, 255, 255, 0.98));
+        }
+
+        .bed-event-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: rgba(59, 130, 246, 0.03);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .bed-event-item i {
+            color: var(--primary-color);
+            width: 20px;
+        }
     </style>
 </head>
 <body>
@@ -687,7 +749,202 @@
                 </div>
             </section>
 
-            <!-- Row 4: Geofencing & Location Tracking -->
+            <!-- Row 4: Smart Bed Monitoring -->
+            <section class="dashboard-section" style="margin-bottom: var(--spacing-lg);">
+                <div class="section-header" style="margin-bottom: var(--spacing-md);">
+                    <h2 style="font-size: 20px;"><i class="fas fa-bed"></i> Smart Bed Monitoring</h2>
+                    <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <span style="color: var(--success-color); font-weight: 700; font-size: 12px;"><i class="fas fa-check-circle"></i> Active Monitoring</span>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                    <!-- Left: Real-time Bed Status & Alerts -->
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: 700; color: var(--primary-color); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);">
+                            <i class="fas fa-bed"></i> Current Bed Status
+                        </h3>
+                        <!-- Bed Status Card -->
+                        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(96, 165, 250, 0.05)); padding: var(--spacing-lg); border-radius: var(--radius-lg); border: 2px solid rgba(59, 130, 246, 0.2); margin-bottom: var(--spacing-md);">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-md);">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                                        <i class="fas fa-bed"></i>
+                                    </div>
+                                    <div>
+                                        <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 4px;">Bedroom - Main Bed</p>
+                                        <p style="font-size: 14px; color: var(--text-secondary);"><i class="fas fa-circle" style="color: var(--success-color); font-size: 8px; animation: pulse-dot 2s infinite;"></i> Occupied • Monitoring Active</p>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Last Update</p>
+                                    <p style="font-weight: 700; font-size: 14px; color: var(--primary-color);" id="bedLastUpdate">Just now</p>
+                                </div>
+                            </div>
+                            <!-- Real-time Metrics -->
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); margin-top: var(--spacing-md);">
+                                <div style="background: white; padding: var(--spacing-md); border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(59, 130, 246, 0.1); position: relative; cursor: pointer;" onclick="showBreathingExplanation()" title="Click to learn how breathing is detected">
+                                    <i class="fas fa-lungs" style="font-size: 24px; color: #3B82F6; margin-bottom: var(--spacing-sm);"></i>
+                                    <p style="font-weight: 700; font-size: 20px; color: var(--text-primary); margin-bottom: 4px;" id="breathingRate">16</p>
+                                    <p style="font-size: 12px; color: var(--text-secondary);">Breaths/min</p>
+                                    <i class="fas fa-info-circle" style="position: absolute; top: 8px; right: 8px; font-size: 14px; color: var(--primary-color); opacity: 0.6;"></i>
+                                </div>
+                                <div style="background: white; padding: var(--spacing-md); border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(59, 130, 246, 0.1);">
+                                    <i class="fas fa-motion" style="font-size: 24px; color: #10B981; margin-bottom: var(--spacing-sm);"></i>
+                                    <p style="font-weight: 700; font-size: 20px; color: var(--text-primary); margin-bottom: 4px;" id="movementLevel">Normal</p>
+                                    <p style="font-size: 12px; color: var(--text-secondary);">Activity</p>
+                                </div>
+                                <div style="background: white; padding: var(--spacing-md); border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(59, 130, 246, 0.1);">
+                                    <i class="fas fa-clock" style="font-size: 24px; color: #F59E0B; margin-bottom: var(--spacing-sm);"></i>
+                                    <p style="font-weight: 700; font-size: 20px; color: var(--text-primary); margin-bottom: 4px;" id="bedTime">2h 15m</p>
+                                    <p style="font-size: 12px; color: var(--text-secondary);">In Bed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Breathing Detection Explanation -->
+                        <div id="breathingExplanation" style="display: none; background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(96, 165, 250, 0.05)); padding: var(--spacing-md); border-radius: var(--radius-md); border: 2px solid rgba(59, 130, 246, 0.2); margin-bottom: var(--spacing-md);">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-sm);">
+                                <h4 style="font-size: 15px; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <i class="fas fa-microchip"></i> How Breathing Detection Works
+                                </h4>
+                                <button onclick="hideBreathingExplanation()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">&times;</button>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                                <div>
+                                    <p style="font-size: 13px; color: var(--text-primary); margin-bottom: var(--spacing-sm); font-weight: 600;">Technology Used:</p>
+                                    <ul style="font-size: 12px; color: var(--text-secondary); line-height: 1.8; padding-left: var(--spacing-md);">
+                                        <li><strong>Pressure Sensors:</strong> Under-mattress load cells detect weight distribution changes</li>
+                                        <li><strong>Ballistocardiography (BCG):</strong> Measures micro-movements from heartbeat and breathing</li>
+                                        <li><strong>Piezoelectric Sensors:</strong> Convert body movements into electrical signals</li>
+                                        <li><strong>AI Processing:</strong> Algorithms filter noise and extract breathing patterns</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <p style="font-size: 13px; color: var(--text-primary); margin-bottom: var(--spacing-sm); font-weight: 600;">How It Works:</p>
+                                    <ol style="font-size: 12px; color: var(--text-secondary); line-height: 1.8; padding-left: var(--spacing-md);">
+                                        <li>Sensors detect chest/body movement as you breathe</li>
+                                        <li>Each breath causes slight pressure changes on the mattress</li>
+                                        <li>Signal processing filters out other movements</li>
+                                        <li>AI counts breathing cycles per minute</li>
+                                        <li>Alerts trigger if rate is abnormal (&lt;12 or &gt;20 breaths/min)</li>
+                                    </ol>
+                                    <div style="margin-top: var(--spacing-sm); padding: var(--spacing-sm); background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-sm); border-left: 3px solid var(--success-color);">
+                                        <p style="font-size: 11px; color: var(--text-secondary); margin: 0;">
+                                            <i class="fas fa-shield-alt" style="color: var(--success-color);"></i> 
+                                            <strong>Privacy:</strong> No cameras or audio - only pressure/movement data
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Active Alerts -->
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <i class="fas fa-bell" style="color: var(--primary-color);"></i> Active Monitoring Alerts
+                            </h4>
+                            <div id="bedAlerts" style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                <div class="bed-alert-item alert-info">
+                                    <i class="fas fa-check-circle" style="font-size: 24px; color: var(--success-color);"></i>
+                                    <div style="flex: 1;">
+                                        <p style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 2px;">All Systems Normal</p>
+                                        <p style="font-size: 12px; color: var(--text-secondary);">No active alerts - monitoring continues</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right: Detection Capabilities & History -->
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: 700; color: var(--primary-color); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);">
+                            <i class="fas fa-shield-alt"></i> Safety Detection Features
+                        </h3>
+                        <!-- Detection Features Grid -->
+                        <div style="display: grid; grid-template-columns: 1fr; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);">
+                            <div class="bed-detection-item" data-type="bed-exit">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #DC2626, #EF4444); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white;">
+                                        <i class="fas fa-door-open"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <p style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 2px;">Bed Exit Alerts</p>
+                                        <p style="font-size: 12px; color: var(--text-secondary);">Warns caregivers if elderly gets up suddenly (fall risk)</p>
+                                    </div>
+                                    <span class="status-badge active" style="font-size: 11px; padding: 4px 8px;">Active</span>
+                                </div>
+                            </div>
+                            <div class="bed-detection-item" data-type="no-movement">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #F59E0B, #D97706); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white;">
+                                        <i class="fas fa-pause-circle"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <p style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 2px;">No Movement Detection</p>
+                                        <p style="font-size: 12px; color: var(--text-secondary);">Alerts if no movement detected for extended period (possible fainting)</p>
+                                    </div>
+                                    <span class="status-badge active" style="font-size: 11px; padding: 4px 8px;">Active</span>
+                                </div>
+                            </div>
+                            <div class="bed-detection-item" data-type="irregular-breathing">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #DC2626, #EF4444); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white;">
+                                        <i class="fas fa-lungs"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <p style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 2px;">Irregular Breathing Detection</p>
+                                        <p style="font-size: 12px; color: var(--text-secondary);">Detects significant changes in breathing patterns (may indicate distress)</p>
+                                    </div>
+                                    <span class="status-badge active" style="font-size: 11px; padding: 4px 8px;">Active</span>
+                                </div>
+                            </div>
+                            <div class="bed-detection-item" data-type="wandering">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #8B5CF6, #A78BFA); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white;">
+                                        <i class="fas fa-walking"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <p style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 2px;">Night-time Wandering</p>
+                                        <p style="font-size: 12px; color: var(--text-secondary);">Monitors for nighttime wandering (important for dementia patients)</p>
+                                    </div>
+                                    <span class="status-badge active" style="font-size: 11px; padding: 4px 8px;">Active</span>
+                                </div>
+                            </div>
+                            <div class="bed-detection-item" data-type="restlessness">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #F59E0B, #D97706); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white;">
+                                        <i class="fas fa-arrows-rotate"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <p style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 2px;">Unusual Restlessness</p>
+                                        <p style="font-size: 12px; color: var(--text-secondary);">Detects excessive movement (could mean discomfort or pain)</p>
+                                    </div>
+                                    <span class="status-badge active" style="font-size: 11px; padding: 4px 8px;">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Recent Bed Events -->
+                        <div style="background: white; padding: var(--spacing-md); border-radius: var(--radius-lg); border: 2px solid rgba(59, 130, 246, 0.1);">
+                            <h4 style="font-size: 14px; font-weight: 700; color: var(--primary-color); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <i class="fas fa-history"></i> Recent Bed Events (Last 24 Hours)
+                            </h4>
+                            <div id="bedEvents" style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                <div class="bed-event-item">
+                                    <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                                    <div style="flex: 1;"><span style="font-weight: 600; color: var(--text-primary);">21:00</span> - Bed occupied - monitoring started</div>
+                                </div>
+                                <div class="bed-event-item">
+                                    <i class="fas fa-arrows-rotate" style="color: var(--warning-color);"></i>
+                                    <div style="flex: 1;"><span style="font-weight: 600; color: var(--text-primary);">22:30</span> - Increased movement detected</div>
+                                </div>
+                                <div class="bed-event-item">
+                                    <i class="fas fa-door-open" style="color: var(--success-color);"></i>
+                                    <div style="flex: 1;"><span style="font-weight: 600; color: var(--text-primary);">23:45</span> - Bed exit detected - returned safely</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Row 5: Geofencing & Location Tracking -->
             <section class="dashboard-section">
                 <div class="section-header" style="margin-bottom: var(--spacing-md);">
                     <h2 style="font-size: 20px;"><i class="fas fa-map-marked-alt"></i> Geofencing & Location Tracking</h2>
@@ -750,7 +1007,217 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             initializeClock();
+            initializeBedMonitoring();
         });
+
+        // Smart Bed Monitoring System
+        function initializeBedMonitoring() {
+            // Initialize bed events
+            populateBedEvents();
+            
+            // Initialize alerts
+            updateBedAlerts();
+            
+            // Start real-time updates
+            setInterval(updateBedMetrics, 5000); // Update every 5 seconds
+            setInterval(updateBedAlerts, 10000); // Check alerts every 10 seconds
+            setInterval(updateLastUpdateTime, 1000); // Update time every second
+        }
+
+        // Bed monitoring data
+        const bedMonitoringData = {
+            breathingRate: 16,
+            movementLevel: 'Normal',
+            bedTime: { hours: 2, minutes: 15 },
+            lastUpdate: new Date(),
+            alerts: [],
+            events: [
+                { type: 'bed-exit', time: '23:45', message: 'Bed exit detected - returned safely', status: 'resolved' },
+                { type: 'restlessness', time: '22:30', message: 'Increased movement detected', status: 'resolved' },
+                { type: 'normal', time: '21:00', message: 'Bed occupied - monitoring started', status: 'active' }
+            ]
+        };
+
+        function updateBedMetrics() {
+            // Simulate breathing rate variation (14-18 breaths/min)
+            bedMonitoringData.breathingRate = 14 + Math.floor(Math.random() * 5);
+            document.getElementById('breathingRate').textContent = bedMonitoringData.breathingRate;
+
+            // Simulate movement levels
+            const movementLevels = ['Normal', 'Low', 'Restless'];
+            bedMonitoringData.movementLevel = movementLevels[Math.floor(Math.random() * movementLevels.length)];
+            document.getElementById('movementLevel').textContent = bedMonitoringData.movementLevel;
+
+            // Update bed time
+            bedMonitoringData.bedTime.minutes += 1;
+            if (bedMonitoringData.bedTime.minutes >= 60) {
+                bedMonitoringData.bedTime.minutes = 0;
+                bedMonitoringData.bedTime.hours += 1;
+            }
+            document.getElementById('bedTime').textContent = 
+                `${bedMonitoringData.bedTime.hours}h ${bedMonitoringData.bedTime.minutes}m`;
+
+            // Check for irregular breathing
+            if (bedMonitoringData.breathingRate < 12 || bedMonitoringData.breathingRate > 20) {
+                addBedAlert('irregular-breathing', 'warning', 
+                    `Irregular breathing detected: ${bedMonitoringData.breathingRate} breaths/min`);
+            }
+
+            // Check for no movement (if movement level is Low for too long)
+            if (bedMonitoringData.movementLevel === 'Low') {
+                // This would be tracked over time in a real system
+            }
+        }
+
+        function updateBedAlerts() {
+            const alertsContainer = document.getElementById('bedAlerts');
+            alertsContainer.innerHTML = '';
+
+            // Check for various alert conditions
+            if (bedMonitoringData.breathingRate < 12 || bedMonitoringData.breathingRate > 20) {
+                addAlertToContainer(alertsContainer, 'irregular-breathing', 'warning',
+                    'Irregular Breathing Detected',
+                    `Breathing rate: ${bedMonitoringData.breathingRate} breaths/min (Normal: 12-20)`);
+            }
+
+            if (bedMonitoringData.movementLevel === 'Restless') {
+                addAlertToContainer(alertsContainer, 'restlessness', 'warning',
+                    'Unusual Restlessness Detected',
+                    'Increased movement detected - may indicate discomfort');
+            }
+
+            // If no alerts, show normal status
+            if (alertsContainer.children.length === 0) {
+                const noAlerts = document.createElement('div');
+                noAlerts.className = 'bed-alert-item alert-info';
+                noAlerts.innerHTML = `
+                    <i class="fas fa-check-circle" style="font-size: 24px; color: var(--success-color);"></i>
+                    <div style="flex: 1;">
+                        <p style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 2px;">All Systems Normal</p>
+                        <p style="font-size: 12px; color: var(--text-secondary);">No active alerts - monitoring continues</p>
+                    </div>
+                `;
+                alertsContainer.appendChild(noAlerts);
+            }
+        }
+
+        function addAlertToContainer(container, type, severity, title, message) {
+            const alert = document.createElement('div');
+            alert.className = `bed-alert-item alert-${severity}`;
+            
+            const icons = {
+                'bed-exit': 'fa-door-open',
+                'no-movement': 'fa-pause-circle',
+                'irregular-breathing': 'fa-lungs',
+                'wandering': 'fa-walking',
+                'restlessness': 'fa-restroom'
+            };
+
+            const colors = {
+                'critical': 'var(--danger-color)',
+                'warning': 'var(--warning-color)',
+                'info': 'var(--info-color)'
+            };
+
+            alert.innerHTML = `
+                <i class="fas ${icons[type] || 'fa-bell'}" style="font-size: 24px; color: ${colors[severity]};"></i>
+                <div style="flex: 1;">
+                    <p style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 2px;">${title}</p>
+                    <p style="font-size: 12px; color: var(--text-secondary);">${message}</p>
+                    <p style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                        <i class="fas fa-clock"></i> ${getCurrentTime()}
+                    </p>
+                </div>
+            `;
+            container.appendChild(alert);
+        }
+
+        function populateBedEvents() {
+            const eventsContainer = document.getElementById('bedEvents');
+            eventsContainer.innerHTML = '';
+
+            bedMonitoringData.events.forEach(event => {
+                const eventItem = document.createElement('div');
+                eventItem.className = 'bed-event-item';
+                
+                const icons = {
+                    'bed-exit': 'fa-door-open',
+                    'restlessness': 'fa-arrows-rotate',
+                    'wandering': 'fa-walking',
+                    'no-movement': 'fa-pause-circle',
+                    'irregular-breathing': 'fa-lungs',
+                    'normal': 'fa-check-circle'
+                };
+
+                const statusColors = {
+                    'resolved': 'var(--success-color)',
+                    'active': 'var(--primary-color)',
+                    'warning': 'var(--warning-color)'
+                };
+
+                eventItem.innerHTML = `
+                    <i class="fas ${icons[event.type] || 'fa-circle'}" style="color: ${statusColors[event.status] || 'var(--primary-color)'};"></i>
+                    <div style="flex: 1;">
+                        <span style="font-weight: 600; color: var(--text-primary);">${event.time}</span> - ${event.message}
+                    </div>
+                `;
+                eventsContainer.appendChild(eventItem);
+            });
+        }
+
+        function addBedAlert(type, severity, message) {
+            // Prevent duplicate alerts
+            const existingAlert = bedMonitoringData.alerts.find(a => a.type === type && a.active);
+            if (existingAlert) return;
+
+            bedMonitoringData.alerts.push({
+                type: type,
+                severity: severity,
+                message: message,
+                timestamp: new Date(),
+                active: true
+            });
+        }
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const diff = Math.floor((now - bedMonitoringData.lastUpdate) / 1000);
+            
+            let timeText = 'Just now';
+            if (diff < 60) {
+                timeText = `${diff}s ago`;
+            } else if (diff < 3600) {
+                timeText = `${Math.floor(diff / 60)}m ago`;
+            } else {
+                timeText = `${Math.floor(diff / 3600)}h ago`;
+            }
+            
+            const element = document.getElementById('bedLastUpdate');
+            if (element) {
+                element.textContent = timeText;
+            }
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // Breathing Detection Explanation Functions
+        function showBreathingExplanation() {
+            const explanation = document.getElementById('breathingExplanation');
+            if (explanation) {
+                explanation.style.display = 'block';
+                explanation.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function hideBreathingExplanation() {
+            const explanation = document.getElementById('breathingExplanation');
+            if (explanation) {
+                explanation.style.display = 'none';
+            }
+        }
 
         function triggerSOS() {
             const confirmation = confirm(
