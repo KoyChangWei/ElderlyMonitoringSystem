@@ -48,16 +48,22 @@
         }
 
         .device-card {
-            background: var(--bg-secondary);
+            background: rgba(255, 255, 255, 0.98);
+            /* background: #F3F4F6; */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--radius-lg);
             padding: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            /* border-left: 3px solid var(--primary-color); */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
         }
 
         .device-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-light);
         }
 
         .device-header {
@@ -131,11 +137,23 @@
         }
 
         .env-card {
-            background: var(--bg-secondary);
+            background: rgba(255, 255, 255, 0.98);
+            /* background: #F3F4F6; */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: var(--spacing-lg);
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            /* border-left: 3px solid var(--primary-color); */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .env-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-light);
         }
 
         .env-value {
@@ -212,6 +230,54 @@
             animation: pulse 1.5s infinite;
             background: rgba(231, 76, 60, 0.5);
         }
+
+        /* Wearable Devices */
+        .wearable-devices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-sm);
+            padding: var(--spacing-xs);
+        }
+
+        .wearable-card {
+            background: #F3F4F6;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            /* border: 1px solid var(--primary-color); */
+            /* border-left: 3px solid var(--primary-color); */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .wearable-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-light);
+        }
+
+        .wearable-icon {
+            font-size: 40px;
+            margin-bottom: var(--spacing-sm);
+            transition: transform 0.3s ease;
+        }
+
+        .wearable-card:hover .wearable-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .wearable-card .status-badge {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            margin-top: 0 !important;
+        }
     </style>
 </head>
 <body>
@@ -254,7 +320,7 @@
                 </a>
                 <a href="smart-home.html" class="nav-item active">
                     <i class="fas fa-home"></i>
-                    <span>Smart Home</span>
+                    <span>Smart Home IoT</span>
                 </a>
                 <a href="emergency.html" class="nav-item">
                     <i class="fas fa-shield-alt"></i>
@@ -282,6 +348,7 @@
         </section>
 
         <!-- Room Selector -->
+        <!-- Room Filter - Commented Out
         <div class="room-selector">
             <button class="room-btn active" onclick="switchRoom(this, 'all')">
                 <i class="fas fa-home"></i> All Rooms
@@ -299,6 +366,7 @@
                 <i class="fas fa-bath"></i> Bathroom
             </button>
         </div>
+        -->
 
         <!-- Environment Monitoring -->
         <section class="dashboard-section">
@@ -342,8 +410,10 @@
         </section>
 
         <!-- IoT Devices -->
-        <section>
-            <h2 style="margin-bottom: var(--spacing-lg);"><i class="fas fa-plug"></i> Connected Devices</h2>
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-plug"></i> Connected Home Devices</h2>
+            </div>
             <div class="devices-grid" id="devicesGrid">
                 <!-- Smart Lights -->
                 <div class="device-card" data-room="living">
@@ -482,7 +552,7 @@
                     </div>
                 </div>
 
-                <!-- Smart Toilet -->
+                <!-- Smart Toilet - Commented Out
                 <div class="device-card" data-room="bathroom">
                     <div class="device-header">
                         <h3>Smart Toilet Sensor</h3>
@@ -500,6 +570,44 @@
                             <p>Auto-flush: Enabled</p>
                         </div>
                     </div>
+                </div>
+                -->
+            </div>
+        </section>
+
+        <!-- Connected Wearable Devices -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Connected Wearable Devices</h2>
+            </div>
+            <div class="wearable-devices">
+                <div class="wearable-card">
+                    <div class="wearable-icon"><i class="fas fa-clock" style="color: #E74C3C; font-size: 36px;"></i></div>
+                    <h4>Smart Watch</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Battery: 78%</p>
+                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                </div>
+                <div class="wearable-card">
+                    <div class="wearable-icon"><i class="fas fa-shoe-prints" style="color: #3498DB; font-size: 36px;"></i></div>
+                    <h4>Smart Shoes</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Gait Analysis, Fall Detection</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Battery: 92%</p>
+                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                </div>
+                <div class="wearable-card">
+                    <div class="wearable-icon"><i class="fas fa-ring" style="color: #9B59B6; font-size: 36px;"></i></div>
+                    <h4>Smart Ring</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Body Temperature, Sleep Quality</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Battery: 65%</p>
+                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                </div>
+                <div class="wearable-card">
+                    <div class="wearable-icon"><i class="fas fa-star" style="color: #F39C12; font-size: 36px;"></i></div>
+                    <h4>Emergency Pendant</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary);">SOS Button, Fall Detection</p>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Battery: 85%</p>
+                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
                 </div>
             </div>
         </section>
