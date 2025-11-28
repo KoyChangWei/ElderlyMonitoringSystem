@@ -8,47 +8,142 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        .timeline-view {
-            background: var(--bg-secondary);
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .time-slot-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--radius-lg);
             padding: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-            margin-bottom: var(--spacing-lg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
         }
 
-        .timeline-hours {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin: var(--spacing-lg) 0;
-            overflow-x: auto;
-            padding-bottom: var(--spacing-sm);
+        .time-slot-card.completed {
+            border-color: var(--success-color);
+            border-left-width: 4px;
         }
 
-        .hour-slot {
-            min-width: 80px;
-            padding: var(--spacing-md);
-            background: var(--bg-primary);
-            border-radius: var(--radius-md);
-            text-align: center;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s;
+        .time-slot-card.upcoming {
+            border-color: var(--warning-color);
+            border-left-width: 4px;
+            animation: pulse 2s infinite;
         }
 
-        .hour-slot.has-medication {
+        .time-slot-card.scheduled {
             border-color: var(--primary-color);
-            background: rgba(74, 144, 226, 0.1);
+            border-left-width: 4px;
         }
 
-        .hour-slot.completed {
-            background: rgba(39, 174, 96, 0.1);
+        .time-slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .time-slot-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .time-status-icon {
+            font-size: 24px;
+        }
+
+        .medication-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .medication-item:last-child {
+            border-bottom: none;
+        }
+
+        .medication-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .medication-info i {
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .medication-details h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .medication-details p {
+            margin: 2px 0 0 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .medication-status-icon {
+            font-size: 20px;
+        }
+
+        /* Round Checkbox Styles */
+        .round-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            outline: none;
+            transition: all 0.3s ease;
+            position: relative;
+            background: white;
+        }
+
+        .round-checkbox:hover {
+            border-color: var(--primary-color);
+        }
+
+        .round-checkbox:checked {
+            background: var(--success-color);
             border-color: var(--success-color);
         }
 
-        .hour-slot.upcoming {
-            background: rgba(243, 156, 18, 0.1);
-            border-color: var(--warning-color);
-            animation: pulse 2s infinite;
+        .round-checkbox:checked::after {
+            content: '\2713';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .round-checkbox.header-checkbox {
+            width: 28px;
+            height: 28px;
+        }
+
+        .round-checkbox.header-checkbox:checked::after {
+            font-size: 16px;
         }
 
         .medication-grid {
@@ -59,20 +154,17 @@
         }
 
         .med-card {
-            background: var(--bg-secondary);
+            /* background: var(--bg-secondary); */
             border-radius: var(--radius-lg);
             padding: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
-            border-left: 4px solid;
-        }
+            /* box-shadow: var(--shadow-md); */
+            /* border-left: 4px solid var(--primary-color); */
 
-        .med-card.active {
-            border-left-color: var(--primary-color);
-        }
-
-        .med-card.completed {
-            border-left-color: var(--success-color);
-            opacity: 0.7;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .med-header {
@@ -95,7 +187,7 @@
         }
 
         .smart-dispenser {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-color);
             color: white;
             border-radius: var(--radius-lg);
             padding: var(--spacing-xl);
@@ -229,10 +321,17 @@
         }
 
         .adherence-chart {
-            background: var(--bg-secondary);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--radius-lg);
-            padding: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
+            padding: var(--spacing-xl);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .adherence-chart canvas {
+            max-height: 350px;
         }
     </style>
 </head>
@@ -247,7 +346,7 @@
             <div class="current-time" id="currentTime"></div>
         </div>
         <div class="header-center">
-            <h1><i class="fas fa-pills"></i> Medication & Nutrition Management</h1>
+            <h1><i class="fas fa-pills"></i> Medication Management</h1>
         </div>
         <div class="header-right">
             <div class="alert-status">
@@ -324,110 +423,159 @@
         </section>
 
         <!-- Daily Timeline -->
-        <section class="timeline-view">
+        <section class="dashboard-section">
             <div class="section-header">
                 <h2><i class="fas fa-clock"></i> Today's Medication Schedule</h2>
                 <div style="display: flex; gap: var(--spacing-md); font-size: 14px;">
                     <div><span style="width: 12px; height: 12px; background: var(--success-color); display: inline-block; border-radius: 50%; margin-right: 4px;"></span>Completed</div>
                     <div><span style="width: 12px; height: 12px; background: var(--warning-color); display: inline-block; border-radius: 50%; margin-right: 4px;"></span>Upcoming</div>
-                    <div><span style="width: 12px; height: 12px; background: var(--bg-primary); display: inline-block; border-radius: 50%; margin-right: 4px;"></span>No medication</div>
+                    <div><span style="width: 12px; height: 12px; background: var(--primary-color); display: inline-block; border-radius: 50%; margin-right: 4px;"></span>Scheduled</div>
                 </div>
             </div>
-            <div class="timeline-hours">
-                <div class="hour-slot completed has-medication">
-                    <div style="font-weight: 700;">08:00</div>
-                    <div style="font-size: 12px; margin-top: 4px;">AM</div>
-                    <i class="fas fa-check" style="color: var(--success-color); margin-top: 4px;"></i>
+
+            <div class="schedule-grid">
+                <!-- 8:00 AM - Completed -->
+                <div class="time-slot-card completed">
+                    <div class="time-slot-header">
+                        <h3>8:00 AM</h3>
+                        <input type="checkbox" class="round-checkbox header-checkbox" checked>
+                    </div>
+                    <div class="medication-item">
+                        <div class="medication-info">
+                            <i class="fas fa-pills"></i>
+                            <div class="medication-details">
+                                <h4>Amlodipine</h4>
+                                <p>5mg</p>
+                            </div>
+                        </div>
+                        <input type="checkbox" class="round-checkbox" checked>
+                    </div>
                 </div>
-                <div class="hour-slot">
-                    <div style="font-weight: 700;">10:00</div>
-                    <div style="font-size: 12px; margin-top: 4px;">AM</div>
+
+                <!-- 12:00 PM - Completed -->
+                <div class="time-slot-card completed">
+                    <div class="time-slot-header">
+                        <h3>12:00 PM</h3>
+                        <input type="checkbox" class="round-checkbox header-checkbox" checked>
+                    </div>
+                    <div class="medication-item">
+                        <div class="medication-info">
+                            <i class="fas fa-capsules"></i>
+                            <div class="medication-details">
+                                <h4>Metformin</h4>
+                                <p>500mg</p>
+                            </div>
+                        </div>
+                        <input type="checkbox" class="round-checkbox" checked>
+                    </div>
                 </div>
-                <div class="hour-slot completed has-medication">
-                    <div style="font-weight: 700;">12:00</div>
-                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
-                    <i class="fas fa-check" style="color: var(--success-color); margin-top: 4px;"></i>
+
+                <!-- 2:00 PM - Upcoming -->
+                <div class="time-slot-card upcoming">
+                    <div class="time-slot-header">
+                        <h3>2:00 PM</h3>
+                        <input type="checkbox" class="round-checkbox header-checkbox">
+                    </div>
+                    <div class="medication-item">
+                        <div class="medication-info">
+                            <i class="fas fa-pills"></i>
+                            <div class="medication-details">
+                                <h4>Amlodipine</h4>
+                                <p>5mg</p>
+                            </div>
+                        </div>
+                        <input type="checkbox" class="round-checkbox">
+                    </div>
                 </div>
-                <div class="hour-slot upcoming has-medication">
-                    <div style="font-weight: 700;">02:00</div>
-                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
-                    <i class="fas fa-bell" style="color: var(--warning-color); margin-top: 4px;"></i>
-                </div>
-                <div class="hour-slot">
-                    <div style="font-weight: 700;">04:00</div>
-                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
-                </div>
-                <div class="hour-slot">
-                    <div style="font-weight: 700;">06:00</div>
-                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
-                </div>
-                <div class="hour-slot has-medication">
-                    <div style="font-weight: 700;">08:00</div>
-                    <div style="font-size: 12px; margin-top: 4px;">PM</div>
-                    <i class="fas fa-clock" style="color: var(--primary-color); margin-top: 4px;"></i>
+
+                <!-- 8:00 PM - Scheduled -->
+                <div class="time-slot-card scheduled">
+                    <div class="time-slot-header">
+                        <h3>8:00 PM</h3>
+                        <input type="checkbox" class="round-checkbox header-checkbox">
+                    </div>
+                    <div class="medication-item">
+                        <div class="medication-info">
+                            <i class="fas fa-capsules"></i>
+                            <div class="medication-details">
+                                <h4>Metformin</h4>
+                                <p>500mg</p>
+                            </div>
+                        </div>
+                        <input type="checkbox" class="round-checkbox">
+                    </div>
+                    <div class="medication-item">
+                        <div class="medication-info">
+                            <i class="fas fa-tablets"></i>
+                            <div class="medication-details">
+                                <h4>Atorvastatin</h4>
+                                <p>20mg</p>
+                            </div>
+                        </div>
+                        <input type="checkbox" class="round-checkbox">
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Medication List -->
-        <section>
-            <h2 style="margin-bottom: var(--spacing-lg);"><i class="fas fa-prescription-bottle-alt"></i> Current Medications</h2>
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-prescription-bottle-alt"></i> Current Medications</h2>
+                <button class="view-all-btn"><i class="fas fa-plus" style="color: white;"></i>Manage Medicine</button>
+            </div>
             <div class="medication-grid">
-                <div class="med-card completed">
+                <div class="med-card">
                     <div class="med-header">
                         <div class="med-icon">
                             <i class="fas fa-pills"></i>
                         </div>
-                        <i class="fas fa-check-circle" style="font-size: 32px; color: var(--success-color);"></i>
                     </div>
                     <h3>Amlodipine</h3>
-                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Blood Pressure Medicine</p>
-                    <div style="background: var(--bg-primary); padding: var(--spacing-sm); border-radius: var(--radius-sm); margin: var(--spacing-sm) 0;">
-                        <p style="font-size: 14px;"><strong>Dosage:</strong> 5mg</p>
-                        <p style="font-size: 14px;"><strong>Frequency:</strong> 2x daily</p>
-                        <p style="font-size: 14px;"><strong>Times:</strong> 8:00 AM, 2:00 PM</p>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Blood Pressure Medicine</p>
+                    <p style="font-size: 14px; margin-bottom: var(--spacing-sm);"><strong>Dosage:</strong> 5mg</p>
+                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                        <span class="status-badge active">2x daily</span>
+                        <span class="status-badge" style="background: var(--bg-primary); color: var(--text-primary);">8:00 AM</span>
+                        <span class="status-badge" style="background: var(--bg-primary); color: var(--text-primary);">2:00 PM</span>
                     </div>
-                    <p style="font-size: 13px; color: var(--success-color);"><i class="fas fa-check"></i> Last taken: 8:00 AM today</p>
                 </div>
 
-                <div class="med-card completed">
+                <div class="med-card">
                     <div class="med-header">
                         <div class="med-icon">
                             <i class="fas fa-capsules"></i>
                         </div>
-                        <i class="fas fa-check-circle" style="font-size: 32px; color: var(--success-color);"></i>
                     </div>
                     <h3>Metformin</h3>
-                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Diabetes Medication</p>
-                    <div style="background: var(--bg-primary); padding: var(--spacing-sm); border-radius: var(--radius-sm); margin: var(--spacing-sm) 0;">
-                        <p style="font-size: 14px;"><strong>Dosage:</strong> 500mg</p>
-                        <p style="font-size: 14px;"><strong>Frequency:</strong> 2x daily</p>
-                        <p style="font-size: 14px;"><strong>Times:</strong> 12:00 PM, 8:00 PM</p>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Diabetes Medication</p>
+                    <p style="font-size: 14px; margin-bottom: var(--spacing-sm);"><strong>Dosage:</strong> 500mg</p>
+                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                        <span class="status-badge active">2x daily</span>
+                        <span class="status-badge" style="background: var(--bg-primary); color: var(--text-primary);">12:00 PM</span>
+                        <span class="status-badge" style="background: var(--bg-primary); color: var(--text-primary);">8:00 PM</span>
                     </div>
-                    <p style="font-size: 13px; color: var(--success-color);"><i class="fas fa-check"></i> Last taken: 12:00 PM today</p>
                 </div>
 
-                <div class="med-card active">
+                <div class="med-card">
                     <div class="med-header">
                         <div class="med-icon">
                             <i class="fas fa-tablets"></i>
                         </div>
-                        <i class="fas fa-exclamation-circle" style="font-size: 32px; color: var(--warning-color);"></i>
                     </div>
                     <h3>Atorvastatin</h3>
-                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">Cholesterol Medication</p>
-                    <div style="background: var(--bg-primary); padding: var(--spacing-sm); border-radius: var(--radius-sm); margin: var(--spacing-sm) 0;">
-                        <p style="font-size: 14px;"><strong>Dosage:</strong> 20mg</p>
-                        <p style="font-size: 14px;"><strong>Frequency:</strong> 1x daily</p>
-                        <p style="font-size: 14px;"><strong>Time:</strong> 8:00 PM</p>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Cholesterol Medication</p>
+                    <p style="font-size: 14px; margin-bottom: var(--spacing-sm);"><strong>Dosage:</strong> 20mg</p>
+                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                        <span class="status-badge active">1x daily</span>
+                        <span class="status-badge" style="background: var(--bg-primary); color: var(--text-primary);">8:00 PM</span>
                     </div>
-                    <p style="font-size: 13px; color: var(--warning-color);"><i class="fas fa-clock"></i> Due at 8:00 PM</p>
                 </div>
             </div>
         </section>
 
         <!-- Nutrition Tracking -->
-        <section class="nutrition-grid">
+        <!-- <section class="nutrition-grid">
             <div class="dashboard-section">
                 <div class="section-header">
                     <h2><i class="fas fa-utensils"></i> Today's Meals</h2>
@@ -498,10 +646,10 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Hydration Tracker -->
-        <section class="hydration-tracker">
+        <!-- <section class="hydration-tracker">
             <h2><i class="fas fa-tint"></i> Daily Hydration Tracker</h2>
             <p style="font-size: 18px; margin: var(--spacing-md) 0; opacity: 0.9;">
                 Stay hydrated! Track your water intake throughout the day
@@ -521,10 +669,10 @@
             <button style="background: white; color: #3498DB; border: none; padding: var(--spacing-md) var(--spacing-xl); border-radius: var(--radius-md); font-size: 16px; font-weight: 700; cursor: pointer; margin-top: var(--spacing-lg);">
                 <i class="fas fa-plus"></i> Add Glass
             </button>
-        </section>
+        </section> -->
 
         <!-- Smart Fridge Monitoring -->
-        <section class="smart-fridge">
+        <!-- <section class="smart-fridge">
             <div class="section-header">
                 <h2><i class="fas fa-refrigerator"></i> Smart Fridge Monitoring</h2>
                 <button class="view-all-btn"><i class="fas fa-shopping-cart"></i> Generate Shopping List</button>
@@ -567,7 +715,7 @@
                     <span class="status-badge active" style="font-size: 10px;">Fresh</span>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Medication Adherence Chart -->
         <section class="adherence-chart">
@@ -595,35 +743,96 @@
                     datasets: [{
                         label: 'Medications Taken',
                         data: [4, 4, 3, 4, 4, 4, 3],
-                        backgroundColor: 'rgba(74, 144, 226, 0.8)',
-                        borderColor: '#4A90E2',
-                        borderWidth: 2
+                        backgroundColor: 'rgba(59, 130, 246, 0.85)',
+                        borderColor: '#3B82F6',
+                        borderWidth: 0,
+                        borderRadius: 8,
+                        borderSkipped: false
                     }, {
                         label: 'Medications Scheduled',
                         data: [4, 4, 4, 4, 4, 4, 4],
-                        backgroundColor: 'rgba(231, 76, 60, 0.3)',
-                        borderColor: '#E74C3C',
-                        borderWidth: 2
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: '#3B82F6',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'center',
+                            labels: {
+                                usePointStyle: false,
+                                padding: 20,
+                                font: {
+                                    size: 13,
+                                    family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                                    weight: '500'
+                                },
+                                color: '#374151',
+                                boxWidth: 20,
+                                boxHeight: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            borderColor: '#3B82F6',
+                            borderWidth: 1,
+                            titleFont: {
+                                size: 14,
+                                weight: '600'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + ' doses';
+                                }
+                            }
+                        }
+                    },
                     scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 13,
+                                    family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                                    weight: '500'
+                                },
+                                color: '#6B7280'
+                            }
+                        },
                         y: {
                             beginAtZero: true,
                             max: 5,
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                font: {
+                                    size: 13,
+                                    family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+                                },
+                                color: '#6B7280'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
                             }
                         }
                     },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    }
+                    barPercentage: 0.7,
+                    categoryPercentage: 0.8
                 }
             });
         }
