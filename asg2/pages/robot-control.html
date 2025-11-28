@@ -9,7 +9,7 @@
     <style>
         .robot-main-control {
             display: grid;
-            grid-template-columns: 1.5fr 1fr;
+            grid-template-columns: 1.2fr 1fr;
             gap: var(--spacing-lg);
             margin-bottom: var(--spacing-lg);
         }
@@ -22,16 +22,58 @@
         }
 
         .robot-camera-view {
-            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            background: #1a1a1a;
             border-radius: var(--radius-md);
             height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
             margin-bottom: var(--spacing-md);
             position: relative;
             overflow: hidden;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .robot-camera-view img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .robot-camera-view.camera-stopped img {
+            display: none;
+        }
+
+        .camera-stopped-placeholder {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 1;
+        }
+
+        .robot-camera-view.camera-stopped .camera-stopped-placeholder {
+            display: block;
+        }
+
+        .robot-camera-view.camera-stopped .camera-overlay,
+        .robot-camera-view.camera-stopped .hud-overlay,
+        .robot-camera-view.camera-stopped .person-detection-box,
+        .robot-camera-view.camera-stopped .bottom-hud,
+        .robot-camera-view.camera-stopped .camera-grid {
+            display: none;
+        }
+
+        .camera-stopped-placeholder i {
+            font-size: 80px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .camera-stopped-placeholder p {
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .robot-camera-view::before {
@@ -41,7 +83,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 100%);
+            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
+            z-index: 1;
         }
 
         .robot-icon-large {
@@ -53,12 +97,17 @@
             position: absolute;
             top: var(--spacing-md);
             left: var(--spacing-md);
-            background: rgba(0,0,0,0.7);
-            padding: var(--spacing-sm);
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 8px 12px;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 2;
+            color: #FFFFFF;
         }
 
         .recording-indicator {
@@ -67,6 +116,170 @@
             background: #E74C3C;
             border-radius: 50%;
             animation: pulse 2s infinite;
+        }
+
+        .hud-overlay {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            z-index: 2;
+        }
+
+        .hud-stat {
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-size: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hud-stat i {
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .hud-stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+        }
+
+        .hud-stat-value {
+            color: #10B981;
+            font-weight: 700;
+        }
+
+        .bottom-hud {
+            position: absolute;
+            bottom: var(--spacing-md);
+            left: var(--spacing-md);
+            right: var(--spacing-md);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            z-index: 2;
+        }
+
+        .hud-info-card {
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            text-align: center;
+        }
+
+        .hud-info-card i {
+            color: var(--primary-color);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .hud-info-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-info-value {
+            font-size: 13px;
+            color: white;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .person-detection-box {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 250px;
+            border: 2px solid #10B981;
+            border-radius: var(--radius-sm);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .person-detection-box::before,
+        .person-detection-box::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #10B981;
+        }
+
+        .person-detection-box::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .person-detection-box::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .detection-label {
+            position: absolute;
+            top: -24px;
+            left: 0;
+            background: rgba(16, 185, 129, 0.9);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .camera-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.15;
+        }
+
+        .camera-grid::before,
+        .camera-grid::after {
+            content: '';
+            position: absolute;
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .camera-grid::before {
+            top: 33.33%;
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        .camera-grid::after {
+            top: 66.66%;
+            left: 0;
+            right: 0;
+            height: 1px;
         }
 
         .control-panel {
@@ -79,14 +292,29 @@
         .robot-status-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
+            gap: var(--spacing-sm);
             margin-bottom: var(--spacing-lg);
+            margin-top: var(--spacing-md);
         }
 
         .status-item {
-            background: var(--bg-primary);
-            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-left: 3px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        .status-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-light);
         }
 
         .status-label {
@@ -113,7 +341,7 @@
 
         .battery-fill {
             height: 100%;
-            background: linear-gradient(90deg, #27AE60, #2ECC71);
+            background: #10B981;
             width: 87%;
             transition: width 0.5s ease;
         }
@@ -124,20 +352,23 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-weight: 700;
-            color: #2C3E50;
+            color: #FFFFFF;
         }
 
         .control-buttons {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--spacing-md);
+            grid-template-columns: repeat(6, 1fr);
+            gap: var(--spacing-sm);
             margin-bottom: var(--spacing-lg);
         }
 
         .control-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            color: var(--text-primary);
             padding: var(--spacing-md);
             border-radius: var(--radius-md);
             cursor: pointer;
@@ -146,17 +377,48 @@
             flex-direction: column;
             align-items: center;
             gap: var(--spacing-sm);
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .control-btn:hover::before {
+            left: 100%;
         }
 
         .control-btn:hover {
-            background: #357ABD;
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .control-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
 
         .control-btn i {
             font-size: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .control-btn span {
+            position: relative;
+            z-index: 1;
         }
 
         .movement-controls {
@@ -196,49 +458,100 @@
         }
 
         .mode-card {
-            background: var(--bg-primary);
-            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: var(--spacing-md);
             cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
+            transition: all 0.3s ease;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .mode-card:hover::before {
+            left: 100%;
         }
 
         .mode-card:hover {
             border-color: var(--primary-color);
-            transform: scale(1.02);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+            background: rgba(255, 255, 255, 1);
         }
 
         .mode-card.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-color);
             color: white;
-            border-color: transparent;
+            border-color: var(--primary-color);
         }
 
         .mode-card i {
             font-size: 32px;
             margin-bottom: var(--spacing-sm);
+            position: relative;
+            z-index: 1;
         }
 
-        .task-history {
-            background: var(--bg-secondary);
+        .mode-card h5,
+        .mode-card p {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Activity Feed Section */
+        .activity-feed-section {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
             border-radius: var(--radius-lg);
             padding: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
         }
 
-        .task-item {
+        .activity-feed-section:hover {
+            box-shadow: 0 12px 48px rgba(59, 130, 246, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .activity-feed {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .feed-item {
             display: flex;
             align-items: center;
             gap: var(--spacing-md);
             padding: var(--spacing-md);
-            background: var(--bg-primary);
+            background: #F3F4F6;
             border-radius: var(--radius-md);
-            margin-bottom: var(--spacing-sm);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary-color);
         }
 
-        .task-icon {
+        .feed-item:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .feed-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -249,23 +562,85 @@
             color: white;
         }
 
+        .feed-icon.success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .feed-icon.info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .feed-icon.warning {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .feed-content {
+            flex: 1;
+        }
+
+        .feed-content p:first-child {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .feed-content p:last-child {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .feed-time {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(6, 1fr);
             gap: var(--spacing-md);
         }
 
         .feature-card {
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: var(--spacing-lg);
-            box-shadow: var(--shadow-md);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-light);
         }
 
         .feature-icon {
-            font-size: 48px;
-            margin-bottom: var(--spacing-md);
+            font-size: 40px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .feature-value {
+            font-size: 18px;
+            font-weight: 600;
+            margin: var(--spacing-sm) 0;
+        }
+
+        /* Gradient color for icons and values */
+        .gradient-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-value {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
     </style>
 </head>
@@ -328,16 +703,63 @@
         <div class="robot-main-control">
             <!-- Robot Camera View -->
             <div class="robot-viewport">
-                <h3><i class="fas fa-video"></i> Robot Camera Feed</h3>
-                <div class="robot-camera-view">
+                <h3 style="margin-bottom: var(--spacing-lg);"><i class="fas fa-video"></i> Robot Camera Feed</h3>
+                <div class="robot-camera-view" id="cameraView">
+                    <!-- Background Image -->
+                    <img src="../assets/robot.png" alt="Robot POV Camera Feed">
+
+                    <!-- Camera Stopped Placeholder -->
+                    <div class="camera-stopped-placeholder">
+                        <i class="fas fa-video-slash"></i>
+                        <p>Camera Stopped</p>
+                    </div>
+
+                    <!-- Camera Grid Overlay -->
+                    <div class="camera-grid"></div>
+
+                    <!-- Top Left: Recording Indicator -->
                     <div class="camera-overlay">
                         <div class="recording-indicator"></div>
                         <span>LIVE</span>
                     </div>
-                    <div style="text-align: center; z-index: 1;">
-                        <i class="fas fa-robot robot-icon-large"></i>
-                        <p style="font-size: 18px; margin-top: var(--spacing-md);">Robot Camera Active</p>
-                        <p style="font-size: 14px; opacity: 0.7;">Currently in Living Room</p>
+
+                    <!-- Top Right: Stats -->
+                    <div class="hud-overlay">
+                        <div class="hud-stat">
+                            <i class="fas fa-ruler"></i>
+                            <span><span class="hud-stat-label">Distance:</span> <span class="hud-stat-value">2.3m</span></span>
+                        </div>
+                        <div class="hud-stat">
+                            <i class="fas fa-battery-three-quarters"></i>
+                            <span><span class="hud-stat-label">Battery:</span> <span class="hud-stat-value" id="hudBatteryText">87%</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Person Detection Box -->
+                    <div class="person-detection-box">
+                        <div class="detection-label">
+                            <i class="fas fa-check-circle"></i>
+                            Person Detected
+                        </div>
+                    </div>
+
+                    <!-- Bottom: Info Cards -->
+                    <div class="bottom-hud">
+                        <div class="hud-info-card">
+                            <i class="fas fa-user-check"></i>
+                            <div class="hud-info-label">Status</div>
+                            <div class="hud-info-value">Identified</div>
+                        </div>
+                        <div class="hud-info-card">
+                            <i class="fas fa-home"></i>
+                            <div class="hud-info-label">Location</div>
+                            <div class="hud-info-value">Living Room</div>
+                        </div>
+                        <div class="hud-info-card">
+                            <i class="fas fa-heartbeat"></i>
+                            <div class="hud-info-label">Posture</div>
+                            <div class="hud-info-value">Normal</div>
+                        </div>
                     </div>
                 </div>
 
@@ -385,11 +807,11 @@
                     </div>
                     <div class="status-item">
                         <div class="status-label">Current Mode</div>
-                        <div class="status-value">Companion</div>
+                        <div class="status-value" id="currentModeText">Companion</div>
                     </div>
                     <div class="status-item">
                         <div class="status-label">Last Updated</div>
-                        <div class="status-value" style="font-size: 14px;">Just now</div>
+                        <div class="status-value" id="lastUpdatedTime">--:--:--</div>
                     </div>
                 </div>
 
@@ -405,27 +827,27 @@
                 <!-- Quick Actions -->
                 <h4 style="margin-bottom: var(--spacing-md);"><i class="fas fa-bolt"></i> Quick Actions</h4>
                 <div class="control-buttons">
-                    <button class="control-btn" onclick="robotAction('speak')">
+                    <button class="control-btn" onclick="robotAction('speak', event)">
                         <i class="fas fa-volume-up"></i>
                         <span>Speak</span>
                     </button>
-                    <button class="control-btn" onclick="robotAction('call')">
+                    <button class="control-btn" onclick="robotAction('call', event)">
                         <i class="fas fa-video"></i>
                         <span>Video Call</span>
                     </button>
-                    <button class="control-btn" onclick="robotAction('medicine')">
+                    <button class="control-btn" onclick="robotAction('medicine', event)">
                         <i class="fas fa-pills"></i>
                         <span>Medicine Reminder</span>
                     </button>
-                    <button class="control-btn" onclick="robotAction('patrol')">
+                    <button class="control-btn" onclick="robotAction('patrol', event)">
                         <i class="fas fa-route"></i>
                         <span>Patrol Mode</span>
                     </button>
-                    <button class="control-btn" onclick="robotAction('music')">
+                    <button class="control-btn" onclick="robotAction('music', event)">
                         <i class="fas fa-music"></i>
                         <span>Play Music</span>
                     </button>
-                    <button class="control-btn" onclick="robotAction('fetch')">
+                    <button class="control-btn" onclick="robotAction('fetch', event)">
                         <i class="fas fa-hand-holding"></i>
                         <span>Fetch Item</span>
                     </button>
@@ -459,7 +881,7 @@
         </div>
 
         <!-- Robot Capabilities -->
-        <section class="dashboard-section">
+        <!-- <section class="dashboard-section">
             <div class="section-header">
                 <h2><i class="fas fa-star"></i> Robot Capabilities</h2>
             </div>
@@ -507,52 +929,54 @@
                     <p style="font-size: 14px; color: var(--text-secondary);">Video calls, photo sharing, activity updates to family</p>
                 </div>
             </div>
-        </section>
+        </section> -->
 
-        <!-- Task History -->
-        <section class="task-history">
+        <!-- Recent Robot Activities -->
+        <section class="dashboard-section activity-feed-section">
             <div class="section-header">
                 <h2><i class="fas fa-history"></i> Recent Robot Activities</h2>
             </div>
-            <div class="task-item">
-                <div class="task-icon" style="background: linear-gradient(135deg, #27AE60, #2ECC71);">
-                    <i class="fas fa-pills"></i>
+            <div class="activity-feed">
+                <div class="feed-item">
+                    <div class="feed-icon success">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <div class="feed-content">
+                        <p><strong>Medication Reminder Delivered</strong></p>
+                        <p>Reminded to take blood pressure medicine at 2:00 PM</p>
+                    </div>
+                    <span class="feed-time">15 mins ago</span>
                 </div>
-                <div style="flex: 1;">
-                    <p style="font-weight: 600;">Medication Reminder Delivered</p>
-                    <p style="font-size: 14px; color: var(--text-secondary);">Reminded to take blood pressure medicine at 2:00 PM</p>
+                <div class="feed-item">
+                    <div class="feed-icon info">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="feed-content">
+                        <p><strong>Conversation Session</strong></p>
+                        <p>Chatted about family memories for 20 minutes</p>
+                    </div>
+                    <span class="feed-time">1 hour ago</span>
                 </div>
-                <span style="font-size: 13px; color: var(--text-secondary);">15 mins ago</span>
-            </div>
-            <div class="task-item">
-                <div class="task-icon" style="background: linear-gradient(135deg, #3498DB, #2980B9);">
-                    <i class="fas fa-comments"></i>
+                <div class="feed-item">
+                    <div class="feed-icon success">
+                        <i class="fas fa-hand-holding"></i>
+                    </div>
+                    <div class="feed-content">
+                        <p><strong>Item Fetch Completed</strong></p>
+                        <p>Brought water bottle from kitchen</p>
+                    </div>
+                    <span class="feed-time">2 hours ago</span>
                 </div>
-                <div style="flex: 1;">
-                    <p style="font-weight: 600;">Conversation Session</p>
-                    <p style="font-size: 14px; color: var(--text-secondary);">Chatted about family memories for 20 minutes</p>
+                <div class="feed-item">
+                    <div class="feed-icon warning">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feed-content">
+                        <p><strong>Safety Patrol Completed</strong></p>
+                        <p>Checked all rooms, no hazards detected</p>
+                    </div>
+                    <span class="feed-time">3 hours ago</span>
                 </div>
-                <span style="font-size: 13px; color: var(--text-secondary);">1 hour ago</span>
-            </div>
-            <div class="task-item">
-                <div class="task-icon" style="background: linear-gradient(135deg, #9B59B6, #8E44AD);">
-                    <i class="fas fa-hand-holding"></i>
-                </div>
-                <div style="flex: 1;">
-                    <p style="font-weight: 600;">Item Fetch Completed</p>
-                    <p style="font-size: 14px; color: var(--text-secondary);">Brought water bottle from kitchen</p>
-                </div>
-                <span style="font-size: 13px; color: var(--text-secondary);">2 hours ago</span>
-            </div>
-            <div class="task-item">
-                <div class="task-icon" style="background: linear-gradient(135deg, #F39C12, #E67E22);">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <div style="flex: 1;">
-                    <p style="font-weight: 600;">Safety Patrol Completed</p>
-                    <p style="font-size: 14px; color: var(--text-secondary);">Checked all rooms, no hazards detected</p>
-                </div>
-                <span style="font-size: 13px; color: var(--text-secondary);">3 hours ago</span>
             </div>
         </section>
         </div>
@@ -568,6 +992,8 @@
             setInterval(updateBattery, 30000);
         });
 
+        let isCameraActive = true;
+
         function moveRobot(direction) {
             const actions = {
                 'forward': 'Moving forward...',
@@ -576,6 +1002,31 @@
                 'right': 'Turning right...',
                 'stop': 'Stopped'
             };
+
+            // Handle camera toggle when stop is clicked
+            if (direction === 'stop') {
+                const cameraView = document.getElementById('cameraView');
+                isCameraActive = !isCameraActive;
+
+                if (isCameraActive) {
+                    cameraView.classList.remove('camera-stopped');
+                    if (window.dashboardUtils) {
+                        window.dashboardUtils.showNotification('Camera started', 'info');
+                    } else {
+                        alert('Camera started');
+                    }
+                } else {
+                    cameraView.classList.add('camera-stopped');
+                    if (window.dashboardUtils) {
+                        window.dashboardUtils.showNotification('Camera stopped', 'info');
+                    } else {
+                        alert('Camera stopped');
+                    }
+                }
+
+                console.log(`Camera ${isCameraActive ? 'started' : 'stopped'}`);
+                return;
+            }
 
             if (window.dashboardUtils) {
                 window.dashboardUtils.showNotification(
@@ -589,7 +1040,9 @@
             console.log(`Robot command: ${direction}`);
         }
 
-        function robotAction(action) {
+        function robotAction(action, event) {
+            const clickedButton = event.currentTarget;
+
             const actions = {
                 'speak': 'Robot is speaking to the elderly...',
                 'call': 'Initiating video call...',
@@ -599,6 +1052,37 @@
                 'fetch': 'Robot will fetch the requested item...'
             };
 
+            const stopMessages = {
+                'speak': 'Stopped speaking',
+                'call': 'Video call ended',
+                'medicine': 'Medication reminder cancelled',
+                'patrol': 'Patrol stopped',
+                'music': 'Music stopped',
+                'fetch': 'Fetch task cancelled'
+            };
+
+            // Check if button is already active
+            if (clickedButton.classList.contains('active')) {
+                // DESELECT - Stop the action (NO trigger)
+                clickedButton.classList.remove('active');
+
+                if (window.dashboardUtils) {
+                    window.dashboardUtils.showNotification(stopMessages[action], 'info');
+                } else {
+                    alert(stopMessages[action]);
+                }
+
+                console.log(`Robot action stopped: ${action}`);
+                return; // Exit early - don't trigger action
+            }
+
+            // SELECT - Remove active from all buttons, activate clicked button
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            clickedButton.classList.add('active');
+
+            // Trigger the action
             if (window.dashboardUtils) {
                 window.dashboardUtils.showNotification(actions[action], 'info');
             } else {
@@ -625,21 +1109,44 @@
                 'emergency': 'Emergency Mode'
             };
 
+            // Update Current Mode display in Robot Status
+            const currentModeElement = document.getElementById('currentModeText');
+            if (currentModeElement) {
+                currentModeElement.textContent = modeNames[mode].replace(' Mode', '');
+            }
+
             if (window.dashboardUtils) {
                 window.dashboardUtils.showNotification(
                     `Robot switched to ${modeNames[mode]}`,
                     'info'
                 );
             }
+        }
 
-            // Update display
-            document.querySelector('.robot-status-grid .status-value').textContent =
-                modeNames[mode].replace(' Mode', '');
+        function updateLastUpdated() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            // Convert to 12-hour format
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be 12
+            const hoursStr = String(hours).padStart(2, '0');
+
+            const timeString = `${hoursStr}:${minutes}:${seconds} ${ampm}`;
+
+            const lastUpdatedElement = document.getElementById('lastUpdatedTime');
+            if (lastUpdatedElement) {
+                lastUpdatedElement.textContent = timeString;
+            }
         }
 
         function updateBattery() {
             const batteryElement = document.getElementById('batteryFill');
             const textElement = document.getElementById('batteryText');
+            const hudBatteryElement = document.getElementById('hudBatteryText');
             const currentBattery = parseInt(textElement.textContent);
 
             // Simulate battery decrease
@@ -648,13 +1155,23 @@
                 batteryElement.style.width = newBattery + '%';
                 textElement.textContent = newBattery + '%';
 
+                // Sync HUD battery display
+                if (hudBatteryElement) {
+                    hudBatteryElement.textContent = newBattery + '%';
+                }
+
                 // Change color based on battery level
                 if (newBattery < 30) {
-                    batteryElement.style.background = 'linear-gradient(90deg, #E74C3C, #C0392B)';
+                    batteryElement.style.background = '#E74C3C';
                 } else if (newBattery < 50) {
-                    batteryElement.style.background = 'linear-gradient(90deg, #F39C12, #E67E22)';
+                    batteryElement.style.background = '#F39C12';
+                } else {
+                    batteryElement.style.background = '#10B981';
                 }
             }
+
+            // Update the last updated timestamp whenever battery updates
+            updateLastUpdated();
         }
 
         function updateClock() {
