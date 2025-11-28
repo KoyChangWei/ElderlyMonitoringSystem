@@ -136,7 +136,7 @@
                                     <i class="fas fa-robot"></i>
                                 </div>
                                 <div class="robot-details">
-                                    <p><strong>Status:</strong> <span class="status-badge active">Active</span></p>
+                                    <p><strong>Status:</strong> <span style="color: var(--success-color); font-weight: 600;">Active</span></p>
                                     <p><strong>Battery:</strong> <span id="robotBattery">87%</span></p>
                                     <p><strong>Location:</strong> Living Room</p>
                                     <p><strong>Current Task:</strong> Companion Mode</p>
@@ -184,10 +184,10 @@
                                 </div>
                             </div>
                             <div class="activity-item">
-                                <i class="fas fa-smile"></i>
+                                <i class="fas fa-map-marker-alt"></i>
                                 <div>
-                                    <span class="activity-label">Mood Score</span>
-                                    <span class="activity-value">85% (Happy)</span>
+                                    <span class="activity-label">Current Location</span>
+                                    <span class="activity-value status-ok">Home - Living Room</span>
                                 </div>
                             </div>
                         </div>
@@ -305,7 +305,7 @@
                 <div class="medication-schedule medication-section">
                     <div class="section-header">
                         <h2><i class="fas fa-pills"></i> Today's Medication</h2>
-                        <button class="view-all-btn" onclick="navigateTo('pages/medication.html')">View All <i class="fas fa-arrow-right"></i></button>
+                        <button class="view-all-btn" onclick="navigateTo('pages/medication.html')">View All <i class="fas fa-arrow-right" style="color: white;"></i></button>
                     </div>
                     <div class="medication-list">
                         <div class="med-item completed">
@@ -841,6 +841,7 @@
             <section class="dashboard-section activity-feed-section">
                 <div class="section-header">
                     <h2><i class="fas fa-rss"></i> Real-time Activity Feed</h2>
+                    <button class="view-all-btn">View All <i class="fas fa-arrow-right" style="color: white;"></i></button>
                 </div>
                 <div class="activity-feed">
                     <div class="feed-item">

@@ -199,7 +199,7 @@
         }
 
         .voice-control-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-color);
             color: white;
             border-radius: var(--radius-lg);
             padding: var(--spacing-xl);
@@ -277,6 +277,44 @@
             top: var(--spacing-sm);
             right: var(--spacing-sm);
             margin-top: 0 !important;
+        }
+
+        .wearable-card .battery-badge {
+            position: absolute;
+            top: var(--spacing-sm);
+            left: var(--spacing-sm);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #F59E0B;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Gradient color for icons and values */
+        .gradient-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-value {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Center device icons */
+        .device-icon-large {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -375,35 +413,35 @@
             </div>
             <div class="environment-monitor">
                 <div class="env-card">
-                    <div class="env-icon" style="color: #F39C12;">
+                    <div class="env-icon gradient-icon">
                         <i class="fas fa-temperature-high"></i>
                     </div>
                     <div class="status-label">Temperature</div>
-                    <div class="env-value" style="color: #F39C12;">24°C</div>
+                    <div class="env-value gradient-value">24°C</div>
                     <span class="status-badge active">Comfortable</span>
                 </div>
                 <div class="env-card">
-                    <div class="env-icon" style="color: #3498DB;">
+                    <div class="env-icon gradient-icon">
                         <i class="fas fa-tint"></i>
                     </div>
                     <div class="status-label">Humidity</div>
-                    <div class="env-value" style="color: #3498DB;">55%</div>
+                    <div class="env-value gradient-value">55%</div>
                     <span class="status-badge active">Optimal</span>
                 </div>
                 <div class="env-card">
-                    <div class="env-icon" style="color: #27AE60;">
+                    <div class="env-icon gradient-icon">
                         <i class="fas fa-wind"></i>
                     </div>
                     <div class="status-label">Air Quality (AQI)</div>
-                    <div class="env-value" style="color: #27AE60;">45</div>
+                    <div class="env-value gradient-value">45</div>
                     <span class="status-badge active">Excellent</span>
                 </div>
                 <div class="env-card">
-                    <div class="env-icon" style="color: #F39C12;">
+                    <div class="env-icon gradient-icon">
                         <i class="fas fa-lightbulb"></i>
                     </div>
                     <div class="status-label">Light Level</div>
-                    <div class="env-value" style="color: #F39C12;">650 lx</div>
+                    <div class="env-value gradient-value">650 lx</div>
                     <span class="status-badge active">Good</span>
                 </div>
             </div>
@@ -413,6 +451,7 @@
         <section class="dashboard-section">
             <div class="section-header">
                 <h2><i class="fas fa-plug"></i> Connected Home Devices</h2>
+                <button class="view-all-btn"><i class="fas fa-plus" style="color: white;"></i> Add Device</button>
             </div>
             <div class="devices-grid" id="devicesGrid">
                 <!-- Smart Lights -->
@@ -424,10 +463,10 @@
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="device-icon-large" style="background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);">
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <i class="fas fa-lightbulb"></i>
                     </div>
-                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Living Room</p>
+                    <p style="color: var(--text-secondary); margin: var(--spacing-md) 0; text-align: center;">Living Room</p>
                     <div class="device-controls">
                         <div class="slider-control">
                             <label>Brightness: <span id="brightnessValue">75%</span></label>
@@ -453,10 +492,10 @@
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="device-icon-large" style="background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);">
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <i class="fas fa-snowflake"></i>
                     </div>
-                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Living Room</p>
+                    <p style="color: var(--text-secondary); margin: var(--spacing-md) 0; text-align: center;">Living Room</p>
                     <div class="device-controls">
                         <div class="slider-control">
                             <label>Temperature: <span id="acTempValue">24°C</span></label>
@@ -482,10 +521,10 @@
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="device-icon-large" style="background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);">
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <i class="fas fa-lock"></i>
                     </div>
-                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Main Door</p>
+                    <p style="color: var(--text-secondary); margin: var(--spacing-md) 0; text-align: center;">Main Door</p>
                     <div class="device-controls">
                         <div style="display: flex; gap: var(--spacing-sm);">
                             <button class="action-btn" style="flex: 1;"><i class="fas fa-lock"></i> Lock</button>
@@ -506,10 +545,10 @@
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="device-icon-large" style="background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);">
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <i class="fas fa-video"></i>
                     </div>
-                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">4 Cameras Active</p>
+                    <p style="color: var(--text-secondary); margin: var(--spacing-md) 0; text-align: center;">4 Cameras Active</p>
                     <div class="device-controls">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
                             <div style="padding: var(--spacing-sm); background: var(--bg-primary); border-radius: var(--radius-sm); text-align: center;">
@@ -536,12 +575,15 @@
                 <div class="device-card" data-room="bedroom">
                     <div class="device-header">
                         <h3>Smart Bed Monitor</h3>
-                        <div class="status-badge active">Active</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDeviceStatus(this, 'Bed Monitor')">
+                            <span class="slider"></span>
+                        </label>
                     </div>
-                    <div class="device-icon-large" style="background: linear-gradient(135deg, #1ABC9C 0%, #16A085 100%);">
+                    <div class="device-icon-large" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <i class="fas fa-bed"></i>
                     </div>
-                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md);">Bedroom</p>
+                    <p style="color: var(--text-secondary); margin: var(--spacing-md) 0; text-align: center;">Bedroom</p>
                     <div class="device-controls">
                         <div style="font-size: 14px;">
                             <p><strong>Last Night's Sleep:</strong></p>
@@ -579,35 +621,36 @@
         <section class="dashboard-section">
             <div class="section-header">
                 <h2><i class="fas fa-clock"></i> Connected Wearable Devices</h2>
+                <button class="view-all-btn"><i class="fas fa-plus" style="color: white;"></i> Add Device</button>
             </div>
             <div class="wearable-devices">
                 <div class="wearable-card">
-                    <div class="wearable-icon"><i class="fas fa-clock" style="color: #E74C3C; font-size: 36px;"></i></div>
+                    <div class="wearable-icon gradient-icon"><i class="fas fa-clock" style="font-size: 36px;"></i></div>
                     <h4>Smart Watch</h4>
                     <p style="font-size: 13px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</p>
-                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Battery: 78%</p>
-                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                    <div class="status-badge active">Connected</div>
+                    <div class="battery-badge"><i class="fas fa-battery-three-quarters"></i> 78%</div>
                 </div>
                 <div class="wearable-card">
-                    <div class="wearable-icon"><i class="fas fa-shoe-prints" style="color: #3498DB; font-size: 36px;"></i></div>
+                    <div class="wearable-icon gradient-icon"><i class="fas fa-shoe-prints" style="font-size: 36px;"></i></div>
                     <h4>Smart Shoes</h4>
                     <p style="font-size: 13px; color: var(--text-secondary);">Gait Analysis, Fall Detection</p>
-                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Battery: 92%</p>
-                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                    <div class="status-badge active">Connected</div>
+                    <div class="battery-badge"><i class="fas fa-battery-full"></i> 92%</div>
                 </div>
                 <div class="wearable-card">
-                    <div class="wearable-icon"><i class="fas fa-ring" style="color: #9B59B6; font-size: 36px;"></i></div>
+                    <div class="wearable-icon gradient-icon"><i class="fas fa-ring" style="font-size: 36px;"></i></div>
                     <h4>Smart Ring</h4>
                     <p style="font-size: 13px; color: var(--text-secondary);">Body Temperature, Sleep Quality</p>
-                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Battery: 65%</p>
-                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                    <div class="status-badge active">Connected</div>
+                    <div class="battery-badge"><i class="fas fa-battery-half"></i> 65%</div>
                 </div>
                 <div class="wearable-card">
-                    <div class="wearable-icon"><i class="fas fa-star" style="color: #F39C12; font-size: 36px;"></i></div>
+                    <div class="wearable-icon gradient-icon"><i class="fas fa-star" style="font-size: 36px;"></i></div>
                     <h4>Emergency Pendant</h4>
                     <p style="font-size: 13px; color: var(--text-secondary);">SOS Button, Fall Detection</p>
-                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Battery: 85%</p>
-                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                    <div class="status-badge active">Connected</div>
+                    <div class="battery-badge"><i class="fas fa-battery-three-quarters"></i> 85%</div>
                 </div>
             </div>
         </section>
@@ -616,7 +659,7 @@
         <section class="automation-rules">
             <div class="section-header">
                 <h2><i class="fas fa-magic"></i> Smart Automation Rules</h2>
-                <button class="view-all-btn"><i class="fas fa-plus"></i> Add New Rule</button>
+                <button class="view-all-btn"><i class="fas fa-plus" style="color: white;"></i> Add New Rule</button>
             </div>
             <div class="rule-item">
                 <div class="rule-icon"><i class="fas fa-moon"></i></div>

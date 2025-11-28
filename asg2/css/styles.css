@@ -1433,15 +1433,15 @@ input:checked + .slider:before {
 }
 
 .feed-icon.success {
-    background: var(--success-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .feed-icon.info {
-    background: var(--info-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .feed-icon.warning {
-    background: var(--warning-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .feed-content {
