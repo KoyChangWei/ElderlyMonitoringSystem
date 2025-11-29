@@ -208,18 +208,26 @@
         }
 
         .location-map {
-            background: var(--bg-primary);
-            border-radius: var(--radius-lg);
-            height: 400px;
+            background: #1a1a1a;
+            border-radius: var(--radius-md);
+            height: auto;
             margin: var(--spacing-md) 0;
             position: relative;
             overflow: hidden;
-            background-image: url('../assets/location.png');
-            background-size: contain;
+            background-image: url('../assets/geofencing.png');
+            background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
-            border: 2px solid rgba(59, 130, 246, 0.2);
-            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+            aspect-ratio: 16/9;
+            transition: all 0.3s ease;
+        }
+
+        .location-map:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+            border-color: rgba(59, 130, 246, 0.6);
         }
 
         .location-pin {
@@ -237,6 +245,24 @@
         @keyframes bounce {
             0%, 100% { transform: translate(-50%, -100%) translateY(0); }
             50% { transform: translate(-50%, -100%) translateY(-15px); }
+        }
+
+        .safe-zone-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
         }
 
         .contact-quick-dial {
@@ -690,58 +716,231 @@
                 <!-- Location Tracking Card -->
                 <div class="safety-card">
                     <h3 style="color: var(--primary-color); display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); font-size: 18px;"><i class="fas fa-map-marker-alt"></i> Location Tracking & Geofencing</h3>
-                    <div class="location-map" style="height: 250px; margin-bottom: var(--spacing-md);">
-                        <div class="location-pin"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="location-map">
+                        <span class="safe-zone-badge">
+                            <i class="fas fa-check-circle"></i> Within Safe Zone
+                        </span>
                     </div>
-                    <div style="padding: var(--spacing-sm); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02)); border-radius: var(--radius-md); border-left: 4px solid var(--success-color); margin-bottom: var(--spacing-md);">
+                    <div style="margin-top: var(--spacing-md); padding: var(--spacing-md); background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.03)); border-radius: var(--radius-md); border: 2px solid rgba(16, 185, 129, 0.2);">
                         <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-                            <i class="fas fa-signal" style="font-size: 18px; color: var(--success-color);"></i>
-                            <div>
-                                <p style="font-weight: 600; font-size: 14px; color: var(--text-primary); margin-bottom: 2px;">GPS Active - Living Room</p>
+                            <i class="fas fa-signal" style="font-size: 20px; color: var(--success-color);"></i>
+                            <div style="flex: 1;">
+                                <p style="font-weight: 700; font-size: 14px; color: #059669; margin-bottom: 2px;">GPS Active - Living Room</p>
                                 <p style="font-size: 12px; color: var(--text-secondary);">Signal: Excellent • Updated: Just now</p>
                             </div>
                         </div>
                     </div>
-                    <div style="text-align: center;">
-                        <span style="display: inline-block; padding: 6px 16px; background: linear-gradient(135deg, #10B981, #059669); color: white; border-radius: 20px; font-weight: 700; font-size: 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
-                            <i class="fas fa-check-circle"></i> Within Safe Zone
-                        </span>
-                    </div>
                 </div>
             </div>
 
-            <!-- Row 1: Emergency Quick Dial -->
+            <!-- Safety Monitoring Devices Section -->
             <section class="dashboard-section" style="margin-bottom: var(--spacing-lg);">
                 <div class="section-header" style="margin-bottom: var(--spacing-md);">
-                    <h2 style="font-size: 20px;"><i class="fas fa-phone-alt"></i> Emergency Quick Dial</h2>
+                    <h2 style="font-size: 20px;"><i class="fas fa-shield-alt"></i> Safety Monitoring Devices</h2>
+                </div>
+
+                <!-- 4-Column Grid: Smart Bed (2 cols) + Smart Shoes (1 col) + Emergency Pendant (1 col) -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+
+                    <!-- Smart Bed Card (2 columns) -->
+                    <div class="safety-card" style="border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+                        <h3 style="color: var(--primary-color); display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); font-size: 18px;">
+                             Smart Bed
+                        </h3>
+
+                        <!-- Bed Icon Visual -->
+                        <div style="text-align: center; padding: var(--spacing-lg); margin-bottom: var(--spacing-md); min-height: 140px; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                                <i class="fas fa-bed" style="font-size: 36px; color: white;"></i>
+                            </div>
+                            <p style="font-size: 14px; color: var(--text-secondary); margin-top: var(--spacing-sm);">Bedroom - Main Bed</p>
+                        </div>
+
+                        <!-- 2x2 Metrics Grid -->
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-sm); margin-bottom: var(--spacing-md);">
+                            <!-- Breathing -->
+                            <div style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(0, 0, 0, 0.2); border-left: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; align-items: center; gap: var(--spacing-sm); min-height: 70px;">
+                                <i class="fas fa-lungs" style="font-size: 24px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;" id="breathingRate">16</p>
+                                    <p style="font-size: 11px; color: var(--text-secondary);">Breaths/min</p>
+                                </div>
+                            </div>
+                            <!-- Movement -->
+                            <div style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(0, 0, 0, 0.2); border-left: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; align-items: center; gap: var(--spacing-sm); min-height: 70px;">
+                                <i class="fas fa-wave-square" style="font-size: 24px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;" id="movementLevel">Normal</p>
+                                    <p style="font-size: 11px; color: var(--text-secondary);">Movement</p>
+                                </div>
+                            </div>
+                            <!-- Time in Bed -->
+                            <div style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(0, 0, 0, 0.2); border-left: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; align-items: center; gap: var(--spacing-sm); min-height: 70px;">
+                                <i class="fas fa-clock" style="font-size: 24px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;" id="bedTime">2h 15m</p>
+                                    <p style="font-size: 11px; color: var(--text-secondary);">Time in Bed</p>
+                                </div>
+                            </div>
+                            <!-- Bed Exits -->
+                            <div style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(0, 0, 0, 0.2); border-left: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; align-items: center; gap: var(--spacing-sm); min-height: 70px;">
+                                <i class="fas fa-door-open" style="font-size: 24px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;" id="bedExitCount">3</p>
+                                    <p style="font-size: 11px; color: var(--text-secondary);">Bed Exits</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Box -->
+                        <div style="margin-top: var(--spacing-md); padding: var(--spacing-md); background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.03)); border-radius: var(--radius-md); border: 2px solid rgba(16, 185, 129, 0.2);">
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <i class="fas fa-check-circle" style="font-size: 20px; color: var(--success-color);"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 14px; color: #059669; margin-bottom: 2px;">Occupied • Monitoring Active</p>
+                                    <p style="font-size: 12px; color: var(--text-secondary);">Last update: Just now</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Smart Shoes Card (1 column) -->
+                    <div class="safety-card" style="border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+                        <h3 style="color: var(--primary-color); display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); font-size: 18px;">
+                             Smart Shoes
+                        </h3>
+
+                        <!-- Shoe Icon Visual -->
+                        <div style="text-align: center; padding: var(--spacing-lg); margin-bottom: var(--spacing-md); min-height: 160px; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                                <i class="fas fa-shoe-prints" style="font-size: 36px; color: white;"></i>
+                            </div>
+                        </div>
+
+                        <!-- 1x2 Metrics Grid -->
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);">
+                            <!-- Footsteps -->
+                            <div style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(0, 0, 0, 0.2); border-left: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; align-items: center; gap: var(--spacing-sm); min-height: 70px;">
+                                <i class="fas fa-walking" style="font-size: 24px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;">5,243</p>
+                                    <p style="font-size: 11px; color: var(--text-secondary);">Footsteps</p>
+                                </div>
+                            </div>
+                            <!-- Fall Detected -->
+                            <div style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(0, 0, 0, 0.2); border-left: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; align-items: center; gap: var(--spacing-sm); min-height: 70px;">
+                                <i class="fas fa-user-shield" style="font-size: 24px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;">No</p>
+                                    <p style="font-size: 11px; color: var(--text-secondary);">Fall Detected</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Box -->
+                        <div style="margin-top: var(--spacing-md); padding: var(--spacing-md); background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.03)); border-radius: var(--radius-md); border: 2px solid rgba(16, 185, 129, 0.2);">
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <i class="fas fa-check-circle" style="font-size: 20px; color: var(--success-color);"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 14px; color: #059669; margin-bottom: 2px;">Active</p>
+                                    <p style="font-size: 12px; color: var(--text-secondary);">Battery: 92% • 2 min ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Pendant Card (1 column) -->
+                    <div class="safety-card" style="border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+                        <h3 style="color: var(--primary-color); display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); font-size: 18px;">
+                             Emergency Pendant
+                        </h3>
+
+                        <!-- Pendant Icon Visual -->
+                        <div style="text-align: center; padding: var(--spacing-lg); margin-bottom: var(--spacing-md); min-height: 160px; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                                <i class="fas fa-star-of-life" style="font-size: 36px; color: white;"></i>
+                            </div>
+                        </div>
+
+                        <!-- 1x2 Metrics Grid -->
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);">
+                            <!-- SOS Button -->
+                            <div style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(0, 0, 0, 0.2); border-left: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; align-items: center; gap: var(--spacing-sm); min-height: 70px;">
+                                <i class="fas fa-hand-paper" style="font-size: 24px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;">Not Pressed</p> 
+                                    <p style="font-size: 11px; color: var(--text-secondary);">SOS Button</p>
+                                </div>
+                            </div>
+                            <!-- Fall Detected -->
+                            <div style="background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid rgba(0, 0, 0, 0.2); border-left: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; align-items: center; gap: var(--spacing-sm); min-height: 70px;">
+                                <i class="fas fa-user-shield" style="font-size: 24px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;">No</p>
+                                    <p style="font-size: 11px; color: var(--text-secondary);">Fall Detected</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Box -->
+                        <div style="margin-top: var(--spacing-md); padding: var(--spacing-md); background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.03)); border-radius: var(--radius-md); border: 2px solid rgba(16, 185, 129, 0.2);">
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <i class="fas fa-check-circle" style="font-size: 20px; color: var(--success-color);"></i>
+                                <div style="flex: 1;">
+                                    <p style="font-weight: 700; font-size: 14px; color: #059669; margin-bottom: 2px;">Worn</p>
+                                    <p style="font-size: 12px; color: var(--text-secondary);">Battery: 85% • Just now</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Row 1: Emergency Quick Dial -->
+            <section class="dashboard-section emergency-contacts-section" style="margin-bottom: var(--spacing-lg);">
+                <div class="section-header" style="margin-bottom: var(--spacing-md);">
+                    <h2 style="font-size: 20px;"><i class="fas fa-phone-alt"></i> Emergency Contacts & Quick Actions</h2>
                     <button class="view-all-btn" onclick="manageContacts()"><i class="fas fa-plus" style="color: white;"></i> Manage Contacts</button>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md);">
-                    <div class="quick-dial-btn" onclick="quickDial('999')" style="padding: var(--spacing-lg);">
-                        <i class="fas fa-ambulance" style="color: #E74C3C; font-size: 36px;"></i>
-                        <h4 style="font-size: 16px;">Emergency 999</h4>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Ambulance & Emergency</p>
+                <div class="emergency-grid">
+                    <div class="contact-card">
+                        <div class="contact-avatar">
+                            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d" alt="Doctor" style="object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Ahmad&size=60&background=E74C3C&color=fff'">
+                        </div>
+                        <h4>Dr. Ahmad Hassan</h4>
+                        <p>Primary Physician</p>
+                        <button class="call-btn"><i class="fas fa-phone"></i> Call Now</button>
                     </div>
-                    <div class="quick-dial-btn" onclick="quickDial('doctor')" style="padding: var(--spacing-lg);">
-                        <i class="fas fa-user-md" style="color: #3498DB; font-size: 36px;"></i>
-                        <h4 style="font-size: 16px;">Dr. Ahmad Hassan</h4>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Primary Physician</p>
+                    <div class="contact-card">
+                        <div class="contact-avatar">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330" alt="Family" style="object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=Siti+Tan&size=60&background=3498DB&color=fff'">
+                        </div>
+                        <h4>Siti Tan</h4>
+                        <p>Daughter</p>
+                        <button class="call-btn"><i class="fas fa-video"></i> Video Call</button>
                     </div>
-                    <div class="quick-dial-btn" onclick="quickDial('family')" style="padding: var(--spacing-lg);">
-                        <i class="fas fa-users" style="color: #9B59B6; font-size: 36px;"></i>
-                        <h4 style="font-size: 16px;">Siti Tan</h4>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Daughter</p>
+                    <div class="contact-card">
+                        <div class="contact-avatar">
+                            <img src="https://ui-avatars.com/api/?name=Emergency&size=60&background=E67E22&color=fff" alt="Emergency">
+                        </div>
+                        <h4>Emergency 999</h4>
+                        <p>Ambulance Service</p>
+                        <button class="call-btn emergency"><i class="fas fa-ambulance"></i> Emergency</button>
                     </div>
-                    <div class="quick-dial-btn" onclick="quickDial('nurse')" style="padding: var(--spacing-lg);">
-                        <i class="fas fa-heartbeat" style="color: #27AE60; font-size: 36px;"></i>
-                        <h4 style="font-size: 16px;">Nurse Maya</h4>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Home Care Nurse</p>
+                    <div class="contact-card">
+                        <div class="contact-avatar">
+                            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2" alt="Nurse" style="object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=Nurse+Maya&size=60&background=9B59B6&color=fff'">
+                        </div>
+                        <h4>Nurse Maya</h4>
+                        <p>Home Care Nurse</p>
+                        <button class="call-btn"><i class="fas fa-phone"></i> Call Now</button>
                     </div>
                 </div>
             </section>
 
             <!-- Row 2: Active Safety Monitoring -->
-            <section class="dashboard-section" style="margin-bottom: var(--spacing-lg);">
+            <!-- <section class="dashboard-section" style="margin-bottom: var(--spacing-lg);">
                 <div class="section-header" style="margin-bottom: var(--spacing-md);">
                     <h2 style="font-size: 20px;"><i class="fas fa-shield-check"></i> Active Safety Monitoring</h2>
                     <div style="display: flex; align-items: center; gap: var(--spacing-md);">
@@ -786,203 +985,42 @@
                         <span class="status-badge active" style="font-size: 12px; padding: 4px 10px;">Active</span>
                     </div>
                 </div>
-            </section>
+            </section> -->
 
             <!-- Row 3: Recent Safety Alerts -->
             <section class="dashboard-section" style="margin-bottom: var(--spacing-lg);">
                 <div class="section-header" style="margin-bottom: var(--spacing-md);">
                     <h2 style="font-size: 20px;"><i class="fas fa-history"></i> Recent Safety Alerts</h2>
-                    <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.3);">
-                        <span style="color: var(--primary-color); font-weight: 700; font-size: 12px;"><i class="fas fa-chart-line"></i> Last 7 Days</span>
-                    </div>
+                    <button class="view-all-btn">View All <i class="fas fa-arrow-right" style="color: white;"></i></button>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md);">
-                    <div class="alert-history-item resolved" style="padding: var(--spacing-md); margin-bottom: 0;">
-                        <i class="fas fa-check-circle" style="font-size: 28px; color: var(--success-color); margin-bottom: var(--spacing-sm);"></i>
-                        <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
-                                <p style="font-weight: 700; font-size: 15px; color: var(--text-primary);">Near-fall Detected</p>
-                                <span style="background: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">RESOLVED</span>
-                            </div>
-                            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.4;">
-                                Stumble detected in bathroom, recovered safely
-                            </p>
-                            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 2px;"><i class="fas fa-calendar"></i> Nov 24, 2025, 14:30</p>
-                            <p style="font-size: 12px; color: var(--success-color);"><i class="fas fa-clock"></i> Response Time: 30 seconds</p>
+                <div class="activity-feed" style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                    <div class="feed-item" style="border-left: 4px solid var(--success-color);">
+                        <div class="feed-icon" style="background: var(--success-color);">
+                            <i class="fas fa-check-circle"></i>
                         </div>
+                        <div class="feed-content">
+                            <p><strong>Near-fall Detected</strong> <span style="background: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-left: 8px;">RESOLVED</span></p>
+                            <p>Stumble detected in bathroom, recovered safely</p>
+                        </div>
+                        <span class="feed-time">1 hour ago</span>
                     </div>
-                    <div class="alert-history-item resolved" style="padding: var(--spacing-md); margin-bottom: 0;">
-                        <i class="fas fa-check-circle" style="font-size: 28px; color: var(--success-color); margin-bottom: var(--spacing-sm);"></i>
-                        <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
-                                <p style="font-weight: 700; font-size: 15px; color: var(--text-primary);">Medication Missed Alert</p>
-                                <span style="background: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">RESOLVED</span>
-                            </div>
-                            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.4;">
-                                2:00 PM medication delayed - Taken at 2:15 PM
-                            </p>
-                            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 2px;"><i class="fas fa-calendar"></i> Nov 25, 2025, 14:15</p>
-                            <p style="font-size: 12px; color: var(--success-color);"><i class="fas fa-check"></i> Completed</p>
+                    <div class="feed-item" style="border-left: 4px solid var(--warning-color);">
+                        <div class="feed-icon" style="background: var(--warning-color);">
+                            <i class="fas fa-exclamation-triangle"></i>
                         </div>
-                    </div>
-                    <div class="alert-history-item warning" style="padding: var(--spacing-md); margin-bottom: 0;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 28px; color: var(--warning-color); margin-bottom: var(--spacing-sm);"></i>
-                        <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
-                                <p style="font-weight: 700; font-size: 15px; color: var(--text-primary);">Low Activity Alert</p>
-                                <span style="background: rgba(245, 158, 11, 0.1); color: var(--warning-color); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">MONITORING</span>
-                            </div>
-                            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.4;">
-                                Steps today below 50% of daily goal
-                            </p>
-                            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 2px;"><i class="fas fa-calendar"></i> Nov 25, 2025, 13:00</p>
-                            <p style="font-size: 12px; color: var(--warning-color);"><i class="fas fa-eye"></i> Actively Monitoring</p>
+                        <div class="feed-content">
+                            <p><strong>Low Activity Alert</strong> <span style="background: rgba(245, 158, 11, 0.1); color: var(--warning-color); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-left: 8px;">MONITORING</span></p>
+                            <p>Steps today below 50% of daily goal</p>
                         </div>
+                        <span class="feed-time">2 hours ago</span>
                     </div>
                 </div>
             </section>
 
-            <!-- Row 4: Smart Bed Monitoring -->
-            <section class="dashboard-section" style="margin-bottom: var(--spacing-lg);">
-                <div class="section-header" style="margin-bottom: var(--spacing-md);">
-                    <h2 style="font-size: 20px;"><i class="fas fa-bed"></i> Smart Bed Monitoring</h2>
-                </div>
-
-                <!-- Bed Status Card - Full Width -->
-                <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(96, 165, 250, 0.05)); padding: var(--spacing-lg); border-radius: var(--radius-lg); border: 2px solid rgba(59, 130, 246, 0.1); margin-bottom: var(--spacing-lg);">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-md);">
-                        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
-                            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
-                                <i class="fas fa-bed"></i>
-                            </div>
-                            <div>
-                                <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 4px;">Bedroom - Main Bed</p>
-                                <p style="font-size: 14px; color: var(--text-secondary);"><i class="fas fa-circle" style="color: var(--success-color); font-size: 8px; animation: pulse-dot 2s infinite;"></i> Occupied • Monitoring Active</p>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Last Update</p>
-                            <p style="font-weight: 700; font-size: 14px; color: var(--primary-color);" id="bedLastUpdate">Just now</p>
-                        </div>
-                    </div>
-                    <!-- Real-time Metrics -->
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-sm); margin-top: var(--spacing-md);">
-                        <div style="background: white; padding: var(--spacing-sm); border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(59, 130, 246, 0.1); position: relative; cursor: pointer;" onclick="showBreathingExplanation()" title="Click to learn how breathing is detected">
-                            <i class="fas fa-lungs" style="font-size: 20px; color: #3B82F6; margin-bottom: 4px;"></i>
-                            <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;" id="breathingRate">16</p>
-                            <p style="font-size: 11px; color: var(--text-secondary);">Breaths/min</p>
-                            <i class="fas fa-info-circle" style="position: absolute; top: 4px; right: 4px; font-size: 12px; color: var(--primary-color); opacity: 0.6;"></i>
-                        </div>
-                        <div style="background: white; padding: var(--spacing-sm); border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(59, 130, 246, 0.1);">
-                            <i class="fas fa-wave-square" style="font-size: 20px; color: #10B981; margin-bottom: 4px;"></i>
-                            <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;" id="movementLevel">Normal</p>
-                            <p style="font-size: 11px; color: var(--text-secondary);">Activity</p>
-                        </div>
-                        <div style="background: white; padding: var(--spacing-sm); border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(59, 130, 246, 0.1);">
-                            <i class="fas fa-clock" style="font-size: 20px; color: #F59E0B; margin-bottom: 4px;"></i>
-                            <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;" id="bedTime">2h 15m</p>
-                            <p style="font-size: 11px; color: var(--text-secondary);">In Bed</p>
-                        </div>
-                        <div style="background: white; padding: var(--spacing-sm); border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(59, 130, 246, 0.1);">
-                            <i class="fas fa-door-open" style="font-size: 20px; color: #DC2626; margin-bottom: 4px;"></i>
-                            <p style="font-weight: 700; font-size: 18px; color: var(--text-primary); margin-bottom: 2px;" id="bedExitCount">3</p>
-                            <p style="font-size: 11px; color: var(--text-secondary);">Bed Exits</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Breathing Detection Explanation -->
-                <div id="breathingExplanation" style="display: none; background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(96, 165, 250, 0.05)); padding: var(--spacing-md); border-radius: var(--radius-md); border: 2px solid rgba(59, 130, 246, 0.2); margin-bottom: var(--spacing-lg);">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-sm);">
-                        <h4 style="font-size: 15px; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: var(--spacing-sm);">
-                            <i class="fas fa-microchip"></i> How Breathing Detection Works
-                        </h4>
-                        <button onclick="hideBreathingExplanation()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">&times;</button>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
-                        <div>
-                            <p style="font-size: 13px; color: var(--text-primary); margin-bottom: var(--spacing-sm); font-weight: 600;">Technology Used:</p>
-                            <ul style="font-size: 12px; color: var(--text-secondary); line-height: 1.8; padding-left: var(--spacing-md);">
-                                <li><strong>Pressure Sensors:</strong> Under-mattress load cells detect weight distribution changes</li>
-                                <li><strong>Ballistocardiography (BCG):</strong> Measures micro-movements from heartbeat and breathing</li>
-                                <li><strong>Piezoelectric Sensors:</strong> Convert body movements into electrical signals</li>
-                                <li><strong>AI Processing:</strong> Algorithms filter noise and extract breathing patterns</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <p style="font-size: 13px; color: var(--text-primary); margin-bottom: var(--spacing-sm); font-weight: 600;">How It Works:</p>
-                            <ol style="font-size: 12px; color: var(--text-secondary); line-height: 1.8; padding-left: var(--spacing-md);">
-                                <li>Sensors detect chest/body movement as you breathe</li>
-                                <li>Each breath causes slight pressure changes on the mattress</li>
-                                <li>Signal processing filters out other movements</li>
-                                <li>AI counts breathing cycles per minute</li>
-                                <li>Alerts trigger if rate is abnormal (&lt;12 or &gt;20 breaths/min)</li>
-                            </ol>
-                            <div style="margin-top: var(--spacing-sm); padding: var(--spacing-sm); background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-sm); border-left: 3px solid var(--success-color);">
-                                <p style="font-size: 11px; color: var(--text-secondary); margin: 0;">
-                                    <i class="fas fa-shield-alt" style="color: var(--success-color);"></i>
-                                    <strong>Privacy:</strong> No cameras or audio - only pressure/movement data
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Connected Bed Sensors - Separate Container -->
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
-                        <h4 style="font-size: 16px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: var(--spacing-sm); margin: 0;">
-                            <i class="fas fa-microchip"></i> Connected Bed Sensors
-                        </h4>
-                        <button class="view-all-btn" onclick="manageBedSensors()"><i class="fas fa-plus" style="color: white;"></i> Manage Sensors</button>
-                    </div>
-                    <div class="bed-sensors-grid">
-                        <!-- Pressure Sensor -->
-                        <div class="sensor-card">
-                            <div class="battery-badge"><i class="fas fa-battery-three-quarters"></i> 92%</div>
-                            <div class="status-badge active">Connected</div>
-                            <div class="sensor-icon" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);">
-                                <i class="fas fa-compress-arrows-alt"></i>
-                            </div>
-                            <h4 style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 4px;">Pressure Sensor</h4>
-                            <p style="font-size: 13px; color: var(--text-secondary);">Weight Distribution</p>
-                        </div>
-                        <!-- Motion Sensor -->
-                        <div class="sensor-card">
-                            <div class="battery-badge"><i class="fas fa-battery-full"></i> 85%</div>
-                            <div class="status-badge active">Connected</div>
-                            <div class="sensor-icon" style="background: linear-gradient(135deg, #10B981, #059669);">
-                                <i class="fas fa-wave-square"></i>
-                            </div>
-                            <h4 style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 4px;">Motion Sensor</h4>
-                            <p style="font-size: 13px; color: var(--text-secondary);">Movement Detection</p>
-                        </div>
-                        <!-- Temperature Sensor -->
-                        <div class="sensor-card">
-                            <div class="battery-badge"><i class="fas fa-battery-half"></i> 78%</div>
-                            <div class="status-badge active">Connected</div>
-                            <div class="sensor-icon" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
-                                <i class="fas fa-temperature-half"></i>
-                            </div>
-                            <h4 style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 4px;">Temperature Sensor</h4>
-                            <p style="font-size: 13px; color: var(--text-secondary);">Body Temperature</p>
-                        </div>
-                        <!-- Exit Detection Sensor -->
-                        <div class="sensor-card">
-                            <div class="battery-badge"><i class="fas fa-battery-three-quarters"></i> 88%</div>
-                            <div class="status-badge active">Connected</div>
-                            <div class="sensor-icon" style="background: linear-gradient(135deg, #DC2626, #EF4444);">
-                                <i class="fas fa-door-open"></i>
-                            </div>
-                            <h4 style="font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 4px;">Exit Detection</h4>
-                            <p style="font-size: 13px; color: var(--text-secondary);">Bed Exit Alert</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            
 
             <!-- Row 5: Recent Bed Events -->
-            <section class="dashboard-section" style="margin-bottom: var(--spacing-lg);">
+            <!-- <section class="dashboard-section" style="margin-bottom: var(--spacing-lg);">
                 <div class="section-header" style="margin-bottom: var(--spacing-md);">
                     <h2 style="font-size: 20px;"><i class="fas fa-history"></i> Recent Bed Events (Last 24 Hours)</h2>
                     <button class="view-all-btn" onclick="viewAllBedEvents()"><i class="fas fa-eye" style="color: white;"></i> View All</button>
@@ -1001,19 +1039,19 @@
                         <div style="flex: 1;"><span style="font-weight: 600; color: var(--text-primary);">23:45</span> - Bed exit detected - returned safely</div>
                     </div>
                 </div>
-            </section>
+            </section> -->
 
             <!-- Row 5: Geofencing & Location Tracking -->
-            <section class="dashboard-section">
+            <!-- <section class="dashboard-section">
                 <div class="section-header" style="margin-bottom: var(--spacing-md);">
                     <h2 style="font-size: 20px;"><i class="fas fa-map-marked-alt"></i> Geofencing & Location Tracking</h2>
                     <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3);">
                         <span style="color: var(--success-color); font-weight: 700; font-size: 12px;"><i class="fas fa-check-circle"></i> Within Safe Zone</span>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);"> -->
                     <!-- Geofencing Map -->
-                    <div>
+                    <!-- <div>
                         <h3 style="font-size: 16px; font-weight: 700; color: var(--primary-color); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);">
                             <i class="fas fa-shield-alt"></i> Geofencing Status
                         </h3>
@@ -1025,9 +1063,9 @@
                                 <i class="fas fa-check-circle"></i> Within Safe Zone (500m radius)
                             </span>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- Location Details -->
-                    <div>
+                    <!-- <div>
                         <h3 style="font-size: 16px; font-weight: 700; color: var(--primary-color); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);">
                             <i class="fas fa-map-marker-alt"></i> Current Location Details
                         </h3>
@@ -1058,7 +1096,7 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
         </div>
     </main>
 

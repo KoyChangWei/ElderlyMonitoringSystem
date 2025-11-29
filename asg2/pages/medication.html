@@ -394,9 +394,9 @@
         <section class="smart-dispenser">
             <h2><i class="fas fa-capsules"></i> AI Smart Medication Dispenser</h2>
             <div class="dispenser-visual">
-                <div class="dispenser-icon">
+                <!-- <div class="dispenser-icon">
                     <i class="fas fa-box-open"></i>
-                </div>
+                </div> -->
                 <h3>Next Medication Due</h3>
                 <p style="font-size: 32px; font-weight: 700; margin: var(--spacing-md) 0;">
                     2:00 PM - in 15 minutes
@@ -716,6 +716,138 @@
                 </div>
             </div>
         </section> -->
+
+        <!-- Important Dates Calendar -->
+        <section class="dashboard-section" style="margin-bottom: var(--spacing-lg);">
+            <div class="section-header">
+                <h2><i class="fas fa-calendar-alt"></i> Important Dates</h2>
+                <button class="view-all-btn"><i class="fas fa-plus"></i> Manage Events</button>
+            </div>
+
+            <div style="background: white; padding: var(--spacing-lg); border-radius: var(--radius-lg); border: 2px solid rgba(0, 0, 0, 0.2);">
+                <!-- Calendar Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+                    <button style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px;">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin: 0;">December 2025</h3>
+                    <button style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px;">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: var(--spacing-sm);">
+                    <!-- Day Headers -->
+                    <div style="text-align: center; font-weight: 700; font-size: 12px; color: var(--text-secondary); padding: 8px;">Sun</div>
+                    <div style="text-align: center; font-weight: 700; font-size: 12px; color: var(--text-secondary); padding: 8px;">Mon</div>
+                    <div style="text-align: center; font-weight: 700; font-size: 12px; color: var(--text-secondary); padding: 8px;">Tue</div>
+                    <div style="text-align: center; font-weight: 700; font-size: 12px; color: var(--text-secondary); padding: 8px;">Wed</div>
+                    <div style="text-align: center; font-weight: 700; font-size: 12px; color: var(--text-secondary); padding: 8px;">Thu</div>
+                    <div style="text-align: center; font-weight: 700; font-size: 12px; color: var(--text-secondary); padding: 8px;">Fri</div>
+                    <div style="text-align: center; font-weight: 700; font-size: 12px; color: var(--text-secondary); padding: 8px;">Sat</div>
+
+                    <!-- Calendar Days -->
+                    <!-- Week 1 -->
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">1</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">2</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">3</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">4</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(126, 34, 206, 0.05)); border: 2px solid #9333ea; color: var(--text-primary); font-weight: 700; font-size: 14px; position: relative;">
+                        5
+                        <div style="position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: #9333ea; border-radius: 50%;"></div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">6</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">7</div>
+
+                    <!-- Week 2 -->
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">8</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">9</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">10</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">11</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); border: 2px solid var(--success-color); color: var(--text-primary); font-weight: 700; font-size: 14px; position: relative;">
+                        12
+                        <div style="position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: var(--success-color); border-radius: 50%;"></div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">13</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">14</div>
+
+                    <!-- Week 3 -->
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">15</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">16</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">17</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">18</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">19</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05)); border: 2px solid var(--warning-color); color: var(--text-primary); font-weight: 700; font-size: 14px; position: relative;">
+                        20
+                        <div style="position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: var(--warning-color); border-radius: 50%;"></div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">21</div>
+
+                    <!-- Week 4 -->
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">22</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">23</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">24</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">25</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">26</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">27</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">28</div>
+
+                    <!-- Week 5 -->
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(96, 165, 250, 0.1)); border: 2px solid var(--primary-color); color: var(--text-primary); font-weight: 700; font-size: 14px; box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);">29</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">30</div>
+                    <div style="text-align: center; padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1); color: var(--text-secondary); font-size: 14px;">31</div>
+                </div>
+
+                <!-- Event Legend -->
+                <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; padding-top: var(--spacing-md); border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 12px; height: 12px; background: #9333ea; border-radius: 50%;"></div>
+                        <span style="font-size: 13px; color: var(--text-secondary);">Cardiology Appointment</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 12px; height: 12px; background: var(--success-color); border-radius: 50%;"></div>
+                        <span style="font-size: 13px; color: var(--text-secondary);">Health Checkup</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 12px; height: 12px; background: var(--warning-color); border-radius: 50%;"></div>
+                        <span style="font-size: 13px; color: var(--text-secondary);">Lab Test</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 16px; height: 16px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(96, 165, 250, 0.1)); border: 2px solid var(--primary-color); border-radius: 50%;"></div>
+                        <span style="font-size: 13px; color: var(--text-secondary); font-weight: 700;">Today (Dec 29)</span>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events List -->
+                <div style="margin-top: var(--spacing-lg);">
+                    <h4 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-md);">Upcoming Events</h4>
+                    <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                        <div style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: rgba(147, 51, 234, 0.05); border-left: 4px solid #9333ea; border-radius: var(--radius-sm);">
+                            <i class="fas fa-calendar-check" style="color: #9333ea; font-size: 20px;"></i>
+                            <div style="flex: 1;">
+                                <p style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 0;">Cardiology Appointment</p>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Dec 5, 2025 • 10:00 AM</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: rgba(16, 185, 129, 0.05); border-left: 4px solid var(--success-color); border-radius: var(--radius-sm);">
+                            <i class="fas fa-heartbeat" style="color: var(--success-color); font-size: 20px;"></i>
+                            <div style="flex: 1;">
+                                <p style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 0;">Annual Health Checkup</p>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Dec 12, 2025 • 2:00 PM</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: rgba(245, 158, 11, 0.05); border-left: 4px solid var(--warning-color); border-radius: var(--radius-sm);">
+                            <i class="fas fa-vial" style="color: var(--warning-color); font-size: 20px;"></i>
+                            <div style="flex: 1;">
+                                <p style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 0;">Blood Test</p>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Dec 20, 2025 • 9:00 AM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Medication Adherence Chart -->
         <section class="adherence-chart">
