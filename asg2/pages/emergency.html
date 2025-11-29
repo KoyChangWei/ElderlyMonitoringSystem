@@ -634,10 +634,10 @@
             <h1><i class="fas fa-shield-alt"></i> Safety & Emergency Management</h1>
         </div>
         <div class="header-right">
-            <div class="alert-status">
-                <i class="fas fa-check-circle"></i>
-                <span>All Systems Normal</span>
-            </div>
+            <button class="emergency-btn" onclick="triggerEmergency()">
+                <i class="fas fa-exclamation-triangle"></i>
+                EMERGENCY SOS
+            </button>
         </div>
     </header>
 
@@ -645,6 +645,13 @@
     <main class="dashboard-main">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
+            <!-- Elderly Profile Section -->
+            <div class="elderly-profile" style="padding: var(--spacing-lg); text-align: center;">
+                <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952" alt="Elder" class="elder-avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto var(--spacing-md) auto; border: 3px solid var(--primary-color);" onerror="this.src='https://ui-avatars.com/api/?name=Ah+Chong&size=80&background=4A90E2&color=fff'">
+                <h2 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin: 0;">Ah Chong Tan</h2>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Age: 78</p>
+            </div>
+            <div style="height: 1px; background: rgba(0, 0, 0, 0.1); margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);"></div>
             <nav>
                 <a href="../index.html" class="nav-item">
                     <i class="fas fa-th-large"></i>
