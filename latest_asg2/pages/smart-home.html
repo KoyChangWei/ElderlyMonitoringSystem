@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home IoT - ElderCare AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Room Tabs */
+        .room-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .room-tab {
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.03);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .room-tab:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--status-info);
+        }
+
+        .room-tab.active {
+            background: var(--status-info);
+            border-color: var(--status-info);
+            color: white;
+        }
+
+        .room-tab i {
+            font-size: 16px;
+        }
+
+        .room-content {
+            display: none;
+        }
+
+        .room-content.active {
+            display: block;
+        }
+
+        /* Environmental Stats */
+        .env-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .env-stat {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .env-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .env-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .env-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .env-status {
+            margin-top: 8px;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Device Controls */
+        .room-devices {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .device-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .device-card:hover {
+            border-color: var(--status-info);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .device-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--status-info);
+        }
+
+        .device-card.active .device-icon {
+            background: var(--status-info);
+            color: white;
+        }
+
+        .device-info h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .device-status {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .device-body {
+            margin: 16px 0;
+        }
+
+        .device-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .device-metric:last-child {
+            border-bottom: none;
+        }
+
+        .slider-control {
+            width: 100%;
+            margin: 12px 0;
+        }
+
+        .slider-control input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-secondary);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--status-info);
+            cursor: pointer;
+        }
+
+        /* Room Overview Grid */
+        .rooms-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .room-overview-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid;
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .room-overview-card:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateY(-2px);
+        }
+
+        .room-overview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .room-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .occupancy-badge {
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .occupancy-badge.occupied {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--status-normal);
+        }
+
+        .occupancy-badge.vacant {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .room-quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .quick-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-stat i {
+            color: var(--status-info);
+            width: 16px;
+        }
+
+        /* Preset Buttons */
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            background: var(--status-info);
+            border-color: var(--status-info);
+        }
+
+        .preset-btn i {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .preset-btn span {
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Top Header -->
+    <div class="sticky-top-header" id="stickyHeader">
+        <div class="sticky-header-content">
+            <div class="sticky-header-title">
+                <i class="fas fa-home"></i>
+                <h2>ElderCare AI - Smart Home IoT</h2>
+            </div>
+            <button class="btn-sos-header" onclick="triggerSOS()">
+                <i class="fas fa-phone-alt"></i>
+                <span>Emergency SOS</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            </div>
+
+            <nav class="nav-menu">
+                <h3>Navigation</h3>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i> Overview
+                </a>
+                <a href="health-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i> Health Analytics
+                </a>
+                <a href="robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i> Robot Control
+                </a>
+                <a href="emergency.html" class="nav-item">
+                    <i class="fas fa-exclamation-triangle"></i> Safety & Emergency
+                </a>
+                <a href="smart-home.html" class="nav-item active">
+                    <i class="fas fa-home"></i> Smart Home IoT
+                </a>
+                <a href="medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i> Medication
+                </a>
+                <a href="user-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i> User Management
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-title">
+                    <!-- Page title removed - redundant with sticky header -->
+                </div>
+            </header>
+
+            <!-- Room Tabs -->
+            <div class="room-tabs">
+                <div class="room-tab active" onclick="switchRoom('overview')">
+                    <i class="fas fa-layer-group"></i> Overview
+                </div>
+                <div class="room-tab" style="border-color: #3B82F6;" onclick="switchRoom('roomA')">
+                    <i class="fas fa-bed"></i> Room A
+                </div>
+                <div class="room-tab" style="border-color: #8B5CF6;" onclick="switchRoom('roomB')">
+                    <i class="fas fa-bed"></i> Room B
+                </div>
+                <div class="room-tab" style="border-color: #14B8A6;" onclick="switchRoom('roomC')">
+                    <i class="fas fa-bed"></i> Room C
+                </div>
+                <div class="room-tab" style="border-color: #F59E0B;" onclick="switchRoom('roomD')">
+                    <i class="fas fa-bed"></i> Room D
+                </div>
+            </div>
+
+            <!-- Overview: Connected Wearable Devices -->
+            <div class="room-content active" id="overview">
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clock"></i> Connected Wearable Devices</h3>
+                        <button class="btn-secondary" onclick="manageDevices()" style="padding: 8px 16px; font-size: 13px; border-radius: 8px; background: #3B82F6; color: white; border: none; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-plus"></i> Manage Device
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+
+                            <!-- Ah Chong Tan's Devices -->
+                            <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="font-weight: 700; font-size: 14px; color: #3B82F6; margin-bottom: 4px;">Ah Chong Tan</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
+                                </div>
+
+                                <!-- Smart Watch -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">78% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Shoes -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">92% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Ring -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-quarter" style="color: #EF4444; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #EF4444;">65% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Emergency Pendant -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">85% Battery</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mei Ling Wong's Devices -->
+                            <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="font-weight: 700; font-size: 14px; color: #8B5CF6; margin-bottom: 4px;">Mei Ling Wong</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
+                                </div>
+
+                                <!-- Smart Watch -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">92% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Shoes -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #6b7280; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Disconnected</span>
+                                    </div>
+                                    <div style="background: rgba(107, 114, 128, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-half" style="color: #6b7280; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #6b7280;">45% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Ring -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">71% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Emergency Pendant -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">88% Battery</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kumar Raj's Devices -->
+                            <div style="background: rgba(20, 184, 166, 0.05); border: 1px solid rgba(20, 184, 166, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="font-weight: 700; font-size: 14px; color: #14B8A6; margin-bottom: 4px;">Kumar Raj</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
+                                </div>
+
+                                <!-- Smart Watch -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">63% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Shoes -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">87% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Ring -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">79% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Emergency Pendant -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">94% Battery</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fatimah Ibrahim's Devices -->
+                            <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="font-weight: 700; font-size: 14px; color: #F59E0B; margin-bottom: 4px;">Fatimah Ibrahim</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
+                                </div>
+
+                                <!-- Smart Watch -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f8b500 0%, #fceabb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">85% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Shoes -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f8b500 0%, #fceabb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-quarter" style="color: #EF4444; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #EF4444;">22% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Ring -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f8b500 0%, #fceabb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-half" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">58% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Emergency Pendant -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #6b7280; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Disconnected</span>
+                                    </div>
+                                    <div style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-quarter" style="color: #EF4444; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #EF4444;">15% Battery</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room Overview Cards -->
+                <div class="card card-full" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-door-open"></i> Room Overview</h3>
+                        <span class="card-badge robot-active">4 Rooms</span>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+
+                            <!-- Room A -->
+                            <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 14px; cursor: pointer; transition: all 0.3s ease;" onclick="switchRoom('roomA')">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 48px; height: 48px; background: #3B82F6; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-bed" style="font-size: 22px; color: white;"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 700; font-size: 15px; color: #3B82F6;">Room A</div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">Ah Chong Tan</div>
+                                        </div>
+                                    </div>
+                                    <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Occupied</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-thermometer-half"></i> Temp</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">22°C</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-tint"></i> Humidity</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">45%</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-lightbulb"></i> Light</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">320 lux</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-wind"></i> Air Quality</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Good</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Room B -->
+                            <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 14px; cursor: pointer; transition: all 0.3s ease;" onclick="switchRoom('roomB')">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 48px; height: 48px; background: #8B5CF6; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-bed" style="font-size: 22px; color: white;"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 700; font-size: 15px; color: #8B5CF6;">Room B</div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">Mei Ling Wong</div>
+                                        </div>
+                                    </div>
+                                    <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Occupied</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-thermometer-half"></i> Temp</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">23°C</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-tint"></i> Humidity</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">50%</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-lightbulb"></i> Light</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">280 lux</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-wind"></i> Air Quality</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Good</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Room C -->
+                            <div style="background: rgba(20, 184, 166, 0.05); border: 1px solid rgba(20, 184, 166, 0.3); border-radius: 12px; padding: 14px; cursor: pointer; transition: all 0.3s ease;" onclick="switchRoom('roomC')">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 48px; height: 48px; background: #14B8A6; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-bed" style="font-size: 22px; color: white;"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 700; font-size: 15px; color: #14B8A6;">Room C</div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">Kumar Raj</div>
+                                        </div>
+                                    </div>
+                                    <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Occupied</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-thermometer-half"></i> Temp</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">21°C</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-tint"></i> Humidity</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">48%</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-lightbulb"></i> Light</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">300 lux</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-wind"></i> Air Quality</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Good</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Room D -->
+                            <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 14px; cursor: pointer; transition: all 0.3s ease;" onclick="switchRoom('roomD')">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 48px; height: 48px; background: #F59E0B; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-bed" style="font-size: 22px; color: white;"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 700; font-size: 15px; color: #F59E0B;">Room D</div>
+                                            <div style="font-size: 12px; color: var(--text-secondary);">Fatimah Ibrahim</div>
+                                        </div>
+                                    </div>
+                                    <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Occupied</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-thermometer-half"></i> Temp</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">24°C</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-tint"></i> Humidity</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">52%</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-lightbulb"></i> Light</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">350 lux</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-wind"></i> Air Quality</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Good</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room A (Ah Chong's Room) -->
+            <div class="room-content" id="roomA">
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bed"></i> Room A - Ah Chong Tan</h3>
+                        <span class="card-badge" style="background: #3B82F6;">Occupied</span>
+                    </div>
+                    <div class="card-content">
+                        <!-- Environmental Stats -->
+                        <div class="env-stats">
+                            <div class="env-stat">
+                                <div class="env-icon" style="color: #F59E0B;"><i class="fas fa-thermometer-half"></i></div>
+                                <div class="env-value">22°C</div>
+                                <div class="env-label">Temperature</div>
+                                <div class="env-status status-normal">Optimal</div>
+                            </div>
+                            <div class="env-stat">
+                                <div class="env-icon" style="color: #3B82F6;"><i class="fas fa-tint"></i></div>
+                                <div class="env-value">45%</div>
+                                <div class="env-label">Humidity</div>
+                                <div class="env-status status-normal">Comfortable</div>
+                            </div>
+                            <div class="env-stat">
+                                <div class="env-icon" style="color: #F59E0B;"><i class="fas fa-lightbulb"></i></div>
+                                <div class="env-value">320 lux</div>
+                                <div class="env-label">Light Level</div>
+                                <div class="env-status status-normal">Good</div>
+                            </div>
+                            <div class="env-stat">
+                                <div class="env-icon" style="color: #10B981;"><i class="fas fa-wind"></i></div>
+                                <div class="env-value">Good</div>
+                                <div class="env-label">Air Quality</div>
+                                <div class="env-status status-normal">Excellent</div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Presets -->
+                        <h4 style="font-size: 14px; margin: 20px 0 12px; text-transform: uppercase; color: var(--text-secondary);">
+                            <i class="fas fa-magic"></i> Quick Presets
+                        </h4>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" onclick="applyPreset('roomA', 'sleep')">
+                                <i class="fas fa-moon"></i>
+                                <span>Sleep Mode</span>
+                            </button>
+                            <button class="preset-btn" onclick="applyPreset('roomA', 'wake')">
+                                <i class="fas fa-sun"></i>
+                                <span>Wake Up</span>
+                            </button>
+                            <button class="preset-btn" onclick="applyPreset('roomA', 'away')">
+                                <i class="fas fa-door-open"></i>
+                                <span>Away</span>
+                            </button>
+                            <button class="preset-btn" onclick="applyPreset('roomA', 'comfort')">
+                                <i class="fas fa-chair"></i>
+                                <span>Comfort</span>
+                            </button>
+                        </div>
+
+                        <!-- Devices -->
+                        <h4 style="font-size: 14px; margin: 20px 0 12px; text-transform: uppercase; color: var(--text-secondary);">
+                            <i class="fas fa-plug"></i> Room Devices
+                        </h4>
+                        <div class="room-devices" id="roomADevices"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Similar structure for other rooms will be dynamically generated -->
+            <div class="room-content" id="roomB"></div>
+            <div class="room-content" id="roomC"></div>
+            <div class="room-content" id="roomD"></div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // Room Data
+        const rooms = {
+            roomA: {
+                name: 'Room A',
+                resident: 'Ah Chong Tan',
+                color: '#3B82F6',
+                occupied: true,
+                environment: { temp: 22, humidity: 45, light: 320, airQuality: 'Good' },
+                devices: [
+                    { id: 'lights', name: 'Ceiling Lights', type: 'light', status: true, brightness: 75, icon: 'lightbulb' },
+                    { id: 'ac', name: 'Air Conditioner', type: 'ac', status: true, temp: 22, mode: 'Cool', icon: 'snowflake' },
+                    { id: 'camera', name: 'AI Camera', type: 'camera', status: true, recording: true, icon: 'video' },
+                    { id: 'sensor', name: 'Motion Sensor', type: 'sensor', status: true, lastMotion: '2 min ago', icon: 'running' }
+                ]
+            },
+            roomB: {
+                name: 'Room B',
+                resident: 'Mei Ling Wong',
+                color: '#8B5CF6',
+                occupied: false,
+                environment: { temp: 24, humidity: 50, light: 0, airQuality: 'Good' },
+                devices: [
+                    { id: 'lights', name: 'Ceiling Lights', type: 'light', status: false, brightness: 0, icon: 'lightbulb' },
+                    { id: 'ac', name: 'Air Conditioner', type: 'ac', status: false, temp: 24, mode: 'Off', icon: 'snowflake' },
+                    { id: 'camera', name: 'AI Camera', type: 'camera', status: true, recording: true, icon: 'video' },
+                    { id: 'sensor', name: 'Motion Sensor', type: 'sensor', status: true, lastMotion: '45 min ago', icon: 'running' }
+                ]
+            },
+            roomC: {
+                name: 'Room C',
+                resident: 'Kumar Raj',
+                color: '#14B8A6',
+                occupied: true,
+                environment: { temp: 23, humidity: 48, light: 450, airQuality: 'Excellent' },
+                devices: [
+                    { id: 'lights', name: 'Ceiling Lights', type: 'light', status: true, brightness: 90, icon: 'lightbulb' },
+                    { id: 'ac', name: 'Air Conditioner', type: 'ac', status: true, temp: 23, mode: 'Auto', icon: 'snowflake' },
+                    { id: 'camera', name: 'AI Camera', type: 'camera', status: true, recording: true, icon: 'video' },
+                    { id: 'sensor', name: 'Motion Sensor', type: 'sensor', status: true, lastMotion: '5 min ago', icon: 'running' }
+                ]
+            },
+            roomD: {
+                name: 'Room D',
+                resident: 'Fatimah Ibrahim',
+                color: '#F59E0B',
+                occupied: true,
+                environment: { temp: 21, humidity: 42, light: 280, airQuality: 'Good' },
+                devices: [
+                    { id: 'lights', name: 'Ceiling Lights', type: 'light', status: true, brightness: 60, icon: 'lightbulb' },
+                    { id: 'ac', name: 'Air Conditioner', type: 'ac', status: true, temp: 21, mode: 'Cool', icon: 'snowflake' },
+                    { id: 'camera', name: 'AI Camera', type: 'camera', status: true, recording: true, icon: 'video' },
+                    { id: 'sensor', name: 'Motion Sensor', type: 'sensor', status: true, lastMotion: '1 min ago', icon: 'running' }
+                ]
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderResidentsList();
+            renderAllRoomsOverview();
+            renderAllRoomContents();
+        });
+
+        function renderResidentsList() {
+            const container = document.getElementById('residentsList');
+            if (!container || !window.elderlyData) return;
+
+            const residents = loadElderlyList();
+            container.innerHTML = residents.map(resident => `
+                <div class="resident-card" style="border-left-color: ${resident.personal.color}">
+                    <div class="resident-header">
+                        <div class="resident-name">
+                            <span class="status-indicator ${resident.vitals.heartRate.status}"></span>
+                            ${resident.personal.fullName}
+                        </div>
+                    </div>
+                    <div class="resident-info">
+                        <span>Age: ${resident.personal.age}</span>
+                        <span>HR: ${resident.vitals.heartRate.current} ${resident.vitals.heartRate.unit}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadElderlyList() {
+            const stored = localStorage.getItem('elderlyResidents');
+            return stored ? JSON.parse(stored) : (window.elderlyData ? window.elderlyData.elderlyList : []);
+        }
+
+        function renderAllRoomsOverview() {
+            const container = document.getElementById('roomsOverviewGrid');
+            if (!container) return;
+
+            container.innerHTML = Object.keys(rooms).map(roomId => {
+                const room = rooms[roomId];
+                return `
+                    <div class="room-overview-card" style="border-left-color: ${room.color}" onclick="switchRoom('${roomId}')">
+                        <div class="room-overview-header">
+                            <div class="room-name">${room.name}</div>
+                            <div class="occupancy-badge ${room.occupied ? 'occupied' : 'vacant'}">
+                                ${room.occupied ? 'Occupied' : 'Vacant'}
+                            </div>
+                        </div>
+                        ${room.resident ? `<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">${room.resident}</div>` : ''}
+                        <div class="room-quick-stats">
+                            <div class="quick-stat">
+                                <i class="fas fa-thermometer-half"></i>
+                                <span>${room.environment.temp}°C</span>
+                            </div>
+                            <div class="quick-stat">
+                                <i class="fas fa-tint"></i>
+                                <span>${room.environment.humidity}%</span>
+                            </div>
+                            <div class="quick-stat">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>${room.environment.light} lux</span>
+                            </div>
+                            <div class="quick-stat">
+                                <i class="fas fa-wind"></i>
+                                <span>${room.environment.airQuality}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAllRoomContents() {
+            Object.keys(rooms).forEach(roomId => {
+                if (roomId === 'roomA') return; // Already has HTML
+
+                const room = rooms[roomId];
+                const container = document.getElementById(roomId);
+                if (!container) return;
+
+                container.innerHTML = `
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3><i class="fas ${getRoomIcon(roomId)}"></i> ${room.name}${room.resident ? ' - ' + room.resident : ''}</h3>
+                            <span class="card-badge" style="background: ${room.color};">${room.occupied ? 'Occupied' : 'Vacant'}</span>
+                        </div>
+                        <div class="card-content">
+                            <!-- Environmental Stats -->
+                            <div class="env-stats">
+                                <div class="env-stat">
+                                    <div class="env-icon" style="color: #F59E0B;"><i class="fas fa-thermometer-half"></i></div>
+                                    <div class="env-value">${room.environment.temp}°C</div>
+                                    <div class="env-label">Temperature</div>
+                                    <div class="env-status status-normal">Optimal</div>
+                                </div>
+                                <div class="env-stat">
+                                    <div class="env-icon" style="color: #3B82F6;"><i class="fas fa-tint"></i></div>
+                                    <div class="env-value">${room.environment.humidity}%</div>
+                                    <div class="env-label">Humidity</div>
+                                    <div class="env-status status-normal">Comfortable</div>
+                                </div>
+                                <div class="env-stat">
+                                    <div class="env-icon" style="color: #F59E0B;"><i class="fas fa-lightbulb"></i></div>
+                                    <div class="env-value">${room.environment.light} lux</div>
+                                    <div class="env-label">Light Level</div>
+                                    <div class="env-status status-normal">Good</div>
+                                </div>
+                                <div class="env-stat">
+                                    <div class="env-icon" style="color: #10B981;"><i class="fas fa-wind"></i></div>
+                                    <div class="env-value">${room.environment.airQuality}</div>
+                                    <div class="env-label">Air Quality</div>
+                                    <div class="env-status status-normal">Excellent</div>
+                                </div>
+                            </div>
+
+                            ${roomId.startsWith('room') ? `
+                            <!-- Quick Presets -->
+                            <h4 style="font-size: 14px; margin: 20px 0 12px; text-transform: uppercase; color: var(--text-secondary);">
+                                <i class="fas fa-magic"></i> Quick Presets
+                            </h4>
+                            <div class="preset-buttons">
+                                <button class="preset-btn" onclick="applyPreset('${roomId}', 'sleep')">
+                                    <i class="fas fa-moon"></i>
+                                    <span>Sleep Mode</span>
+                                </button>
+                                <button class="preset-btn" onclick="applyPreset('${roomId}', 'wake')">
+                                    <i class="fas fa-sun"></i>
+                                    <span>Wake Up</span>
+                                </button>
+                                <button class="preset-btn" onclick="applyPreset('${roomId}', 'away')">
+                                    <i class="fas fa-door-open"></i>
+                                    <span>Away</span>
+                                </button>
+                                <button class="preset-btn" onclick="applyPreset('${roomId}', 'comfort')">
+                                    <i class="fas fa-chair"></i>
+                                    <span>Comfort</span>
+                                </button>
+                            </div>
+                            ` : ''}
+
+                            <!-- Devices -->
+                            <h4 style="font-size: 14px; margin: 20px 0 12px; text-transform: uppercase; color: var(--text-secondary);">
+                                <i class="fas fa-plug"></i> Room Devices
+                            </h4>
+                            <div class="room-devices">${renderDevices(room.devices, roomId)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Also render Room A devices
+            document.getElementById('roomADevices').innerHTML = renderDevices(rooms.roomA.devices, 'roomA');
+        }
+
+        function renderDevices(devices, roomId) {
+            return devices.map(device => `
+                <div class="device-card ${device.status ? 'active' : ''}" id="${roomId}-${device.id}">
+                    <div class="device-header">
+                        <div class="device-icon">
+                            <i class="fas fa-${device.icon}"></i>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" ${device.status ? 'checked' : ''} onchange="toggleDevice('${roomId}', '${device.id}')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-info">
+                        <h4>${device.name}</h4>
+                        <div class="device-status">${device.status ? 'Active' : 'Inactive'}</div>
+                    </div>
+                    <div class="device-body">
+                        ${device.type === 'light' ? `
+                            <div class="slider-control">
+                                <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 8px;">
+                                    Brightness: <span id="${roomId}-${device.id}-brightness">${device.brightness}%</span>
+                                </label>
+                                <input type="range" min="0" max="100" value="${device.brightness}"
+                                    oninput="updateBrightness('${roomId}', '${device.id}', this.value)">
+                            </div>
+                        ` : ''}
+                        ${device.type === 'ac' ? `
+                            <div class="slider-control">
+                                <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 8px;">
+                                    Temperature: <span id="${roomId}-${device.id}-temp">${device.temp}°C</span>
+                                </label>
+                                <input type="range" min="16" max="30" value="${device.temp}"
+                                    oninput="updateTemperature('${roomId}', '${device.id}', this.value)">
+                            </div>
+                            <div class="device-metric">
+                                <span>Mode</span>
+                                <strong>${device.mode}</strong>
+                            </div>
+                        ` : ''}
+                        ${device.recording !== undefined ? `
+                            <div class="device-metric">
+                                <span>Recording</span>
+                                <strong style="color: ${device.recording ? 'var(--status-critical)' : 'var(--text-secondary)'}">${device.recording ? 'Live' : 'Off'}</strong>
+                            </div>
+                        ` : ''}
+                        ${device.lastMotion ? `
+                            <div class="device-metric">
+                                <span>Last Motion</span>
+                                <strong>${device.lastMotion}</strong>
+                            </div>
+                        ` : ''}
+                        ${device.lastCheck ? `
+                            <div class="device-metric">
+                                <span>Status</span>
+                                <strong style="color: var(--status-normal)">${device.lastCheck}</strong>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getRoomIcon(roomId) {
+            const icons = {
+                roomA: 'fa-bed', roomB: 'fa-bed', roomC: 'fa-bed', roomD: 'fa-bed',
+                living: 'fa-couch', kitchen: 'fa-utensils', bathroom: 'fa-bath'
+            };
+            return icons[roomId] || 'fa-door-open';
+        }
+
+        function switchRoom(roomId) {
+            // Update tabs
+            document.querySelectorAll('.room-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.closest('.room-tab').classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.room-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(roomId).classList.add('active');
+        }
+
+        function toggleDevice(roomId, deviceId) {
+            const card = document.getElementById(`${roomId}-${deviceId}`);
+            const checkbox = card.querySelector('input[type="checkbox"]');
+
+            if (checkbox.checked) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+
+            console.log(`${roomId} - ${deviceId}: ${checkbox.checked ? 'ON' : 'OFF'}`);
+        }
+
+        function updateBrightness(roomId, deviceId, value) {
+            document.getElementById(`${roomId}-${deviceId}-brightness`).textContent = value + '%';
+            rooms[roomId].devices.find(d => d.id === deviceId).brightness = parseInt(value);
+        }
+
+        function updateTemperature(roomId, deviceId, value) {
+            document.getElementById(`${roomId}-${deviceId}-temp`).textContent = value + '°C';
+            rooms[roomId].devices.find(d => d.id === deviceId).temp = parseInt(value);
+            rooms[roomId].environment.temp = parseInt(value);
+        }
+
+        function applyPreset(roomId, preset) {
+            const presets = {
+                sleep: { temp: 21, brightness: 0, message: 'Sleep mode activated' },
+                wake: { temp: 23, brightness: 80, message: 'Wake up mode activated' },
+                away: { temp: 25, brightness: 0, message: 'Away mode activated' },
+                comfort: { temp: 22, brightness: 75, message: 'Comfort mode activated' }
+            };
+
+            const config = presets[preset];
+            if (config) {
+                alert(`${rooms[roomId].name}: ${config.message}\n\nTemp: ${config.temp}°C\nLights: ${config.brightness}%`);
+            }
+        }
+
+        // Sticky Header Scroll Behavior
+        let lastScrollTop = 0;
+        const stickyHeader = document.getElementById('stickyHeader');
+        const scrollThreshold = 100;
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > scrollThreshold) {
+                if (scrollTop > lastScrollTop) {
+                    stickyHeader.classList.add('hidden');
+                } else {
+                    stickyHeader.classList.remove('hidden');
+                }
+            } else {
+                stickyHeader.classList.remove('hidden');
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, false);
+
+        // Manage Devices function
+        function manageDevices() {
+            alert('Manage Wearable Devices:\n\n• Add/Remove devices\n• Update device settings\n• View battery status\n• Sync device data\n• Configure alerts\n• View device history');
+        }
+
+        // Emergency SOS function
+        function triggerSOS() {
+            if (confirm('⚠️ EMERGENCY SOS ACTIVATED\n\nThis will:\n✓ Call Emergency Services (999)\n✓ Alert All Family Members\n✓ Activate All Cameras\n✓ Unlock All Doors\n✓ Send Location to Responders\n\nDo you want to proceed?')) {
+                alert('🚨 EMERGENCY RESPONSE INITIATED\n\nEmergency services have been notified.\nFamily members are being alerted.\nAll safety protocols activated.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Control - ElderCare AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Robot Camera Feed */
+        .camera-feed {
+            position: relative;
+            background: #000;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.5) 100%);
+            color: white;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .camera-hud-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+
+        .hud-live {
+            background: #ef4444;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .camera-hud-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .hud-info {
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .camera-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            pointer-events: none;
+        }
+
+        .camera-grid > div {
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .camera-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #3B82F6;
+        }
+
+        /* Movement Controls */
+        .movement-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 8px;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .control-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: var(--status-info);
+            border-color: var(--status-info);
+            transform: scale(1.05);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn.stop {
+            background: var(--status-critical);
+            border-color: var(--status-critical);
+        }
+
+        /* Quick Actions */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 16px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: var(--status-info);
+            border-color: var(--status-info);
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .action-btn span {
+            font-size: 11px;
+            display: block;
+        }
+
+        /* Operation Modes */
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
+        }
+
+        .mode-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .mode-btn.active {
+            background: var(--status-info);
+            border-color: var(--status-info);
+            color: white;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--status-info);
+        }
+
+        /* Task Scheduler */
+        .scheduler-form {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr) 2fr;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            height: 38px;
+            box-sizing: border-box;
+        }
+
+        .btn-add-task {
+            background: var(--status-normal);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            width: 100%;
+            height: 38px;
+        }
+
+        .btn-add-task:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background: var(--status-info);
+            border-color: var(--status-info);
+            color: white;
+        }
+
+        .btn-icon.delete:hover {
+            background: var(--status-critical);
+            border-color: var(--status-critical);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Top Header -->
+    <div class="sticky-top-header" id="stickyHeader">
+        <div class="sticky-header-content">
+            <div class="sticky-header-title">
+                <i class="fas fa-robot"></i>
+                <h2>ElderCare AI - Robot Control</h2>
+            </div>
+            <button class="btn-sos-header" onclick="triggerSOS()">
+                <i class="fas fa-phone-alt"></i>
+                <span>Emergency SOS</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            </div>
+
+            <nav class="nav-menu">
+                <h3>Navigation</h3>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i> Overview
+                </a>
+                <a href="health-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i> Health Analytics
+                </a>
+                <a href="robot-control.html" class="nav-item active">
+                    <i class="fas fa-robot"></i> Robot Control
+                </a>
+                <a href="emergency.html" class="nav-item">
+                    <i class="fas fa-exclamation-triangle"></i> Safety & Emergency
+                </a>
+                <a href="smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i> Smart Home IoT
+                </a>
+                <a href="medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i> Medication
+                </a>
+                <a href="user-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i> User Management
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-title">
+                    <!-- Page title removed - redundant with sticky header -->
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Row 1: Robot Status & Camera Feed -->
+                <div class="grid-row">
+                    <!-- Robot Camera Feed -->
+                    <div class="card card-large">
+                        <div class="card-header">
+                            <h3><i class="fas fa-video"></i> Live Robot Camera Feed</h3>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span class="card-badge robot-active" style="animation: pulse 2s infinite;">● LIVE</span>
+                            </div>
+                        </div>
+                        <div class="card-content" style="padding: 0;">
+                            <div class="camera-feed" style="position: relative;">
+                                <!-- Robot Image -->
+                                <img src="../assets/robot.png" alt="Robot Camera View" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+
+                                <!-- Camera Info Overlay -->
+                                <div style="position: absolute; top: 12px; right: 12px; background: rgba(0, 0, 0, 0.75); padding: 8px 14px; border-radius: 8px; color: white; font-size: 12px; font-weight: 600; backdrop-filter: blur(4px);">
+                                    <div style="margin-bottom: 4px;"><i class="fas fa-battery-three-quarters" style="color: #10b981; margin-right: 6px;"></i>Battery: 87%</div>
+                                    <div><i class="fas fa-map-marker-alt" style="color: #3B82F6; margin-right: 6px;"></i>Location: Living Room</div>
+                                </div>
+
+                                <!-- Recording Badge -->
+                                <div style="position: absolute; top: 12px; left: 12px; background: #ef4444; padding: 6px 12px; border-radius: 6px; color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                                    <div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+                                    RECORDING
+                                </div>
+
+                                <!-- Bottom Info Bar -->
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 70%, transparent 100%); padding: 20px 16px 16px; color: white;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                        <div style="font-size: 11px; line-height: 1.6;">
+                                            <div><i class="fas fa-ruler" style="margin-right: 6px; color: #10b981;"></i>Distance: <strong>2.3m</strong></div>
+                                            <div><i class="fas fa-users" style="margin-right: 6px; color: #3B82F6;"></i>Persons: <strong>3 Detected ✓</strong></div>
+                                            <div><i class="fas fa-male" style="margin-right: 6px; color: #8B5CF6;"></i>Posture: <strong>Normal</strong></div>
+                                        </div>
+                                        <div style="text-align: right; font-size: 12px; font-weight: 600;" id="cameraTime">
+                                            <!-- Time populated by JS -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="camera-grid">
+                                    <div></div><div></div><div></div>
+                                    <div></div><div></div><div></div>
+                                    <div></div><div></div><div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Robot Status & Controls -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-cog"></i> Robot Status</h3>
+                            <span class="card-badge robot-active">Active</span>
+                        </div>
+                        <div class="card-content">
+                            <div style="margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>Battery Level</span>
+                                    <strong>87%</strong>
+                                </div>
+                                <div class="progress-bar" style="width: 100%; height: 12px;">
+                                    <div class="progress-fill" style="width: 87%; background: #10b981;"></div>
+                                </div>
+                            </div>
+
+                            <div class="robot-status" style="flex-direction: column; gap: 8px;">
+                                <div class="status-item" style="justify-content: space-between; width: 100%;">
+                                    <span><i class="fas fa-map-marker-alt"></i> Location</span>
+                                    <strong>Living Room</strong>
+                                </div>
+                                <div class="status-item" style="justify-content: space-between; width: 100%;">
+                                    <span><i class="fas fa-toggle-on"></i> Mode</span>
+                                    <strong>Companion</strong>
+                                </div>
+                                <div class="status-item" style="justify-content: space-between; width: 100%;">
+                                    <span><i class="fas fa-tasks"></i> Active Task</span>
+                                    <strong>Bring Water</strong>
+                                </div>
+                            </div>
+
+                            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;">
+
+                            <h4 style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 12px;">Movement Controls</h4>
+                            <div class="movement-controls">
+                                <div></div>
+                                <button class="control-btn" onclick="moveRobot('forward')"><i class="fas fa-arrow-up"></i></button>
+                                <div></div>
+                                <button class="control-btn" onclick="moveRobot('left')"><i class="fas fa-arrow-left"></i></button>
+                                <button class="control-btn stop" onclick="moveRobot('stop')"><i class="fas fa-stop"></i></button>
+                                <button class="control-btn" onclick="moveRobot('right')"><i class="fas fa-arrow-right"></i></button>
+                                <div></div>
+                                <button class="control-btn" onclick="moveRobot('backward')"><i class="fas fa-arrow-down"></i></button>
+                                <div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Quick Actions & Operation Modes -->
+                <div class="grid-row">
+                    <!-- Quick Actions -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="quick-actions-grid" style="grid-template-columns: repeat(3, 1fr);">
+                                <button class="action-btn" onclick="quickAction('speak')">
+                                    <i class="fas fa-volume-up"></i>
+                                    <span>Speak</span>
+                                </button>
+                                <button class="action-btn" onclick="quickAction('videocall')">
+                                    <i class="fas fa-video"></i>
+                                    <span>Video Call</span>
+                                </button>
+                                <button class="action-btn" onclick="quickAction('medicine')">
+                                    <i class="fas fa-pills"></i>
+                                    <span>Medicine Reminder</span>
+                                </button>
+                                <button class="action-btn" onclick="quickAction('patrol')">
+                                    <i class="fas fa-route"></i>
+                                    <span>Patrol Mode</span>
+                                </button>
+                                <button class="action-btn" onclick="quickAction('music')">
+                                    <i class="fas fa-music"></i>
+                                    <span>Play Music</span>
+                                </button>
+                                <button class="action-btn" onclick="quickAction('fetch')">
+                                    <i class="fas fa-hand-holding"></i>
+                                    <span>Fetch Item</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operation Modes -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-sliders-h"></i> Operation Modes</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="mode-selector" style="grid-template-columns: repeat(2, 1fr);">
+                                <button class="mode-btn active" onclick="setMode('companion')">
+                                    <i class="fas fa-user-friends" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
+                                    <div style="font-weight: 600;">Companion</div>
+                                    <div style="font-size: 10px; color: var(--text-secondary);">Social interaction</div>
+                                </button>
+                                <button class="mode-btn" onclick="setMode('assistant')">
+                                    <i class="fas fa-hands-helping" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
+                                    <div style="font-weight: 600;">Assistant</div>
+                                    <div style="font-size: 10px; color: var(--text-secondary);">Daily tasks</div>
+                                </button>
+                                <button class="mode-btn" onclick="setMode('security')">
+                                    <i class="fas fa-shield-alt" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
+                                    <div style="font-weight: 600;">Security</div>
+                                    <div style="font-size: 10px; color: var(--text-secondary);">Patrol & surveillance</div>
+                                </button>
+                                <button class="mode-btn" onclick="setMode('emergency')">
+                                    <i class="fas fa-exclamation-triangle" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
+                                    <div style="font-weight: 600;">Emergency</div>
+                                    <div style="font-size: 10px; color: var(--text-secondary);">Rapid response</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Robot Task Scheduler -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-alt"></i> Robot Task Scheduler</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="scheduler-form">
+                            <div class="form-group">
+                                <label>Time</label>
+                                <input type="time" id="taskTime" value="12:00">
+                            </div>
+                            <div class="form-group">
+                                <label>Task Command</label>
+                                <select id="taskCommand">
+                                    <option>🍳 Cook Meal</option>
+                                    <option>💧 Bring Water</option>
+                                    <option>💊 Medication Reminder</option>
+                                    <option>❤️ Check Vitals</option>
+                                    <option>🧹 Clean Room</option>
+                                    <option>🚶 Assist Walking</option>
+                                    <option>📞 Emergency Alert</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>For Resident</label>
+                                <select id="taskResident">
+                                    <option value="#3B82F6">Ah Chong Tan</option>
+                                    <option value="#8B5CF6">Mei Ling Wong</option>
+                                    <option value="#14B8A6">Kumar Raj</option>
+                                    <option value="#F59E0B">Fatimah Ibrahim</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Repeat</label>
+                                <div style="display: flex; gap: 12px; align-items: stretch; height: 38px;">
+                                    <select id="taskRepeat" style="flex: 1; height: 38px;">
+                                        <option>Daily</option>
+                                        <option>Weekly</option>
+                                        <option>Mon, Wed, Fri</option>
+                                        <option>Tue, Thu</option>
+                                        <option>As needed</option>
+                                    </select>
+                                    <button class="btn-add-task" onclick="addTask()" style="flex: 2; height: 38px; margin-top: 0;">
+                                        <i class="fas fa-plus"></i> Add Task to Schedule
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Task</th>
+                                    <th>For Resident</th>
+                                    <th>Repeat</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduledTasksTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Row 4: Recent Robot Activities -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> Recent Robot Activities</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="activity-feed" id="robotActivityFeed"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.elderlyData) {
+                renderResidentsList();
+                renderScheduledTasks();
+                renderRobotActivityFeed();
+                updateCameraTime();
+                setInterval(updateCameraTime, 1000);
+            }
+        });
+
+        function renderResidentsList() {
+            const container = document.getElementById('residentsList');
+            if (!container || !window.elderlyData) return;
+
+            container.innerHTML = window.elderlyData.elderlyList.map(resident => `
+                <div class="resident-card" style="border-left-color: ${resident.personal.color}">
+                    <div class="resident-header">
+                        <div class="resident-name">
+                            <span class="status-indicator ${resident.vitals.heartRate.status}"></span>
+                            ${resident.personal.fullName}
+                        </div>
+                    </div>
+                    <div class="resident-info">
+                        <span>Age: ${resident.personal.age}</span>
+                        <span>HR: ${resident.vitals.heartRate.current} ${resident.vitals.heartRate.unit}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderScheduledTasks() {
+            const tbody = document.getElementById('scheduledTasksTable');
+            if (!tbody || !window.elderlyData) return;
+
+            tbody.innerHTML = window.elderlyData.robotSchedule.map((task, index) => `
+                <tr>
+                    <td style="font-weight: 600;">${task.time}</td>
+                    <td>${task.task}</td>
+                    <td>
+                        <div class="resident-name-cell">
+                            <div class="resident-color-dot" style="background: ${task.residentColor}"></div>
+                            ${task.resident}
+                        </div>
+                    </td>
+                    <td>${task.repeat}</td>
+                    <td>
+                        <span class="status-badge status-${task.status}">
+                            ${task.status === 'done' ? '✓ Done' : task.status === 'active' ? '● Active' : 'Pending'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="task-actions">
+                            <button class="btn-icon" onclick="editTask(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete" onclick="deleteTask(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderRobotActivityFeed() {
+            const container = document.getElementById('robotActivityFeed');
+            if (!container) return;
+
+            const activities = [
+                { icon: '💧', iconBg: '#14B8A6', title: 'Water Delivered', description: 'Brought water to Kumar Raj (Living Room)', time: '2 min ago', borderColor: '#14B8A6' },
+                { icon: '💊', iconBg: '#8B5CF6', title: 'Medication Reminder', description: 'Reminded Mei Ling Wong to take medication', time: '18 min ago', borderColor: '#8B5CF6' },
+                { icon: '🍳', iconBg: '#3B82F6', title: 'Meal Preparation', description: 'Prepared breakfast for Ah Chong Tan', time: '45 min ago', borderColor: '#3B82F6' },
+                { icon: '🤖', iconBg: '#F59E0B', title: 'Conversation Session', description: 'Had a 15-minute conversation with Fatimah Ibrahim', time: '1 hour ago', borderColor: '#F59E0B' }
+            ];
+
+            container.innerHTML = activities.map(activity => `
+                <div class="activity-item" style="border-left-color: ${activity.borderColor}">
+                    <div class="activity-icon" style="background: ${activity.iconBg}">
+                        ${activity.icon}
+                    </div>
+                    <div class="activity-details">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-description">${activity.description}</div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateCameraTime() {
+            const timeElement = document.getElementById('cameraTime');
+            if (timeElement) {
+                const now = new Date();
+                timeElement.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }
+        }
+
+        function moveRobot(direction) {
+            console.log('Moving robot:', direction);
+            alert(`Robot moving ${direction.toUpperCase()}`);
+        }
+
+        function toggleCamera() {
+            alert('Camera toggled');
+        }
+
+        function quickAction(action) {
+            const actions = {
+                speak: 'Robot speaking to resident',
+                videocall: 'Initiating video call with family',
+                medicine: 'Sending medication reminder',
+                patrol: 'Starting patrol mode',
+                music: 'Playing relaxing music',
+                fetch: 'Fetching requested item'
+            };
+            alert(actions[action] || 'Action triggered');
+        }
+
+        function setMode(mode) {
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.mode-btn').classList.add('active');
+            alert(`Robot mode set to: ${mode.toUpperCase()}`);
+        }
+
+        function addTask() {
+            const time = document.getElementById('taskTime').value;
+            const command = document.getElementById('taskCommand').value;
+            const resident = document.getElementById('taskResident').selectedOptions[0].text;
+            const repeat = document.getElementById('taskRepeat').value;
+
+            alert(`Task added:\n\nTime: ${time}\nTask: ${command}\nResident: ${resident}\nRepeat: ${repeat}`);
+
+            // In a real app, this would add to the schedule
+        }
+
+        function editTask(index) {
+            alert(`Editing task ${index + 1}`);
+        }
+
+        function deleteTask(index) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                alert(`Task ${index + 1} deleted`);
+                // In a real app, this would remove from the schedule
+            }
+        }
+
+        function manageTasks() {
+            alert('Manage Robot Tasks:\n\n• View all scheduled tasks\n• Edit task schedules\n• Add new tasks\n• Remove tasks\n• Set recurring tasks\n• Monitor task history');
+        }
+
+        // Sticky Header Scroll Behavior
+        let lastScrollTop = 0;
+        const stickyHeader = document.getElementById('stickyHeader');
+        const scrollThreshold = 100;
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > scrollThreshold) {
+                if (scrollTop > lastScrollTop) {
+                    stickyHeader.classList.add('hidden');
+                } else {
+                    stickyHeader.classList.remove('hidden');
+                }
+            } else {
+                stickyHeader.classList.remove('hidden');
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, false);
+
+        // Emergency SOS function
+        function triggerSOS() {
+            if (confirm('⚠️ EMERGENCY SOS ACTIVATED\n\nThis will:\n✓ Call Emergency Services (999)\n✓ Alert All Family Members\n✓ Activate All Cameras\n✓ Unlock All Doors\n✓ Send Location to Responders\n\nDo you want to proceed?')) {
+                alert('🚨 EMERGENCY RESPONSE INITIATED\n\nEmergency services have been notified.\nFamily members are being alerted.\nAll safety protocols activated.');
+            }
+        }
+    </script>
+</body>
+</html>

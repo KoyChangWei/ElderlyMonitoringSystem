@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medication Management - ElderCare AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .timeline {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 0;
+        }
+
+        .timeline::before {
+            display: none;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 0;
+            width: 100%;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 8px;
+            top: 10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            border: 2px solid white;
+            z-index: 1;
+        }
+
+        .timeline-marker.completed {
+            background: var(--status-normal);
+            color: white;
+        }
+
+        .timeline-marker.upcoming {
+            background: var(--status-warning);
+            color: white;
+        }
+
+        .timeline-marker.pending {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-color: var(--border-color);
+        }
+
+        .timeline-content {
+            background: white;
+            border-left: 4px solid;
+            border-radius: var(--radius-md);
+            padding: 14px;
+            padding-left: 44px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .timeline-content:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .timeline-time {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .med-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .med-detail-item {
+            font-size: 12px;
+        }
+
+        .med-detail-label {
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .med-detail-value {
+            font-weight: 600;
+        }
+
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-top: 12px;
+        }
+
+        .compliance-day {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+        }
+
+        .compliance-day.taken {
+            background: var(--status-normal);
+            border-color: var(--status-normal);
+            color: white;
+        }
+
+        .compliance-day.missed {
+            background: var(--status-critical);
+            border-color: var(--status-critical);
+            color: white;
+        }
+
+        .med-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .med-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .med-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .med-dosage {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .refill-alert {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--status-warning);
+            border-radius: 6px;
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: auto;
+            margin-top: 0;
+            flex-shrink: 0;
+        }
+
+        .refill-alert i {
+            font-size: 14px;
+            color: var(--status-warning);
+        }
+
+        .quick-action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .quick-action-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-action-card:hover {
+            background: var(--status-info);
+            border-color: var(--status-info);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-card i {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+            color: var(--status-info);
+        }
+
+        .quick-action-card:hover i {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Top Header -->
+    <div class="sticky-top-header" id="stickyHeader">
+        <div class="sticky-header-content">
+            <div class="sticky-header-title">
+                <i class="fas fa-pills"></i>
+                <h2>ElderCare AI - Medication Management</h2>
+            </div>
+            <button class="btn-sos-header" onclick="triggerSOS()">
+                <i class="fas fa-phone-alt"></i>
+                <span>Emergency SOS</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            </div>
+
+            <nav class="nav-menu">
+                <h3>Navigation</h3>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i> Overview
+                </a>
+                <a href="health-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i> Health Analytics
+                </a>
+                <a href="robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i> Robot Control
+                </a>
+                <a href="emergency.html" class="nav-item">
+                    <i class="fas fa-exclamation-triangle"></i> Safety & Emergency
+                </a>
+                <a href="smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i> Smart Home IoT
+                </a>
+                <a href="medication.html" class="nav-item active">
+                    <i class="fas fa-pills"></i> Medication
+                </a>
+                <a href="user-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i> User Management
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-title">
+                    <!-- Page title removed - redundant with sticky header -->
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Quick Actions -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="quick-action-grid">
+                            <div class="quick-action-card" onclick="addMedication()">
+                                <i class="fas fa-plus-circle"></i>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Add Medication</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">New prescription</div>
+                            </div>
+                            <div class="quick-action-card" onclick="markTaken()">
+                                <i class="fas fa-check-circle"></i>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Mark as Taken</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Confirm dosage</div>
+                            </div>
+                            <div class="quick-action-card" onclick="setReminder()">
+                                <i class="fas fa-bell"></i>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Set Reminder</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Custom alert</div>
+                            </div>
+                            <div class="quick-action-card" onclick="orderRefill()">
+                                <i class="fas fa-shopping-cart"></i>
+                                <div style="font-weight: 600; margin-bottom: 4px;">Order Refill</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Pharmacy order</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 1: Compliance & Medication Inventory -->
+                <div class="grid-row">
+                    <!-- Weekly Compliance -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-pie"></i> Weekly Compliance</h3>
+                            <span class="card-badge safe">95%</span>
+                        </div>
+                        <div class="card-content">
+                            <div style="position: relative; height: 200px; margin-bottom: 20px;">
+                                <canvas id="complianceChart"></canvas>
+                            </div>
+
+                            <h4 style="font-size: 15px; margin-bottom: 16px; font-weight: 600;">This Week Summary</h4>
+                            <div class="device-metric" style="border-bottom-color: #000000;">
+                                <span style="font-size: 13px;">Total Doses</span>
+                                <strong style="font-size: 15px;">56</strong>
+                            </div>
+                            <div class="device-metric" style="border-bottom-color: #000000;">
+                                <span style="font-size: 13px;">Taken On Time</span>
+                                <strong style="color: var(--status-normal); font-size: 15px;">53 (95%)</strong>
+                            </div>
+                            <div class="device-metric" style="border-bottom-color: #000000;">
+                                <span style="font-size: 13px;">Missed</span>
+                                <strong style="color: var(--status-critical); font-size: 15px;">3 (5%)</strong>
+                            </div>
+                            <div class="device-metric" style="border-bottom-color: #000000;">
+                                <span style="font-size: 13px;">Upcoming Today</span>
+                                <strong style="color: var(--status-warning); font-size: 15px;">3</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medication Inventory -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-boxes"></i> Medication Inventory</h3>
+                            <button class="btn-secondary" onclick="manageMedicationInventory()" style="padding: 8px 16px; font-size: 13px; border-radius: 6px; background: var(--status-info); color: white; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-cog"></i> Manage
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <h4 style="font-size: 13px; margin-bottom: 12px; font-weight: 600;">Current Stock Levels</h4>
+
+                            <div style="margin-bottom: 16px;">
+                                <div class="device-metric">
+                                    <span>Total Medications</span>
+                                    <strong>8 Types</strong>
+                                </div>
+                                <div class="device-metric">
+                                    <span><i class="fas fa-pills" style="color: #3B82F6; margin-right: 6px;"></i>Aspirin 75mg</span>
+                                    <strong>120 pills</strong>
+                                </div>
+                                <div class="device-metric">
+                                    <span><i class="fas fa-pills" style="color: #8B5CF6; margin-right: 6px;"></i>Metformin 500mg</span>
+                                    <strong>90 pills</strong>
+                                </div>
+                                <div class="device-metric">
+                                    <span><i class="fas fa-pills" style="color: #14B8A6; margin-right: 6px;"></i>Lisinopril 10mg</span>
+                                    <strong>60 pills</strong>
+                                </div>
+                                <div class="device-metric">
+                                    <span><i class="fas fa-pills" style="color: #F59E0B; margin-right: 6px;"></i>Atorvastatin 20mg</span>
+                                    <strong>75 pills</strong>
+                                </div>
+                                <div class="device-metric">
+                                    <span><i class="fas fa-pills" style="color: #EF4444; margin-right: 6px;"></i>Calcium 600mg</span>
+                                    <strong>180 pills</strong>
+                                </div>
+                                <div class="device-metric">
+                                    <span>Total Pills</span>
+                                    <strong>624 Pills</strong>
+                                </div>
+                                <div class="device-metric">
+                                    <span>Needs Refill Soon</span>
+                                    <strong style="color: var(--status-warning);">2 Items</strong>
+                                </div>
+                                <div class="device-metric">
+                                    <span>Out of Stock</span>
+                                    <strong style="color: var(--status-critical);">0 Items</strong>
+                                </div>
+                            </div>
+
+                            <div style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--status-warning); padding: 12px; border-radius: 6px; margin-top: 12px;">
+                                <div style="font-size: 12px; font-weight: 600; color: var(--status-warning); margin-bottom: 6px;">
+                                    <i class="fas fa-exclamation-triangle"></i> Refill Required
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">
+                                    • Metformin: <strong style="color: var(--text-primary);">3 days supply</strong><br>
+                                    • Aspirin: <strong style="color: var(--text-primary);">8 days supply</strong>
+                                </div>
+                            </div>
+
+                            <button onclick="viewAllMedications()" style="width: 100%; margin-top: 16px; background: white; border: 2px solid #3B82F6; color: #3B82F6; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease;">
+                                <i class="fas fa-list"></i>
+                                View All Medications
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Today's Medication Schedule (below Weekly Compliance) & Upcoming Reminders (below Medication Inventory) -->
+                <div class="grid-row">
+                    <!-- Today's Medication Schedule -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-calendar-day"></i> Today's Medication Schedule</h3>
+                            <span class="card-badge">8 Doses</span>
+                        </div>
+                        <div class="card-content" style="max-height: 400px; overflow-y: auto;">
+                        <div class="timeline" id="medicationTimeline" style="flex-direction: column;">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Upcoming Reminders -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bell"></i> Upcoming Reminders</h3>
+                        </div>
+                        <div class="card-content" style="max-height: 400px; overflow-y: auto;">
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <div style="padding: 14px; background: rgba(59, 130, 246, 0.05); border-left: 4px solid #3B82F6; border-radius: 8px;">
+                                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">11:15 AM</div>
+                                    <div style="font-size: 13px; margin-bottom: 4px;">Aspirin 75mg</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">Kumar Raj • Due in 30 min</div>
+                                </div>
+                                <div style="padding: 14px; background: rgba(245, 158, 11, 0.05); border-left: 4px solid #F59E0B; border-radius: 8px;">
+                                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">12:30 PM</div>
+                                    <div style="font-size: 13px; margin-bottom: 4px;">Calcium 600mg</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">Fatimah • Due in 1h 45min</div>
+                                </div>
+                                <div style="padding: 14px; background: rgba(139, 92, 246, 0.05); border-left: 4px solid #8B5CF6; border-radius: 8px;">
+                                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">14:00 PM</div>
+                                    <div style="font-size: 13px; margin-bottom: 4px;">Vitamin D 1000IU</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">Mei Ling • Pending</div>
+                                </div>
+                                <div style="padding: 14px; background: rgba(20, 184, 166, 0.05); border-left: 4px solid #14B8A6; border-radius: 8px;">
+                                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">18:00 PM</div>
+                                    <div style="font-size: 13px; margin-bottom: 4px;">Metformin 500mg</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">Ah Chong • Pending</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Active Medications -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-prescription-bottle"></i> Active Medications (All Residents)</h3>
+                        <button class="btn-secondary" onclick="manageMedications()" style="padding: 6px 12px; font-size: 13px; border-radius: 6px; background: var(--status-info); color: white; border: none; cursor: pointer; font-weight: 600;">
+                            <i class="fas fa-cog"></i> Manage
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-height: 600px; overflow-y: auto; padding-right: 8px;">
+                            <!-- Ah Chong's Medications -->
+                            <div>
+                                <h4 style="font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                    <div class="resident-color-dot" style="background: #3B82F6; width: 12px; height: 12px; border-radius: 50%;"></div>
+                                    Ah Chong Tan
+                                </h4>
+                                <div class="med-card" style="border-left-color: #3B82F6;">
+                                    <div class="med-card-header">
+                                        <div>
+                                            <div class="med-name">Lisinopril</div>
+                                            <div class="med-dosage">10mg • Twice Daily</div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="med-details">
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Condition</span>
+                                            <div class="med-detail-value">Hypertension</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Times</span>
+                                            <div class="med-detail-value">8:00 AM, 6:00 PM</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Refill Due</span>
+                                            <div class="med-detail-value">15 days</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="med-card" style="border-left-color: #3B82F6;">
+                                    <div class="med-card-header">
+                                        <div>
+                                            <div class="med-name">Metformin</div>
+                                            <div class="med-dosage">500mg • Daily</div>
+                                        </div>
+                                        <div class="refill-alert" style="width: auto; margin-top: 0;">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <div style="font-size: 10px; line-height: 1.3;">
+                                                <strong style="font-size: 10px;">Refill Needed Soon</strong><br>
+                                                <span style="font-size: 9px;">Only 3 days supply</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="med-details">
+                                        <div class="med-detail-item" style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div style="display: flex; flex-direction: column;">
+                                                <span class="med-detail-label">Condition</span>
+                                                <div class="med-detail-value">Diabetes</div>
+                                            </div>
+
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Times</span>
+                                            <div class="med-detail-value">9:00 AM</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Refill Due</span>
+                                            <div class="med-detail-value" style="color: var(--status-warning);">3 days</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mei Ling's Medications -->
+                            <div>
+                                <h4 style="font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                    <div class="resident-color-dot" style="background: #8B5CF6; width: 12px; height: 12px; border-radius: 50%;"></div>
+                                    Mei Ling Wong
+                                </h4>
+                                <div class="med-card" style="border-left-color: #8B5CF6;">
+                                    <div class="med-card-header">
+                                        <div>
+                                            <div class="med-name">Ibuprofen</div>
+                                            <div class="med-dosage">400mg • As Needed</div>
+                                        </div>
+                                       
+                                    </div>
+                                    <div class="med-details">
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Condition</span>
+                                            <div class="med-detail-value">Arthritis Pain</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Max Daily</span>
+                                            <div class="med-detail-value">3 doses</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Last Taken</span>
+                                            <div class="med-detail-value">9:30 AM</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="med-card" style="border-left-color: #8B5CF6;">
+                                    <div class="med-card-header">
+                                        <div>
+                                            <div class="med-name">Vitamin D</div>
+                                            <div class="med-dosage">1000IU • Daily</div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="med-details">
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Type</span>
+                                            <div class="med-detail-value">Supplement</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Times</span>
+                                            <div class="med-detail-value">2:00 PM</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Refill Due</span>
+                                            <div class="med-detail-value">22 days</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kumar's Medications -->
+                            <div>
+                                <h4 style="font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                    <div class="resident-color-dot" style="background: #14B8A6; width: 12px; height: 12px; border-radius: 50%;"></div>
+                                    Kumar Raj
+                                </h4>
+                                <div class="med-card" style="border-left-color: #14B8A6;">
+                                    <div class="med-card-header">
+                                        <div>
+                                            <div class="med-name">Aspirin</div>
+                                            <div class="med-dosage">75mg • Daily</div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="med-details">
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Condition</span>
+                                            <div class="med-detail-value">Heart Disease</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Times</span>
+                                            <div class="med-detail-value">11:15 AM</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Refill Due</span>
+                                            <div class="med-detail-value">8 days</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="med-card" style="border-left-color: #14B8A6;">
+                                    <div class="med-card-header">
+                                        <div>
+                                            <div class="med-name">Donepezil</div>
+                                            <div class="med-dosage">5mg • Bedtime</div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="med-details">
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Condition</span>
+                                            <div class="med-detail-value">Dementia</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Times</span>
+                                            <div class="med-detail-value">8:00 PM</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Refill Due</span>
+                                            <div class="med-detail-value">12 days</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fatimah's Medications -->
+                            <div>
+                                <h4 style="font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                    <div class="resident-color-dot" style="background: #F59E0B; width: 12px; height: 12px; border-radius: 50%;"></div>
+                                    Fatimah Ibrahim
+                                </h4>
+                                <div class="med-card" style="border-left-color: #F59E0B;">
+                                    <div class="med-card-header">
+                                        <div>
+                                            <div class="med-name">Calcium Carbonate</div>
+                                            <div class="med-dosage">600mg • Twice Daily</div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="med-details">
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Condition</span>
+                                            <div class="med-detail-value">Osteoporosis</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Times</span>
+                                            <div class="med-detail-value">12:30 PM, 7:00 PM</div>
+                                        </div>
+                                        <div class="med-detail-item">
+                                            <span class="med-detail-label">Refill Due</span>
+                                            <div class="med-detail-value">18 days</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 4: Compliance Calendar -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-check"></i> Medication Compliance Calendar (Last 7 Days)</h3>
+                    </div>
+                    <div class="card-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Resident</th>
+                                    <th>Mon</th>
+                                    <th>Tue</th>
+                                    <th>Wed</th>
+                                    <th>Thu</th>
+                                    <th>Fri</th>
+                                    <th>Sat</th>
+                                    <th>Sun</th>
+                                    <th>Compliance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="complianceTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.elderlyData) {
+                renderResidentsList();
+                renderMedicationTimeline();
+                initializeComplianceChart();
+                renderComplianceCalendar();
+            }
+        });
+
+        function renderResidentsList() {
+            const container = document.getElementById('residentsList');
+            if (!container || !window.elderlyData) return;
+
+            container.innerHTML = window.elderlyData.elderlyList.map(resident => `
+                <div class="resident-card" style="border-left-color: ${resident.personal.color}">
+                    <div class="resident-header">
+                        <div class="resident-name">
+                            <span class="status-indicator ${resident.vitals.heartRate.status}"></span>
+                            ${resident.personal.fullName}
+                        </div>
+                    </div>
+                    <div class="resident-info">
+                        <span>Age: ${resident.personal.age}</span>
+                        <span>HR: ${resident.vitals.heartRate.current} ${resident.vitals.heartRate.unit}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMedicationTimeline() {
+            const container = document.getElementById('medicationTimeline');
+            if (!container || !window.elderlyData) return;
+
+            container.innerHTML = window.elderlyData.medicationSchedule.map(med => {
+                const markerClass = med.status === 'completed' ? 'completed' : med.status === 'upcoming' ? 'upcoming' : 'pending';
+                const icon = med.status === 'completed' ? '✓' : med.status === 'upcoming' ? '!' : '○';
+
+                return `
+                    <div class="timeline-item">
+                        <div class="timeline-marker ${markerClass}">${icon}</div>
+                        <div class="timeline-content" style="border-left-color: ${med.residentColor}">
+                            <div class="timeline-header">
+                                <div class="timeline-time">${med.time}</div>
+                                <span class="status-badge status-${med.status === 'completed' ? 'done' : med.status === 'upcoming' ? 'active' : 'pending'}">
+                                    ${med.status.toUpperCase()}
+                                </span>
+                            </div>
+                            <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">${med.medication}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">
+                                For: ${med.resident}
+                                ${med.countdown ? ` • Due in ${med.countdown}` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function initializeComplianceChart() {
+            const ctx = document.getElementById('complianceChart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Taken On Time', 'Missed'],
+                    datasets: [{
+                        data: [53, 3],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#0f172a',
+                                padding: 15,
+                                usePointStyle: true,
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderComplianceCalendar() {
+            const tbody = document.getElementById('complianceTable');
+            if (!tbody || !window.elderlyData) return;
+
+            const complianceData = [
+                { days: ['✓', '✓', '✓', '✓', '✓', '✓', '✓'], rate: '100%' },
+                { days: ['✓', '✓', '✓', '✗', '✓', '✓', '✓'], rate: '86%' },
+                { days: ['✓', '✓', '✓', '✓', '✓', '✗', '✓'], rate: '86%' },
+                { days: ['✓', '✓', '✓', '✓', '✗', '✓', '✓'], rate: '86%' }
+            ];
+
+            tbody.innerHTML = window.elderlyData.elderlyList.map((resident, index) => `
+                <tr>
+                    <td>
+                        <div class="resident-name-cell">
+                            <div class="resident-color-dot" style="background: ${resident.personal.color}"></div>
+                            ${resident.personal.fullName}
+                        </div>
+                    </td>
+                    ${complianceData[index].days.map(day => `
+                        <td style="text-align: center;">
+                            <span style="font-size: 18px; color: ${day === '✓' ? 'var(--status-normal)' : 'var(--status-critical)'};">
+                                ${day}
+                            </span>
+                        </td>
+                    `).join('')}
+                    <td>
+                        <span class="status-badge ${complianceData[index].rate === '100%' ? 'status-normal' : 'status-warning'}">
+                            ${complianceData[index].rate}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function addMedication() {
+            alert('Add New Medication:\n\n- Select Resident\n- Enter Medication Name\n- Set Dosage & Frequency\n- Add to Schedule');
+        }
+
+        function markTaken() {
+            alert('Mark medication as taken');
+        }
+
+        function setReminder() {
+            alert('Set custom medication reminder');
+        }
+
+        function orderRefill() {
+            alert('Order medication refill from pharmacy');
+        }
+
+        function manageMedicationInventory() {
+            alert('Medication Inventory Management:\n\n• View detailed stock levels\n• Update pill counts\n• Set refill alerts\n• Order from pharmacy\n• View medication history');
+        }
+
+        function viewAllMedications() {
+            alert('View All Medications\n\n1. Aspirin 75mg - 120 pills\n2. Metformin 500mg - 90 pills\n3. Lisinopril 10mg - 60 pills\n4. Atorvastatin 20mg - 75 pills\n5. Calcium 600mg - 180 pills\n6. Vitamin D 1000IU - 100 pills\n7. Donepezil 5mg - 45 pills\n8. Omeprazole 20mg - 30 pills\n\nTotal: 624 pills');
+        }
+
+        function manageMedications() {
+            alert('Manage Medications:\n\n• Add/Remove medications\n• Update dosages and schedules\n• Set refill reminders\n• View medication history\n• Print medication list');
+        }
+
+        // Sticky Header Scroll Behavior
+        let lastScrollTop = 0;
+        const stickyHeader = document.getElementById('stickyHeader');
+        const scrollThreshold = 100;
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > scrollThreshold) {
+                if (scrollTop > lastScrollTop) {
+                    stickyHeader.classList.add('hidden');
+                } else {
+                    stickyHeader.classList.remove('hidden');
+                }
+            } else {
+                stickyHeader.classList.remove('hidden');
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, false);
+
+        // Emergency SOS function
+        function triggerSOS() {
+            if (confirm('⚠️ EMERGENCY SOS ACTIVATED\n\nThis will:\n✓ Call Emergency Services (999)\n✓ Alert All Family Members\n✓ Activate All Cameras\n✓ Unlock All Doors\n✓ Send Location to Responders\n\nDo you want to proceed?')) {
+                alert('🚨 EMERGENCY RESPONSE INITIATED\n\nEmergency services have been notified.\nFamily members are being alerted.\nAll safety protocols activated.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Analytics - ElderCare AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .health-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-card h4 {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .metric-unit {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .metric-status {
+            margin-top: 8px;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 16px;
+        }
+
+        .resident-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .resident-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 2px solid;
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .resident-btn.active {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Top Header -->
+    <div class="sticky-top-header" id="stickyHeader">
+        <div class="sticky-header-content">
+            <div class="sticky-header-title">
+                <i class="fas fa-chart-line"></i>
+                <h2>ElderCare AI - Health Analytics</h2>
+            </div>
+            <button class="btn-sos-header" onclick="triggerSOS()">
+                <i class="fas fa-phone-alt"></i>
+                <span>Emergency SOS</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            </div>
+
+            <nav class="nav-menu">
+                <h3>Navigation</h3>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i> Overview
+                </a>
+                <a href="health-analytics.html" class="nav-item active">
+                    <i class="fas fa-chart-line"></i> Health Analytics
+                </a>
+                <a href="robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i> Robot Control
+                </a>
+                <a href="emergency.html" class="nav-item">
+                    <i class="fas fa-exclamation-triangle"></i> Safety & Emergency
+                </a>
+                <a href="smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i> Smart Home IoT
+                </a>
+                <a href="medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i> Medication
+                </a>
+                <a href="user-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i> User Management
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-title">
+                    <!-- Page title removed - redundant with sticky header -->
+                </div>
+            </header>
+
+            <!-- Resident Selector -->
+            <div class="resident-selector">
+                <button class="resident-btn active" id="btn-resident-all" style="border-color: #6366f1; background: #6366f1;" onclick="selectResidentForAnalytics('all')">
+                    <i class="fas fa-users"></i> All
+                </button>
+                <button class="resident-btn" id="btn-resident-1" style="border-color: #3B82F6; background: transparent;" onclick="selectResidentForAnalytics(1)">
+                    Ah Chong Tan
+                </button>
+                <button class="resident-btn" id="btn-resident-2" style="border-color: #8B5CF6; background: transparent;" onclick="selectResidentForAnalytics(2)">
+                    Mei Ling Wong
+                </button>
+                <button class="resident-btn" id="btn-resident-3" style="border-color: #14B8A6; background: transparent;" onclick="selectResidentForAnalytics(3)">
+                    Kumar Raj
+                </button>
+                <button class="resident-btn" id="btn-resident-4" style="border-color: #F59E0B; background: transparent;" onclick="selectResidentForAnalytics(4)">
+                    Fatimah Ibrahim
+                </button>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Current Vitals Overview -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-heartbeat"></i> Current Vitals - <span id="selectedResidentName">All Residents</span></h3>
+                        <span class="card-badge">Live</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="health-metrics-grid" id="currentVitals"></div>
+                    </div>
+                </div>
+
+                <!-- Row: Heart Rate & Blood Pressure Trends -->
+                <div class="grid-row">
+                    <!-- Heart Rate Trend -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-heartbeat"></i> Heart Rate Trend (24h)</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="heartRateChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blood Pressure Trend -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-tint"></i> Blood Pressure Trend (24h)</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="bloodPressureChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row: Blood Sugar & Temperature Trends -->
+                <div class="grid-row">
+                    <!-- Blood Sugar Trend -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-syringe"></i> Blood Sugar Trend (24h)</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="bloodSugarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Temperature Trend -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-thermometer-half"></i> Body Temperature Trend (24h)</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="temperatureChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Health Prediction -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-brain"></i> AI Health Stability Prediction</h3>
+                        <span class="card-badge">AI Powered</span>
+                    </div>
+                    <div class="card-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Resident</th>
+                                    <th>Current Stability</th>
+                                    <th>Trend (7 days)</th>
+                                    <th>Risk Factors</th>
+                                    <th>Recommendations</th>
+                                </tr>
+                            </thead>
+                            <tbody id="aiPredictionTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Health Summary Report -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-file-medical"></i> Weekly Health Summary</h3>
+                    </div>
+                    <div class="card-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Resident</th>
+                                    <th>Avg Heart Rate</th>
+                                    <th>Avg BP</th>
+                                    <th>Avg Sugar</th>
+                                    <th>Sleep Quality</th>
+                                    <th>Activity Level</th>
+                                    <th>Overall Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="healthSummaryTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        let selectedResident = 'all';  // Changed default to 'all'
+        let charts = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.elderlyData) {
+                renderResidentsList();
+                renderCurrentVitals(selectedResident);
+                initializeHealthCharts();
+                renderAIPredictionTable();
+                renderHealthSummaryTable();
+            }
+        });
+
+        function renderResidentsList() {
+            const container = document.getElementById('residentsList');
+            if (!container || !window.elderlyData) return;
+
+            container.innerHTML = window.elderlyData.elderlyList.map(resident => `
+                <div class="resident-card" style="border-left-color: ${resident.personal.color}">
+                    <div class="resident-header">
+                        <div class="resident-name">
+                            <span class="status-indicator ${resident.vitals.heartRate.status}"></span>
+                            ${resident.personal.fullName}
+                        </div>
+                    </div>
+                    <div class="resident-info">
+                        <span>Age: ${resident.personal.age}</span>
+                        <span>HR: ${resident.vitals.heartRate.current} ${resident.vitals.heartRate.unit}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectResidentForAnalytics(residentId) {
+            selectedResident = residentId;
+
+            // Update button styles
+            const allBtn = document.getElementById('btn-resident-all');
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`btn-resident-${i}`);
+                if (residentId === 'all') {
+                    btn.classList.remove('active');
+                    btn.style.background = 'transparent';
+                } else if (i === residentId) {
+                    btn.classList.add('active');
+                    btn.style.background = btn.style.borderColor;
+                } else {
+                    btn.classList.remove('active');
+                    btn.style.background = 'transparent';
+                }
+            }
+
+            // Update All button style
+            if (residentId === 'all') {
+                allBtn.classList.add('active');
+                allBtn.style.background = '#6366f1';
+                allBtn.style.color = 'white';
+            } else {
+                allBtn.classList.remove('active');
+                allBtn.style.background = 'transparent';
+                allBtn.style.color = 'var(--text-primary)';
+            }
+
+            renderCurrentVitals(residentId);
+            updateHealthCharts();
+            renderAIPredictionTable();
+            renderHealthSummaryTable();
+        }
+
+        function renderCurrentVitals(residentId) {
+            if (residentId === 'all') {
+                // Show all residents
+                document.getElementById('selectedResidentName').textContent = 'All Residents';
+
+                const vitalsHtml = window.elderlyData.elderlyList.map(resident => `
+                    <div class="metric-card" style="border-left: 3px solid ${resident.personal.color}">
+                        <h4 style="color: ${resident.personal.color}; font-weight: 700;">${resident.personal.fullName}</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; text-align: left;">
+                            <div>
+                                <div style="font-size: 10px; color: var(--text-secondary);">Heart Rate</div>
+                                <div style="font-size: 16px; font-weight: 600;">${resident.vitals.heartRate.current} ${resident.vitals.heartRate.unit}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 10px; color: var(--text-secondary);">Blood Pressure</div>
+                                <div style="font-size: 16px; font-weight: 600;">${resident.vitals.bloodPressure.systolic}/${resident.vitals.bloodPressure.diastolic}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 10px; color: var(--text-secondary);">Blood Sugar</div>
+                                <div style="font-size: 16px; font-weight: 600;">${resident.vitals.bloodSugar.current} ${resident.vitals.bloodSugar.unit}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 10px; color: var(--text-secondary);">Temperature</div>
+                                <div style="font-size: 16px; font-weight: 600;">${resident.vitals.temperature.current}°C</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('currentVitals').innerHTML = vitalsHtml;
+            } else {
+                // Show single resident
+                const resident = window.elderlyData.elderlyList[residentId - 1];
+                document.getElementById('selectedResidentName').textContent = resident.personal.fullName;
+
+                const vitalsHtml = `
+                    <div class="metric-card">
+                        <h4>Heart Rate</h4>
+                        <div class="metric-value" style="color: ${resident.personal.color}">${resident.vitals.heartRate.current}</div>
+                        <div class="metric-unit">${resident.vitals.heartRate.unit}</div>
+                        <div class="metric-status status-${resident.vitals.heartRate.status}">${resident.vitals.heartRate.status.toUpperCase()}</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Blood Pressure</h4>
+                        <div class="metric-value" style="color: ${resident.personal.color}">${resident.vitals.bloodPressure.systolic}/${resident.vitals.bloodPressure.diastolic}</div>
+                        <div class="metric-unit">${resident.vitals.bloodPressure.unit}</div>
+                        <div class="metric-status status-${resident.vitals.bloodPressure.status}">${resident.vitals.bloodPressure.status.toUpperCase()}</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Blood Sugar</h4>
+                        <div class="metric-value" style="color: ${resident.personal.color}">${resident.vitals.bloodSugar.current}</div>
+                        <div class="metric-unit">${resident.vitals.bloodSugar.unit}</div>
+                        <div class="metric-status status-${resident.vitals.bloodSugar.status}">${resident.vitals.bloodSugar.status.toUpperCase()}</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Temperature</h4>
+                        <div class="metric-value" style="color: ${resident.personal.color}">${resident.vitals.temperature.current}</div>
+                        <div class="metric-unit">${resident.vitals.temperature.unit}</div>
+                        <div class="metric-status status-${resident.vitals.temperature.status}">${resident.vitals.temperature.status.toUpperCase()}</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>AI Prediction</h4>
+                        <div class="metric-value" style="color: ${resident.personal.color}">${resident.activity.aiPrediction}%</div>
+                        <div class="metric-unit">Health Stability</div>
+                        <div class="metric-status status-normal">STABLE</div>
+                    </div>
+                `;
+
+                document.getElementById('currentVitals').innerHTML = vitalsHtml;
+            }
+        }
+
+        function initializeHealthCharts() {
+            // For "all" view, show all residents
+            if (selectedResident === 'all') {
+                // Show all residents' data
+                const labels = window.elderlyData.healthChartData.labels;
+                
+                // Heart Rate Chart
+                charts.heartRate = new Chart(document.getElementById('heartRateChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: window.elderlyData.elderlyList.map(resident => ({
+                            label: resident.personal.fullName,
+                            data: window.elderlyData.healthChartData.heartRate[resident.personal.name],
+                            borderColor: resident.personal.color,
+                            backgroundColor: resident.personal.color + '20',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false
+                        }))
+                    },
+                    options: getChartOptions('Heart Rate (bpm)', true)
+                });
+
+                // Blood Pressure Chart
+                charts.bloodPressure = new Chart(document.getElementById('bloodPressureChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: window.elderlyData.elderlyList.map(resident => ({
+                            label: resident.personal.fullName,
+                            data: window.elderlyData.healthChartData.bloodPressure[resident.personal.name],
+                            borderColor: resident.personal.color,
+                            backgroundColor: resident.personal.color + '20',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false
+                        }))
+                    },
+                    options: getChartOptions('Blood Pressure (mmHg)', true)
+                });
+
+                // Blood Sugar Chart
+                charts.bloodSugar = new Chart(document.getElementById('bloodSugarChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: window.elderlyData.elderlyList.map(resident => ({
+                            label: resident.personal.fullName,
+                            data: window.elderlyData.healthChartData.bloodSugar[resident.personal.name],
+                            borderColor: resident.personal.color,
+                            backgroundColor: resident.personal.color + '20',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false
+                        }))
+                    },
+                    options: getChartOptions('Blood Sugar (mmol/L)', true)
+                });
+
+                // Temperature Chart
+                charts.temperature = new Chart(document.getElementById('temperatureChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: window.elderlyData.elderlyList.map(resident => ({
+                            label: resident.personal.fullName,
+                            data: window.elderlyData.healthChartData.temperature[resident.personal.name],
+                            borderColor: resident.personal.color,
+                            backgroundColor: resident.personal.color + '20',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false
+                        }))
+                    },
+                    options: getChartOptions('Temperature (°C)', true)
+                });
+            } else {
+                const resident = window.elderlyData.elderlyList[selectedResident - 1];
+                const labels = window.elderlyData.healthChartData.labels;
+
+                // Heart Rate Chart
+                charts.heartRate = new Chart(document.getElementById('heartRateChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Heart Rate (bpm)',
+                            data: window.elderlyData.healthChartData.heartRate[resident.personal.name],
+                            borderColor: resident.personal.color,
+                            backgroundColor: resident.personal.color + '20',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: getChartOptions('Heart Rate (bpm)', false)
+                });
+
+                // Blood Pressure Chart
+                charts.bloodPressure = new Chart(document.getElementById('bloodPressureChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Systolic (mmHg)',
+                            data: window.elderlyData.healthChartData.bloodPressure[resident.personal.name],
+                            borderColor: resident.personal.color,
+                            backgroundColor: resident.personal.color + '20',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: getChartOptions('Blood Pressure (mmHg)', false)
+                });
+
+                // Blood Sugar Chart
+                charts.bloodSugar = new Chart(document.getElementById('bloodSugarChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Blood Sugar (mmol/L)',
+                            data: window.elderlyData.healthChartData.bloodSugar[resident.personal.name],
+                            borderColor: resident.personal.color,
+                            backgroundColor: resident.personal.color + '20',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: getChartOptions('Blood Sugar (mmol/L)', false)
+                });
+
+                // Temperature Chart
+                charts.temperature = new Chart(document.getElementById('temperatureChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Temperature (°C)',
+                            data: window.elderlyData.healthChartData.temperature[resident.personal.name],
+                            borderColor: resident.personal.color,
+                            backgroundColor: resident.personal.color + '20',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: getChartOptions('Temperature (°C)', false)
+                });
+            }
+        }
+
+        function updateHealthCharts() {
+            if (selectedResident === 'all') {
+                // Show all residents
+                Object.keys(charts).forEach(chartKey => {
+                    const chart = charts[chartKey];
+                    chart.data.datasets = window.elderlyData.elderlyList.map(resident => ({
+                        label: resident.personal.fullName,
+                        data: window.elderlyData.healthChartData[chartKey][resident.personal.name],
+                        borderColor: resident.personal.color,
+                        backgroundColor: resident.personal.color + '20',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: false
+                    }));
+                    chart.options.plugins.legend.display = true;
+                    chart.update();
+                });
+            } else {
+                // Show single resident
+                const resident = window.elderlyData.elderlyList[selectedResident - 1];
+
+                Object.keys(charts).forEach(chartKey => {
+                    const chart = charts[chartKey];
+                    chart.data.datasets = [{
+                        label: chartKey.replace(/([A-Z])/g, ' $1').trim(),
+                        data: window.elderlyData.healthChartData[chartKey][resident.personal.name],
+                        borderColor: resident.personal.color,
+                        backgroundColor: resident.personal.color + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }];
+                    chart.options.plugins.legend.display = false;
+                    chart.update();
+                });
+            }
+        }
+
+        function getChartOptions(title, showLegend = false) {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: showLegend,
+                        position: 'top',
+                        labels: {
+                            color: '#64748b',
+                            font: {
+                                size: 11,
+                                weight: '600'
+                            },
+                            padding: 10,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            color: '#64748b'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            color: '#64748b'
+                        }
+                    }
+                }
+            };
+        }
+
+        function renderAIPredictionTable() {
+            const tbody = document.getElementById('aiPredictionTable');
+            const predictions = [
+                { stability: 85, trend: '+3%', risks: 'Hypertension, Diabetes', recommendations: 'Monitor BP regularly, reduce salt intake' },
+                { stability: 92, trend: '+1%', risks: 'Low activity', recommendations: 'Encourage light exercise, increase mobility' },
+                { stability: 78, trend: '-5%', risks: 'Heart Disease, Memory', recommendations: 'Frequent vitals check, cognitive activities' },
+                { stability: 95, trend: '+2%', risks: 'Osteoporosis', recommendations: 'Continue current routine, calcium supplements' }
+            ];
+
+            let residentsToShow;
+            if (selectedResident === 'all') {
+                residentsToShow = window.elderlyData.elderlyList.map((resident, index) => ({ resident, index }));
+            } else {
+                const index = selectedResident - 1;
+                residentsToShow = [{ resident: window.elderlyData.elderlyList[index], index }];
+            }
+
+            tbody.innerHTML = residentsToShow.map(({ resident, index }) => `
+                <tr>
+                    <td>
+                        <div class="resident-name-cell">
+                            <div class="resident-color-dot" style="background: ${resident.personal.color}"></div>
+                            ${resident.personal.fullName}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge ${predictions[index].stability > 85 ? 'status-normal' : predictions[index].stability > 70 ? 'status-warning' : 'status-critical'}">
+                            ${predictions[index].stability}% Stable
+                        </span>
+                    </td>
+                    <td style="color: ${predictions[index].trend.includes('+') ? '#10b981' : '#ef4444'}">${predictions[index].trend}</td>
+                    <td style="color: var(--text-secondary)">${predictions[index].risks}</td>
+                    <td>${predictions[index].recommendations}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderHealthSummaryTable() {
+            const tbody = document.getElementById('healthSummaryTable');
+            const summaries = [
+                { avgHR: 72, avgBP: '145/90', avgSugar: 6.2, sleep: 'Good (7.2h)', activity: 'Moderate', status: 'warning' },
+                { avgHR: 68, avgBP: '128/82', avgSugar: 5.8, sleep: 'Fair (6.5h)', activity: 'Low', status: 'normal' },
+                { avgHR: 76, avgBP: '132/85', avgSugar: 5.4, sleep: 'Excellent (8.1h)', activity: 'High', status: 'normal' },
+                { avgHR: 70, avgBP: '135/88', avgSugar: 6.0, sleep: 'Good (7.8h)', activity: 'High', status: 'normal' }
+            ];
+
+            let residentsToShow;
+            if (selectedResident === 'all') {
+                residentsToShow = window.elderlyData.elderlyList.map((resident, index) => ({ resident, index }));
+            } else {
+                const index = selectedResident - 1;
+                residentsToShow = [{ resident: window.elderlyData.elderlyList[index], index }];
+            }
+
+            tbody.innerHTML = residentsToShow.map(({ resident, index }) => `
+                <tr>
+                    <td>
+                        <div class="resident-name-cell">
+                            <div class="resident-color-dot" style="background: ${resident.personal.color}"></div>
+                            ${resident.personal.fullName}
+                        </div>
+                    </td>
+                    <td>${summaries[index].avgHR} bpm</td>
+                    <td>${summaries[index].avgBP} mmHg</td>
+                    <td>${summaries[index].avgSugar} mmol/L</td>
+                    <td>${summaries[index].sleep}</td>
+                    <td>${summaries[index].activity}</td>
+                    <td>
+                        <span class="status-badge status-${summaries[index].status}">
+                            ${summaries[index].status === 'normal' ? '✓ Healthy' : '⚠ Monitor'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Sticky Header Scroll Behavior
+        let lastScrollTop = 0;
+        const stickyHeader = document.getElementById('stickyHeader');
+        const scrollThreshold = 100;
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > scrollThreshold) {
+                if (scrollTop > lastScrollTop) {
+                    stickyHeader.classList.add('hidden');
+                } else {
+                    stickyHeader.classList.remove('hidden');
+                }
+            } else {
+                stickyHeader.classList.remove('hidden');
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, false);
+
+        // Emergency SOS function
+        function triggerSOS() {
+            if (confirm('⚠️ EMERGENCY SOS ACTIVATED\n\nThis will:\n✓ Call Emergency Services (999)\n✓ Alert All Family Members\n✓ Activate All Cameras\n✓ Unlock All Doors\n✓ Send Location to Responders\n\nDo you want to proceed?')) {
+                alert('🚨 EMERGENCY RESPONSE INITIATED\n\nEmergency services have been notified.\nFamily members are being alerted.\nAll safety protocols activated.');
+            }
+        }
+    </script>
+</body>
+</html>

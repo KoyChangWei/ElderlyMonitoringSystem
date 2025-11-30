@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety & Emergency - ElderCare AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .emergency-sos {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+        }
+
+        .sos-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: white;
+            color: #dc2626;
+            border: 8px solid rgba(255,255,255,0.3);
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .sos-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        .sos-button:active {
+            transform: scale(0.95);
+        }
+
+        .sos-button i {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .emergency-info {
+            color: white;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .sensor-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .sensor-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: var(--status-info);
+        }
+
+        .sensor-name {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .sensor-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .sensor-battery {
+            font-size: 11px;
+            color: var(--status-normal);
+        }
+
+        .location-map {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--border-color);
+        }
+
+        .map-placeholder {
+            text-align: center;
+        }
+
+        .map-placeholder i {
+            font-size: 64px;
+            color: var(--status-normal);
+            margin-bottom: 16px;
+        }
+
+        .location-status {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--status-normal);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .bed-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            text-align: center;
+        }
+
+        .metric-box h5 {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .metric-box .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--status-info);
+        }
+
+        .metric-box .unit {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .alert-history {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alert-history-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-md);
+            border-left: 3px solid;
+        }
+
+        .alert-history-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .camera-status {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .camera-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .camera-item i {
+            font-size: 20px;
+            color: var(--status-normal);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Top Header -->
+    <div class="sticky-top-header" id="stickyHeader">
+        <div class="sticky-header-content">
+            <div class="sticky-header-title">
+                <i class="fas fa-shield-alt"></i>
+                <h2>ElderCare AI - Safety & Emergency</h2>
+            </div>
+            <button class="btn-sos-header" onclick="triggerSOS()">
+                <i class="fas fa-phone-alt"></i>
+                <span>Emergency SOS</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            </div>
+
+            <nav class="nav-menu">
+                <h3>Navigation</h3>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i> Overview
+                </a>
+                <a href="health-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i> Health Analytics
+                </a>
+                <a href="robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i> Robot Control
+                </a>
+                <a href="emergency.html" class="nav-item active">
+                    <i class="fas fa-exclamation-triangle"></i> Safety & Emergency
+                </a>
+                <a href="smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i> Smart Home IoT
+                </a>
+                <a href="medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i> Medication
+                </a>
+                <a href="user-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i> User Management
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-title">
+                    <!-- Page title removed - redundant with sticky header -->
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Row 1: Fall Detection & Location Tracking -->
+                <div class="grid-row">
+                    <!-- AI Fall Detection with CCTV Views -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-running"></i> AI Fall Detection</h3>
+                            <span class="card-badge safe">0 Falls Detected</span>
+                        </div>
+                        <div class="card-content">
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px;">
+                                <!-- Camera 1: Living Room -->
+                                <div style="position: relative; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                    <img src="../assets/CCTV-livingroom.png" alt="Living Room Camera" style="width: 100%; height: auto; display: block;">
+
+                                    <!-- Live Badge -->
+                                    <div style="position: absolute; top: 12px; right: 12px; background: #10b981; padding: 5px 12px; border-radius: 6px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: white;">
+                                        <div style="width: 6px; height: 6px; background: white; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+                                        LIVE
+                                    </div>
+
+                                    <!-- Status Overlay -->
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 70%, transparent 100%); padding: 16px 12px 12px;">
+                                        <div style="font-size: 10px; color: #94a3b8; margin-bottom: 4px;">
+                                            <i class="fas fa-check-circle" style="color: #10b981; margin-right: 4px;"></i>
+                                            Status: <strong style="color: #10b981;">RESIDENT DETECTED</strong>
+                                        </div>
+                                        <div style="font-size: 11px; font-weight: 600; color: #3B82F6;">26s ago - 1D FALL DETECTED - Subject: Ah Chong</div>
+                                    </div>
+                                </div>
+
+                                <!-- Camera 2: Kitchen -->
+                                <div style="position: relative; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                    <img src="../assets/CCTV2-kitchen.png" alt="Kitchen Camera" style="width: 100%; height: auto; display: block;">
+
+                                    <!-- Live Badge -->
+                                    <div style="position: absolute; top: 12px; right: 12px; background: #10b981; padding: 5px 12px; border-radius: 6px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: white;">
+                                        <div style="width: 6px; height: 6px; background: white; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+                                        LIVE
+                                    </div>
+
+                                    <!-- Status Overlay -->
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 70%, transparent 100%); padding: 16px 12px 12px;">
+                                        <div style="font-size: 10px; color: #94a3b8; margin-bottom: 4px;">
+                                            <i class="fas fa-check-circle" style="color: #10b981; margin-right: 4px;"></i>
+                                            Status: <strong style="color: #10b981;">MONITORING - ROOM EMPTY</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Camera 3: Bedroom -->
+                                <div style="position: relative; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                    <img src="../assets/CCTV3-bedroom.png" alt="Bedroom Camera" style="width: 100%; height: auto; display: block;">
+
+                                    <!-- Live Badge -->
+                                    <div style="position: absolute; top: 12px; right: 12px; background: #10b981; padding: 5px 12px; border-radius: 6px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: white;">
+                                        <div style="width: 6px; height: 6px; background: white; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+                                        LIVE
+                                    </div>
+
+                                    <!-- Status Overlay -->
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 70%, transparent 100%); padding: 16px 12px 12px;">
+                                        <div style="font-size: 10px; color: #94a3b8; margin-bottom: 4px;">
+                                            <i class="fas fa-check-circle" style="color: #10b981; margin-right: 4px;"></i>
+                                            Status: <strong style="color: #10b981;">MONITORING - ROOM EMPTY</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Camera 4: Dining Room -->
+                                <div style="position: relative; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                    <img src="../assets/CCTV4-dining room.png" alt="Dining Room Camera" style="width: 100%; height: auto; display: block;">
+
+                                    <!-- Live Badge -->
+                                    <div style="position: absolute; top: 12px; right: 12px; background: #10b981; padding: 5px 12px; border-radius: 6px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: white;">
+                                        <div style="width: 6px; height: 6px; background: white; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+                                        LIVE
+                                    </div>
+
+                                    <!-- Status Overlay -->
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 70%, transparent 100%); padding: 16px 12px 12px;">
+                                        <div style="font-size: 10px; color: #94a3b8; margin-bottom: 4px;">
+                                            <i class="fas fa-check-circle" style="color: #10b981; margin-right: 4px;"></i>
+                                            Status: <strong style="color: #10b981;">MONITORING - ROOM EMPTY</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- All Systems Operational -->
+                            <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; border-radius: 8px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+                                <i class="fas fa-check-circle" style="color: #10b981; font-size: 18px;"></i>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 13px; color: var(--text-primary); margin-bottom: 2px;">All Systems Operational</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Cameras Active • Real-time AI</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location Tracking -->
+                    <div class="card card-medium">
+                        <div class="card-header">
+                            <h3><i class="fas fa-map-marker-alt"></i> Location Tracking</h3>
+                        </div>
+                        <div class="card-content">
+                            <div style="position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                <img src="../assets/location.png" alt="House Floor Plan" style="width: 100%; height: auto; display: block;">
+
+                                <!-- Pin 1: Ah Chong (Living Room) -->
+                                <div style="position: absolute; top: 45%; left: 30%; transform: translate(-50%, -50%);">
+                                    <div style="position: relative;">
+                                        <i class="fas fa-map-marker-alt" style="font-size: 28px; color: #3B82F6; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i>
+                                        <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: rgba(59, 130, 246, 0.95); padding: 4px 8px; border-radius: 4px; white-space: nowrap; font-size: 10px; font-weight: 700;">
+                                            Ah Chong
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pin 2: Mei Ling (Bedroom) -->
+                                <div style="position: absolute; top: 25%; left: 65%; transform: translate(-50%, -50%);">
+                                    <div style="position: relative;">
+                                        <i class="fas fa-map-marker-alt" style="font-size: 28px; color: #8B5CF6; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i>
+                                        <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: rgba(139, 92, 246, 0.95); padding: 4px 8px; border-radius: 4px; white-space: nowrap; font-size: 10px; font-weight: 700;">
+                                            Mei Ling
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pin 3: Kumar (Garden) -->
+                                <div style="position: absolute; top: 70%; left: 75%; transform: translate(-50%, -50%);">
+                                    <div style="position: relative;">
+                                        <i class="fas fa-map-marker-alt" style="font-size: 28px; color: #14B8A6; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i>
+                                        <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: rgba(20, 184, 166, 0.95); padding: 4px 8px; border-radius: 4px; white-space: nowrap; font-size: 10px; font-weight: 700;">
+                                            Kumar
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pin 4: Fatimah (Dining Room) -->
+                                <div style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%);">
+                                    <div style="position: relative;">
+                                        <i class="fas fa-map-marker-alt" style="font-size: 28px; color: #F59E0B; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i>
+                                        <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: rgba(245, 158, 11, 0.95); padding: 4px 8px; border-radius: 4px; white-space: nowrap; font-size: 10px; font-weight: 700;">
+                                            Fatimah
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Legend -->
+                                <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 6px; font-size: 10px;">
+                                    <div style="margin-bottom: 4px;"><strong>Real-Time Tracking</strong></div>
+                                    <div><i class="fas fa-circle" style="color: #10b981; font-size: 8px;"></i> All residents monitored</div>
+                                </div>
+                            </div>
+
+                            <!-- GPS Status -->
+                            <div style="margin-top: 16px;">
+                                <!-- GPS Active Card -->
+                                <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; border-radius: 8px; padding: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                        <i class="fas fa-signal" style="color: #10b981; font-size: 14px;"></i>
+                                        <div style="font-weight: 700; font-size: 12px; color: var(--text-primary);">GPS Active - Living Room</div>
+                                    </div>
+                                    <div style="font-size: 10px; color: var(--text-secondary);">Signal: Excellent • Updated: Just now</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Smart Bed Monitoring Systems -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bed"></i> Safety Monitoring Devices</h3>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                            <!-- Bed 1: Ah Chong Tan -->
+                            <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="width: 64px; height: 64px; background: #5B7FDB; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                        <i class="fas fa-bed" style="font-size: 28px; color: white;"></i>
+                                    </div>
+                                    <div style="font-weight: 700; font-size: 14px; color: #3B82F6; margin-bottom: 4px;">Ah Chong Tan</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">Bedroom - Main Bed</div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-lungs" style="color: #5B7FDB;"></i> Breathing Rate</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">16</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">breaths/min</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-wave-square" style="color: #5B7FDB;"></i> Movement</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Normal</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">Activity Status</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-clock" style="color: #5B7FDB;"></i> Time in Bed</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">2h 15m</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">Current Session</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-door-open" style="color: #5B7FDB;"></i> Bed Exits</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">3</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">Today</div>
+                                    </div>
+                                </div>
+
+                                <div style="background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; border-radius: 6px; padding: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-check-circle" style="color: #10b981; font-size: 12px;"></i>
+                                        <div style="font-weight: 600; font-size: 11px; color: var(--text-primary);">Occupied • Monitoring Active</div>
+                                    </div>
+                                    <div style="font-size: 9px; color: var(--text-secondary); margin-top: 4px;">Last update: Just now</div>
+                                </div>
+                            </div>
+
+                            <!-- Bed 2: Mei Ling Wong -->
+                            <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="width: 64px; height: 64px; background: #8B5CF6; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                        <i class="fas fa-bed" style="font-size: 28px; color: white;"></i>
+                                    </div>
+                                    <div style="font-weight: 700; font-size: 14px; color: #8B5CF6; margin-bottom: 4px;">Mei Ling Wong</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">Bedroom B - Single Bed</div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-lungs" style="color: #8B5CF6;"></i> Breathing Rate</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">14</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">breaths/min</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-wave-square" style="color: #8B5CF6;"></i> Movement</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Low</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">Activity Status</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-clock" style="color: #8B5CF6;"></i> Time in Bed</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Empty</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">---</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-door-open" style="color: #8B5CF6;"></i> Bed Exits</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">5</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">Today</div>
+                                    </div>
+                                </div>
+
+                                <div style="background: rgba(148, 163, 184, 0.1); border-left: 3px solid #94a3b8; border-radius: 6px; padding: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-circle" style="color: #94a3b8; font-size: 12px;"></i>
+                                        <div style="font-weight: 600; font-size: 11px; color: var(--text-primary);">Empty • Monitoring Active</div>
+                                    </div>
+                                    <div style="font-size: 9px; color: var(--text-secondary); margin-top: 4px;">Last occupied: 3h ago</div>
+                                </div>
+                            </div>
+
+                            <!-- Bed 3: Kumar Raj -->
+                            <div style="background: rgba(20, 184, 166, 0.05); border: 1px solid rgba(20, 184, 166, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="width: 64px; height: 64px; background: #14B8A6; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                        <i class="fas fa-bed" style="font-size: 28px; color: white;"></i>
+                                    </div>
+                                    <div style="font-weight: 700; font-size: 14px; color: #14B8A6; margin-bottom: 4px;">Kumar Raj</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">Bedroom C - Single Bed</div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-lungs" style="color: #14B8A6;"></i> Breathing Rate</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">15</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">breaths/min</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-wave-square" style="color: #14B8A6;"></i> Movement</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Normal</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">Activity Status</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-clock" style="color: #14B8A6;"></i> Time in Bed</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Empty</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">---</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-door-open" style="color: #14B8A6;"></i> Bed Exits</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">2</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">Today</div>
+                                    </div>
+                                </div>
+
+                                <div style="background: rgba(148, 163, 184, 0.1); border-left: 3px solid #94a3b8; border-radius: 6px; padding: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-circle" style="color: #94a3b8; font-size: 12px;"></i>
+                                        <div style="font-weight: 600; font-size: 11px; color: var(--text-primary);">Empty • Monitoring Active</div>
+                                    </div>
+                                    <div style="font-size: 9px; color: var(--text-secondary); margin-top: 4px;">Last occupied: 1h ago</div>
+                                </div>
+                            </div>
+
+                            <!-- Bed 4: Fatimah Ibrahim -->
+                            <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="width: 64px; height: 64px; background: #F59E0B; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                        <i class="fas fa-bed" style="font-size: 28px; color: white;"></i>
+                                    </div>
+                                    <div style="font-weight: 700; font-size: 14px; color: #F59E0B; margin-bottom: 4px;">Fatimah Ibrahim</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">Bedroom D - Single Bed</div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-lungs" style="color: #F59E0B;"></i> Breathing Rate</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">17</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">breaths/min</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-wave-square" style="color: #F59E0B;"></i> Movement</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Normal</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">Activity Status</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-clock" style="color: #F59E0B;"></i> Time in Bed</div>
+                                        <div style="font-size: 16px; font-weight: 700; color: var(--text-primary);">Empty</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">---</div>
+                                    </div>
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px;"><i class="fas fa-door-open" style="color: #F59E0B;"></i> Bed Exits</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">4</div>
+                                        <div style="font-size: 9px; color: var(--text-secondary);">Today</div>
+                                    </div>
+                                </div>
+
+                                <div style="background: rgba(148, 163, 184, 0.1); border-left: 3px solid #94a3b8; border-radius: 6px; padding: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-circle" style="color: #94a3b8; font-size: 12px;"></i>
+                                        <div style="font-weight: 600; font-size: 11px; color: var(--text-primary);">Empty • Monitoring Active</div>
+                                    </div>
+                                    <div style="font-size: 9px; color: var(--text-secondary); margin-top: 4px;">Last occupied: 30m ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Wearable Sensors -->
+                <div class="grid-row">
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-shoe-prints"></i> Wearable Sensors Monitoring</h3>
+                            <span class="card-badge robot-active">4 Residents Active</span>
+                        </div>
+                        <div class="card-content">
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+
+                                <!-- Resident 1: Ah Chong Tan -->
+                                <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 14px;">
+                                    <div style="text-align: center; margin-bottom: 16px;">
+                                        <div style="font-weight: 700; font-size: 14px; color: #3B82F6; margin-bottom: 4px;">Ah Chong Tan</div>
+                                        <div style="font-size: 11px; color: var(--text-secondary);">Active Monitoring</div>
+                                    </div>
+
+                                    <!-- Smart Shoes -->
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                            <div style="width: 40px; height: 40px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 18px; color: white;"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 12px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 10px; color: var(--status-normal); margin-top: 2px;">
+                                                    <i class="fas fa-check-circle"></i> Currently Worn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-shoe-prints"></i> Steps</span>
+                                            <strong>5,243</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-person-falling"></i> Falls</span>
+                                            <strong style="color: var(--status-normal);">0</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-battery-three-quarters"></i> Battery</span>
+                                            <strong>92%</strong>
+                                        </div>
+                                    </div>
+
+                                    <!-- Emergency Pendant -->
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                            <div style="width: 40px; height: 40px; background: #EF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-heart-pulse" style="font-size: 18px; color: white;"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 12px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 10px; color: var(--status-normal); margin-top: 2px;">
+                                                    <i class="fas fa-check-circle"></i> Currently Worn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-exclamation-circle"></i> SOS</span>
+                                            <strong style="color: var(--status-normal);">Safe</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-person-falling"></i> Falls</span>
+                                            <strong style="color: var(--status-normal);">0</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-battery-full"></i> Battery</span>
+                                            <strong>85%</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Resident 2: Mei Ling Wong -->
+                                <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 14px;">
+                                    <div style="text-align: center; margin-bottom: 16px;">
+                                        <div style="font-weight: 700; font-size: 14px; color: #8B5CF6; margin-bottom: 4px;">Mei Ling Wong</div>
+                                        <div style="font-size: 11px; color: var(--text-secondary);">Active Monitoring</div>
+                                    </div>
+
+                                    <!-- Smart Shoes -->
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                            <div style="width: 40px; height: 40px; background: #8B5CF6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 18px; color: white;"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 12px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">
+                                                    <i class="fas fa-times-circle"></i> Not Worn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-shoe-prints"></i> Steps</span>
+                                            <strong>3,892</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-person-falling"></i> Falls</span>
+                                            <strong style="color: var(--status-normal);">0</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-battery-three-quarters"></i> Battery</span>
+                                            <strong>78%</strong>
+                                        </div>
+                                    </div>
+
+                                    <!-- Emergency Pendant -->
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                            <div style="width: 40px; height: 40px; background: #EF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-heart-pulse" style="font-size: 18px; color: white;"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 12px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 10px; color: var(--status-normal); margin-top: 2px;">
+                                                    <i class="fas fa-check-circle"></i> Currently Worn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-exclamation-circle"></i> SOS</span>
+                                            <strong style="color: var(--status-normal);">Safe</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-person-falling"></i> Falls</span>
+                                            <strong style="color: var(--status-normal);">0</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-battery-full"></i> Battery</span>
+                                            <strong>91%</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Resident 3: Kumar Raj -->
+                                <div style="background: rgba(20, 184, 166, 0.05); border: 1px solid rgba(20, 184, 166, 0.2); border-radius: 12px; padding: 14px;">
+                                    <div style="text-align: center; margin-bottom: 16px;">
+                                        <div style="font-weight: 700; font-size: 14px; color: #14B8A6; margin-bottom: 4px;">Kumar Raj</div>
+                                        <div style="font-size: 11px; color: var(--text-secondary);">Active Monitoring</div>
+                                    </div>
+
+                                    <!-- Smart Shoes -->
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                            <div style="width: 40px; height: 40px; background: #14B8A6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 18px; color: white;"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 12px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 10px; color: var(--status-normal); margin-top: 2px;">
+                                                    <i class="fas fa-check-circle"></i> Currently Worn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-shoe-prints"></i> Steps</span>
+                                            <strong>6,781</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-person-falling"></i> Falls</span>
+                                            <strong style="color: var(--status-normal);">0</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-battery-full"></i> Battery</span>
+                                            <strong>88%</strong>
+                                        </div>
+                                    </div>
+
+                                    <!-- Emergency Pendant -->
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                            <div style="width: 40px; height: 40px; background: #EF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-heart-pulse" style="font-size: 18px; color: white;"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 12px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 10px; color: var(--status-normal); margin-top: 2px;">
+                                                    <i class="fas fa-check-circle"></i> Currently Worn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-exclamation-circle"></i> SOS</span>
+                                            <strong style="color: var(--status-normal);">Safe</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-person-falling"></i> Falls</span>
+                                            <strong style="color: var(--status-normal);">0</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-battery-full"></i> Battery</span>
+                                            <strong>94%</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Resident 4: Fatimah Ibrahim -->
+                                <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 14px;">
+                                    <div style="text-align: center; margin-bottom: 16px;">
+                                        <div style="font-weight: 700; font-size: 14px; color: #F59E0B; margin-bottom: 4px;">Fatimah Ibrahim</div>
+                                        <div style="font-size: 11px; color: var(--text-secondary);">Active Monitoring</div>
+                                    </div>
+
+                                    <!-- Smart Shoes -->
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                            <div style="width: 40px; height: 40px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 18px; color: white;"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 12px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 10px; color: var(--status-normal); margin-top: 2px;">
+                                                    <i class="fas fa-check-circle"></i> Currently Worn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-shoe-prints"></i> Steps</span>
+                                            <strong>4,567</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-person-falling"></i> Falls</span>
+                                            <strong style="color: var(--status-normal);">0</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-battery-full"></i> Battery</span>
+                                            <strong>81%</strong>
+                                        </div>
+                                    </div>
+
+                                    <!-- Emergency Pendant -->
+                                    <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                            <div style="width: 40px; height: 40px; background: #EF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-heart-pulse" style="font-size: 18px; color: white;"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 12px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">
+                                                    <i class="fas fa-times-circle"></i> Not Worn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-exclamation-circle"></i> SOS</span>
+                                            <strong style="color: var(--status-normal);">Safe</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-person-falling"></i> Falls</span>
+                                            <strong style="color: #94a3b8;">N/A</strong>
+                                        </div>
+                                        <div class="device-metric">
+                                            <span><i class="fas fa-battery-three-quarters"></i> Battery</span>
+                                            <strong>76%</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: AI Camera Monitoring & Emergency Contacts -->
+                <div class="grid-row" style="grid-template-columns: 2fr 1fr;">
+                    <!-- AI Activity Monitoring Summary -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-brain"></i> AI Activity Monitoring Summary</h3>
+                            <span class="card-badge robot-active">Real-Time Tracking</span>
+                        </div>
+                        <div class="card-content">
+                            <table class="data-table" style="font-size: 12px;">
+                                <thead>
+                                    <tr>
+                                        <th>Resident</th>
+                                        <th>Tracked Location</th>
+                                        <th>Activity</th>
+                                        <th>Last Update</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activityMonitoringTable">
+                                    <tr>
+                                        <td>
+                                            <div class="resident-name-cell">
+                                                <div class="resident-color-dot" style="background: #3B82F6;"></div>
+                                                Ah Chong Tan
+                                            </div>
+                                        </td>
+                                        <td><i class="fas fa-video" style="color: #10b981; margin-right: 4px;"></i>Living Room (CCTV)</td>
+                                        <td>Watching TV</td>
+                                        <td id="summary-idle-1" style="color: var(--text-secondary); font-size: 11px;">12s ago</td>
+                                        <td><span class="status-badge status-normal"><i class="fas fa-check-circle"></i> Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="resident-name-cell">
+                                                <div class="resident-color-dot" style="background: #8B5CF6;"></div>
+                                                Mei Ling Wong
+                                            </div>
+                                        </td>
+                                        <td><i class="fas fa-map-marker-alt" style="color: #10b981; margin-right: 4px;"></i>Room B (Bedroom)</td>
+                                        <td>Reading</td>
+                                        <td id="summary-idle-2" style="color: var(--text-secondary); font-size: 11px;">2m ago</td>
+                                        <td><span class="status-badge status-normal"><i class="fas fa-check-circle"></i> Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="resident-name-cell">
+                                                <div class="resident-color-dot" style="background: #14B8A6;"></div>
+                                                Kumar Raj
+                                            </div>
+                                        </td>
+                                        <td><i class="fas fa-map-marker-alt" style="color: #10b981; margin-right: 4px;"></i>Garden (Outside)</td>
+                                        <td>Walking/Exercise</td>
+                                        <td id="summary-idle-3" style="color: var(--text-secondary); font-size: 11px;">45s ago</td>
+                                        <td><span class="status-badge status-normal"><i class="fas fa-check-circle"></i> Active</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="resident-name-cell">
+                                                <div class="resident-color-dot" style="background: #F59E0B;"></div>
+                                                Fatimah Ibrahim
+                                            </div>
+                                        </td>
+                                        <td><i class="fas fa-map-marker-alt" style="color: #10b981; margin-right: 4px;"></i>Dining Room</td>
+                                        <td>Having Meal</td>
+                                        <td id="summary-idle-4" style="color: var(--text-secondary); font-size: 11px;">1m ago</td>
+                                        <td><span class="status-badge status-normal"><i class="fas fa-check-circle"></i> Active</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div style="margin-top: 16px; padding: 12px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border-left: 3px solid #10b981;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-check-circle" style="color: #10b981; font-size: 16px;"></i>
+                                    <div>
+                                        <strong style="color: #10b981;">All Clear: All Residents Active</strong><br>
+                                        <div style="font-size: 12px; margin-top: 4px; color: var(--text-secondary);">
+                                            All 4 residents are active and showing normal activity patterns. No alerts detected.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 12px; padding: 10px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; font-size: 11px; color: var(--text-secondary);">
+                                <strong style="color: var(--status-info); font-size: 12px;">AI Detection Features:</strong>
+                                Person ID • Fall Detection • Posture Analysis • Idle Time Tracking • Movement Monitoring
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-phone"></i> Emergency Contacts</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="contacts-list">
+                                <div class="contact-item">
+                                    <div class="contact-info">
+                                        <i class="fas fa-user-md"></i>
+                                        <div>
+                                            <strong>Dr. Ahmad Hassan</strong>
+                                            <span>Primary Physician</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <button class="btn-call" onclick="callContact('doctor')">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                        <button class="btn-call" onclick="videoCall('doctor')">
+                                            <i class="fas fa-video"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-info">
+                                        <i class="fas fa-user"></i>
+                                        <div>
+                                            <strong>Siti Tan</strong>
+                                            <span>Family (Daughter)</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <button class="btn-call" onclick="callContact('family')">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                        <button class="btn-call" onclick="videoCall('family')">
+                                            <i class="fas fa-video"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-info">
+                                        <i class="fas fa-ambulance"></i>
+                                        <div>
+                                            <strong>Emergency 999</strong>
+                                            <span>Ambulance Service</span>
+                                        </div>
+                                    </div>
+                                    <button class="btn-call emergency" onclick="callContact('emergency')">
+                                        <i class="fas fa-phone"></i>
+                                    </button>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-info">
+                                        <i class="fas fa-user-nurse"></i>
+                                        <div>
+                                            <strong>Nurse Maya</strong>
+                                            <span>Home Care Nurse</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <button class="btn-call" onclick="callContact('nurse')">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                        <button class="btn-call" onclick="videoCall('nurse')">
+                                            <i class="fas fa-video"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 4: Recent Safety Alerts -->
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-exclamation-circle"></i> Recent Safety Alerts</h3>
+                        <span class="card-badge status-normal">4 Alerts Today</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="alert-history" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div class="alert-history-item" style="border-left-color: var(--status-warning);">
+                                <div class="alert-history-icon" style="background: rgba(245, 158, 11, 0.2); color: var(--status-warning);">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 4px;">Near-Fall Detected - Kumar Raj</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">AI camera detected sudden posture change in hallway</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">2 hours ago • Garden Area</div>
+                                </div>
+                                <span class="status-badge status-normal">Resolved</span>
+                            </div>
+                            <div class="alert-history-item" style="border-left-color: var(--status-info);">
+                                <div class="alert-history-icon" style="background: rgba(59, 130, 246, 0.2); color: var(--status-info);">
+                                    <i class="fas fa-bed"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 4px;">Unusual Bed Activity - Ah Chong Tan</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">Restless movement detected, 5 bed exits in 30 minutes</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">5 hours ago • Bedroom</div>
+                                </div>
+                                <span class="status-badge status-active">Monitoring</span>
+                            </div>
+                            <div class="alert-history-item" style="border-left-color: var(--status-warning);">
+                                <div class="alert-history-icon" style="background: rgba(245, 158, 11, 0.2); color: var(--status-warning);">
+                                    <i class="fas fa-running"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 4px;">Low Activity Alert - Mei Ling Wong</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">Only 1,823 steps today, below daily average</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">8 hours ago</div>
+                                </div>
+                                <span class="status-badge status-normal">Resolved</span>
+                            </div>
+                            <div class="alert-history-item" style="border-left-color: var(--status-info);">
+                                <div class="alert-history-icon" style="background: rgba(59, 130, 246, 0.2); color: var(--status-info);">
+                                    <i class="fas fa-heartbeat"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 4px;">Irregular Breathing Pattern - Kumar Raj</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">Smart bed detected irregular breathing during sleep</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">Yesterday 11:30 PM • Bedroom</div>
+                                </div>
+                                <span class="status-badge status-normal">Resolved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.elderlyData) {
+                renderResidentsList();
+            }
+        });
+
+        function renderResidentsList() {
+            const container = document.getElementById('residentsList');
+            if (!container || !window.elderlyData) return;
+
+            container.innerHTML = window.elderlyData.elderlyList.map(resident => `
+                <div class="resident-card" style="border-left-color: ${resident.personal.color}">
+                    <div class="resident-header">
+                        <div class="resident-name">
+                            <span class="status-indicator ${resident.vitals.heartRate.status}"></span>
+                            ${resident.personal.fullName}
+                        </div>
+                    </div>
+                    <div class="resident-info">
+                        <span>Age: ${resident.personal.age}</span>
+                        <span>HR: ${resident.vitals.heartRate.current} ${resident.vitals.heartRate.unit}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function triggerSOS() {
+            if (confirm('🚨 ACTIVATE EMERGENCY SOS?\n\nThis will:\n• Call Emergency Services (999)\n• Alert all family members\n• Activate all cameras\n• Unlock all doors\n• Send location to responders\n\nConfirm activation?')) {
+                alert('🚨 EMERGENCY SOS ACTIVATED!\n\nAll emergency protocols initiated.\nHelp is on the way!');
+            }
+        }
+
+        function callContact(type) {
+            alert(`Calling ${type}...`);
+        }
+
+        function videoCall(type) {
+            alert(`Starting video call with ${type}...`);
+        }
+
+        // === AI ACTIVITY MONITORING - REAL-TIME IDLE TIMER ===
+        // Only Camera 1 (Living Room) has Ah Chong Tan visible
+        let camera1IdleSeconds = 12;
+
+        function formatIdleTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes}m ${secs}s`;
+        }
+
+        function updateIdleTimers() {
+            // Increment idle time for Camera 1
+            camera1IdleSeconds++;
+
+            // Format time
+            const timeStr = formatIdleTime(camera1IdleSeconds);
+
+            // Update camera overlay
+            const cameraElement = document.getElementById('camera1-idle');
+            if (cameraElement) {
+                cameraElement.textContent = timeStr;
+
+                // Update color based on idle time
+                if (camera1IdleSeconds > 900) { // 15 minutes
+                    cameraElement.style.color = '#ef4444'; // Red - Critical
+                } else if (camera1IdleSeconds > 600) { // 10 minutes
+                    cameraElement.style.color = '#f59e0b'; // Orange - Warning
+                } else {
+                    cameraElement.style.color = '#10b981'; // Green - Active
+                }
+            }
+
+            // Update summary table (Ah Chong Tan - last update time)
+            const summaryElement = document.getElementById('summary-idle-1');
+            if (summaryElement) {
+                summaryElement.textContent = timeStr + ' ago';
+            }
+        }
+
+        // Start real-time updates every second
+        setInterval(updateIdleTimers, 1000);
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateIdleTimers();
+        });
+
+        // Sticky Header Scroll Behavior
+        let lastScrollTop = 0;
+        const stickyHeader = document.getElementById('stickyHeader');
+        const scrollThreshold = 100;
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > scrollThreshold) {
+                if (scrollTop > lastScrollTop) {
+                    // Scrolling down - hide header
+                    stickyHeader.classList.add('hidden');
+                } else {
+                    // Scrolling up - show header
+                    stickyHeader.classList.remove('hidden');
+                }
+            } else {
+                // At top of page - show header
+                stickyHeader.classList.remove('hidden');
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, false);
+
+        // Emergency SOS function (global)
+        function triggerSOS() {
+            if (confirm('⚠️ EMERGENCY SOS ACTIVATED\n\nThis will:\n✓ Call Emergency Services (999)\n✓ Alert All Family Members\n✓ Activate All Cameras\n✓ Unlock All Doors\n✓ Send Location to Responders\n\nDo you want to proceed?')) {
+                alert('🚨 EMERGENCY RESPONSE INITIATED\n\nEmergency services have been notified.\nFamily members are being alerted.\nAll safety protocols activated.');
+            }
+        }
+    </script>
+</body>
+</html>

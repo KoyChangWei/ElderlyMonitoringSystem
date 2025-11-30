@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - ElderCare AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        #residentCardsContainer {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .user-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 0;
+            transition: all 0.2s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--status-info);
+        }
+
+        .user-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            margin-right: 16px;
+        }
+
+        .user-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .info-item {
+            background: rgba(255,255,255,0.03);
+            padding: 12px;
+            border-radius: var(--radius-md);
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-action:hover {
+            background: var(--status-info);
+            border-color: var(--status-info);
+        }
+
+        .btn-action.delete:hover {
+            background: var(--status-critical);
+            border-color: var(--status-critical);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .btn-close:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--status-info);
+        }
+
+        .color-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--status-info);
+        }
+
+        .wristband-preview {
+            background: rgba(255,255,255,0.03);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .wristband-id {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: var(--status-info);
+            margin-top: 8px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--status-info);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-add-large {
+            background: var(--status-info);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: var(--radius-lg);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-add-large:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: var(--status-info);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .conditions-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .condition-tag {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--status-critical);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Top Header -->
+    <div class="sticky-top-header" id="stickyHeader">
+        <div class="sticky-header-content">
+            <div class="sticky-header-title">
+                <i class="fas fa-users-cog"></i>
+                <h2>ElderCare AI - User Management</h2>
+            </div>
+            <button class="btn-sos-header" onclick="triggerSOS()">
+                <i class="fas fa-phone-alt"></i>
+                <span>Emergency SOS</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            </div>
+
+            <nav class="nav-menu">
+                <h3>Navigation</h3>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i> Overview
+                </a>
+                <a href="health-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i> Health Analytics
+                </a>
+                <a href="robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i> Robot Control
+                </a>
+                <a href="emergency.html" class="nav-item">
+                    <i class="fas fa-exclamation-triangle"></i> Safety & Emergency
+                </a>
+                <a href="smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i> Smart Home IoT
+                </a>
+                <a href="medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i> Medication
+                </a>
+                <a href="user-management.html" class="nav-item active">
+                    <i class="fas fa-users-cog"></i> User Management
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-title">
+                    <h1><i class="fas fa-users-cog"></i> User Management</h1>
+                </div>
+                <button class="btn-add-large" onclick="openAddModal()">
+                    <i class="fas fa-plus-circle"></i> Add New Resident
+                </button>
+            </header>
+
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-value" id="totalResidents">4</div>
+                    <div class="stat-label">Total Residents</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-id-badge"></i></div>
+                    <div class="stat-value" id="activeWristbands">4</div>
+                    <div class="stat-label">Active Wristbands</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-heartbeat"></i></div>
+                    <div class="stat-value" id="healthyCount">3</div>
+                    <div class="stat-label">Healthy Status</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="stat-value" id="warningCount">1</div>
+                    <div class="stat-label">Need Attention</div>
+                </div>
+            </div>
+
+            <!-- Residents List -->
+            <div class="dashboard-grid">
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> All Residents</h3>
+                        <span class="card-badge robot-active"><span id="residentListCount">4</span> Active</span>
+                    </div>
+                    <div class="card-content">
+                        <div id="residentCardsContainer">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="residentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Resident</h2>
+                <button class="btn-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="residentForm" onsubmit="saveResident(event)">
+                <!-- Wristband Preview -->
+                <div class="wristband-preview">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">WRISTBAND ID</div>
+                    <div class="wristband-id" id="wristbandPreview">WB-001</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px;">
+                        <i class="fas fa-info-circle"></i> Auto-generated unique identifier
+                    </div>
+                </div>
+
+                <!-- Personal Information -->
+                <h3 style="font-size: 14px; margin-bottom: 12px; text-transform: uppercase; color: var(--text-secondary);">
+                    <i class="fas fa-user"></i> Personal Information
+                </h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" id="firstName" required placeholder="e.g., Ah Chong">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" id="lastName" required placeholder="e.g., Tan">
+                    </div>
+                    <div class="form-group">
+                        <label>Age *</label>
+                        <input type="number" id="age" required min="50" max="120" placeholder="e.g., 78">
+                    </div>
+                    <div class="form-group">
+                        <label>Room Assignment</label>
+                        <input type="text" id="room" placeholder="e.g., Room A">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Medical Conditions (comma-separated)</label>
+                        <textarea id="conditions" placeholder="e.g., Hypertension, Diabetes"></textarea>
+                    </div>
+                </div>
+
+                <!-- Color Selection -->
+                <h3 style="font-size: 14px; margin: 20px 0 12px; text-transform: uppercase; color: var(--text-secondary);">
+                    <i class="fas fa-palette"></i> Display Color (for visual identification)
+                </h3>
+                <div class="color-picker-grid">
+                    <div class="color-option selected" style="background: #3B82F6;" onclick="selectColor('#3B82F6', this)"></div>
+                    <div class="color-option" style="background: #8B5CF6;" onclick="selectColor('#8B5CF6', this)"></div>
+                    <div class="color-option" style="background: #14B8A6;" onclick="selectColor('#14B8A6', this)"></div>
+                    <div class="color-option" style="background: #F59E0B;" onclick="selectColor('#F59E0B', this)"></div>
+                    <div class="color-option" style="background: #EF4444;" onclick="selectColor('#EF4444', this)"></div>
+                    <div class="color-option" style="background: #10B981;" onclick="selectColor('#10B981', this)"></div>
+                    <div class="color-option" style="background: #6366F1;" onclick="selectColor('#6366F1', this)"></div>
+                    <div class="color-option" style="background: #EC4899;" onclick="selectColor('#EC4899', this)"></div>
+                    <div class="color-option" style="background: #06B6D4;" onclick="selectColor('#06B6D4', this)"></div>
+                    <div class="color-option" style="background: #84CC16;" onclick="selectColor('#84CC16', this)"></div>
+                    <div class="color-option" style="background: #F97316;" onclick="selectColor('#F97316', this)"></div>
+                    <div class="color-option" style="background: #A855F7;" onclick="selectColor('#A855F7', this)"></div>
+                </div>
+
+                <input type="hidden" id="selectedColor" value="#3B82F6">
+                <input type="hidden" id="residentId" value="">
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Save Resident
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        let editingResidentId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadResidents();
+            updateStatistics();
+        });
+
+        function loadResidents() {
+            // Load from localStorage if available, otherwise use default data
+            let residents = JSON.parse(localStorage.getItem('elderlyResidents'));
+
+            if (!residents) {
+                // Use default data from app.js
+                residents = window.elderlyData ? window.elderlyData.elderlyList : [];
+                localStorage.setItem('elderlyResidents', JSON.stringify(residents));
+            }
+
+            renderResidentsList(residents);
+            renderResidentCards(residents);
+            updateStatistics();
+        }
+
+        function renderResidentsList(residents) {
+            const container = document.getElementById('residentsList');
+            const countElement = document.getElementById('residentCount');
+
+            if (container) {
+                container.innerHTML = residents.map(resident => `
+                    <div class="resident-card" style="border-left-color: ${resident.personal.color}">
+                        <div class="resident-header">
+                            <div class="resident-name">
+                                <span class="status-indicator ${resident.vitals.heartRate.status}"></span>
+                                ${resident.personal.fullName}
+                            </div>
+                        </div>
+                        <div class="resident-info">
+                            <span>Age: ${resident.personal.age}</span>
+                            <span>${resident.personal.wristbandId}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (countElement) {
+                countElement.textContent = residents.length;
+            }
+        }
+
+        function renderResidentCards(residents) {
+            const container = document.getElementById('residentCardsContainer');
+            const countElement = document.getElementById('residentListCount');
+
+            if (!container) return;
+
+            container.innerHTML = residents.map(resident => `
+                <div class="user-card" style="border-left-color: ${resident.personal.color}">
+                    <div class="user-card-header">
+                        <div style="display: flex; align-items: center; flex: 1;">
+                            <div class="user-avatar" style="background: ${resident.personal.color}">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 20px; margin-bottom: 4px;">${resident.personal.fullName}</h3>
+                                <div style="font-size: 13px; color: var(--text-secondary);">
+                                    <i class="fas fa-id-badge"></i> ${resident.personal.wristbandId} • Age ${resident.personal.age}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn-action" onclick="editResident(${resident.id})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn-action delete" onclick="deleteResident(${resident.id})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="user-info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Room</div>
+                            <div class="info-value">${resident.personal.room}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Heart Rate</div>
+                            <div class="info-value">${resident.vitals.heartRate.current} bpm</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Blood Pressure</div>
+                            <div class="info-value">${resident.vitals.bloodPressure.systolic}/${resident.vitals.bloodPressure.diastolic}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Location</div>
+                            <div class="info-value">${resident.activity.location}</div>
+                        </div>
+                    </div>
+
+                    ${resident.personal.conditions && resident.personal.conditions.length > 0 ? `
+                        <div style="margin-top: 12px;">
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase;">Medical Conditions</div>
+                            <div class="conditions-tags">
+                                ${resident.personal.conditions.map(cond => `
+                                    <span class="condition-tag">${cond}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+
+            if (countElement) {
+                countElement.textContent = residents.length;
+            }
+        }
+
+        function updateStatistics() {
+            const residents = JSON.parse(localStorage.getItem('elderlyResidents')) || [];
+
+            document.getElementById('totalResidents').textContent = residents.length;
+            document.getElementById('activeWristbands').textContent = residents.length;
+
+            const healthyCount = residents.filter(r => r.vitals.heartRate.status === 'normal' && r.vitals.bloodPressure.status === 'normal').length;
+            const warningCount = residents.length - healthyCount;
+
+            document.getElementById('healthyCount').textContent = healthyCount;
+            document.getElementById('warningCount').textContent = warningCount;
+        }
+
+        function openAddModal() {
+            editingResidentId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Resident';
+            document.getElementById('residentForm').reset();
+
+            // Generate new wristband ID
+            const residents = JSON.parse(localStorage.getItem('elderlyResidents')) || [];
+            const newId = String(residents.length + 1).padStart(3, '0');
+            document.getElementById('wristbandPreview').textContent = `WB-${newId}`;
+
+            // Reset color selection
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+            document.querySelector('.color-option').classList.add('selected');
+            document.getElementById('selectedColor').value = '#3B82F6';
+
+            document.getElementById('residentModal').classList.add('active');
+        }
+
+        function editResident(id) {
+            const residents = JSON.parse(localStorage.getItem('elderlyResidents')) || [];
+            const resident = residents.find(r => r.id === id);
+
+            if (!resident) return;
+
+            editingResidentId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Resident';
+
+            // Fill form with existing data
+            const nameParts = resident.personal.fullName.split(' ');
+            document.getElementById('firstName').value = nameParts[0];
+            document.getElementById('lastName').value = nameParts.slice(1).join(' ');
+            document.getElementById('age').value = resident.personal.age;
+            document.getElementById('room').value = resident.personal.room;
+            document.getElementById('conditions').value = resident.personal.conditions.join(', ');
+            document.getElementById('wristbandPreview').textContent = resident.personal.wristbandId;
+            document.getElementById('selectedColor').value = resident.personal.color;
+            document.getElementById('residentId').value = id;
+
+            // Set color selection
+            document.querySelectorAll('.color-option').forEach(el => {
+                if (el.style.background === 'rgb(' + parseInt(resident.personal.color.slice(1,3), 16) + ', ' +
+                    parseInt(resident.personal.color.slice(3,5), 16) + ', ' +
+                    parseInt(resident.personal.color.slice(5,7), 16) + ')') {
+                    el.classList.add('selected');
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
+
+            document.getElementById('residentModal').classList.add('active');
+        }
+
+        function deleteResident(id) {
+            if (!confirm('Are you sure you want to remove this resident?\n\nThis will delete all associated data including:\n• Health records\n• Medication schedules\n• Activity history\n\nThis action cannot be undone.')) {
+                return;
+            }
+
+            let residents = JSON.parse(localStorage.getItem('elderlyResidents')) || [];
+            residents = residents.filter(r => r.id !== id);
+
+            localStorage.setItem('elderlyResidents', JSON.stringify(residents));
+
+            loadResidents();
+            alert('Resident removed successfully');
+        }
+
+        function closeModal() {
+            document.getElementById('residentModal').classList.remove('active');
+            editingResidentId = null;
+        }
+
+        function selectColor(color, element) {
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('selectedColor').value = color;
+        }
+
+        function saveResident(event) {
+            event.preventDefault();
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const age = parseInt(document.getElementById('age').value);
+            const room = document.getElementById('room').value.trim() || 'Unassigned';
+            const conditions = document.getElementById('conditions').value.split(',').map(c => c.trim()).filter(c => c);
+            const color = document.getElementById('selectedColor').value;
+            const wristbandId = document.getElementById('wristbandPreview').textContent;
+
+            let residents = JSON.parse(localStorage.getItem('elderlyResidents')) || [];
+
+            if (editingResidentId) {
+                // Edit existing
+                const index = residents.findIndex(r => r.id === editingResidentId);
+                if (index !== -1) {
+                    residents[index].personal.name = firstName;
+                    residents[index].personal.fullName = `${firstName} ${lastName}`;
+                    residents[index].personal.age = age;
+                    residents[index].personal.room = room;
+                    residents[index].personal.color = color;
+                    residents[index].personal.conditions = conditions;
+                }
+            } else {
+                // Add new
+                const newId = residents.length > 0 ? Math.max(...residents.map(r => r.id)) + 1 : 1;
+                const newResident = {
+                    id: newId,
+                    personal: {
+                        name: firstName,
+                        fullName: `${firstName} ${lastName}`,
+                        age: age,
+                        room: room,
+                        color: color,
+                        wristbandId: wristbandId,
+                        conditions: conditions
+                    },
+                    vitals: {
+                        heartRate: { current: 70, normal: '60-100', unit: 'bpm', status: 'normal' },
+                        bloodPressure: { systolic: 120, diastolic: 80, unit: 'mmHg', status: 'normal' },
+                        bloodSugar: { current: 5.5, normal: '4.0-7.0', unit: 'mmol/L', status: 'normal' },
+                        temperature: { current: 36.8, normal: '36.5-37.5', unit: '°C', status: 'normal' }
+                    },
+                    activity: {
+                        steps: 0,
+                        stepGoal: 5000,
+                        sleepHours: 8,
+                        sleepQuality: 'Good',
+                        lastFall: 'None',
+                        location: 'Room',
+                        aiPrediction: 90
+                    },
+                    alerts: []
+                };
+                residents.push(newResident);
+            }
+
+            localStorage.setItem('elderlyResidents', JSON.stringify(residents));
+
+            closeModal();
+            loadResidents();
+
+            alert(editingResidentId ? 'Resident updated successfully!' : 'New resident added successfully!');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('residentModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Sticky Header Scroll Behavior
+        let lastScrollTop = 0;
+        const stickyHeader = document.getElementById('stickyHeader');
+        const scrollThreshold = 100;
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > scrollThreshold) {
+                if (scrollTop > lastScrollTop) {
+                    stickyHeader.classList.add('hidden');
+                } else {
+                    stickyHeader.classList.remove('hidden');
+                }
+            } else {
+                stickyHeader.classList.remove('hidden');
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        }, false);
+
+        // Emergency SOS function
+        function triggerSOS() {
+            if (confirm('⚠️ EMERGENCY SOS ACTIVATED\n\nThis will:\n✓ Call Emergency Services (999)\n✓ Alert All Family Members\n✓ Activate All Cameras\n✓ Unlock All Doors\n✓ Send Location to Responders\n\nDo you want to proceed?')) {
+                alert('🚨 EMERGENCY RESPONSE INITIATED\n\nEmergency services have been notified.\nFamily members are being alerted.\nAll safety protocols activated.');
+            }
+        }
+    </script>
+</body>
+</html>
