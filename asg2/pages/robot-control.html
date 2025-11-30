@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Caregiver Control - Elderly Care Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .robot-main-control {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .robot-viewport {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .robot-camera-view {
+            background: #1a1a1a;
+            border-radius: var(--radius-md);
+            height: 400px;
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .robot-camera-view img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .robot-camera-view.camera-stopped img {
+            display: none;
+        }
+
+        .camera-stopped-placeholder {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 1;
+        }
+
+        .robot-camera-view.camera-stopped .camera-stopped-placeholder {
+            display: block;
+        }
+
+        .robot-camera-view.camera-stopped .camera-overlay,
+        .robot-camera-view.camera-stopped .hud-overlay,
+        .robot-camera-view.camera-stopped .person-detection-box,
+        .robot-camera-view.camera-stopped .bottom-hud,
+        .robot-camera-view.camera-stopped .camera-grid {
+            display: none;
+        }
+
+        .camera-stopped-placeholder i {
+            font-size: 80px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .camera-stopped-placeholder p {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .robot-camera-view::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .robot-icon-large {
+            font-size: 120px;
+            opacity: 0.3;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: var(--spacing-md);
+            left: var(--spacing-md);
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 2;
+            color: #FFFFFF;
+        }
+
+        .recording-indicator {
+            width: 10px;
+            height: 10px;
+            background: #E74C3C;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .hud-overlay {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            z-index: 2;
+        }
+
+        .hud-stat {
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-size: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hud-stat i {
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .hud-stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+        }
+
+        .hud-stat-value {
+            color: #10B981;
+            font-weight: 700;
+        }
+
+        .bottom-hud {
+            position: absolute;
+            bottom: var(--spacing-md);
+            left: var(--spacing-md);
+            right: var(--spacing-md);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            z-index: 2;
+        }
+
+        .hud-info-card {
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            text-align: center;
+        }
+
+        .hud-info-card i {
+            color: var(--primary-color);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .hud-info-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-info-value {
+            font-size: 13px;
+            color: white;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .person-detection-box {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 250px;
+            border: 2px solid #10B981;
+            border-radius: var(--radius-sm);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .person-detection-box::before,
+        .person-detection-box::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #10B981;
+        }
+
+        .person-detection-box::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .person-detection-box::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .detection-label {
+            position: absolute;
+            top: -24px;
+            left: 0;
+            background: rgba(16, 185, 129, 0.9);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .camera-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.15;
+        }
+
+        .camera-grid::before,
+        .camera-grid::after {
+            content: '';
+            position: absolute;
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .camera-grid::before {
+            top: 33.33%;
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        .camera-grid::after {
+            top: 66.66%;
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        .control-panel {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .robot-status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            margin-top: var(--spacing-md);
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-left: 3px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        .status-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-light);
+        }
+
+        .status-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .status-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .battery-indicator {
+            width: 100%;
+            height: 30px;
+            background: #E1E8ED;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: var(--spacing-sm);
+            position: relative;
+        }
+
+        .battery-fill {
+            height: 100%;
+            background: #10B981;
+            width: 87%;
+            transition: width 0.5s ease;
+        }
+
+        .battery-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            color: var(--text-primary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .control-btn:hover::before {
+            left: 100%;
+        }
+
+        .control-btn:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .control-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .control-btn i {
+            font-size: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .control-btn span {
+            position: relative;
+            z-index: 1;
+            font-size: 14px;
+        }
+
+        .movement-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 60px);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .move-btn {
+            background: var(--bg-primary);
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .move-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .move-btn:active {
+            transform: scale(0.95);
+        }
+
+        .robot-modes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .mode-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .mode-card:hover::before {
+            left: 100%;
+        }
+
+        .mode-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .mode-card.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .mode-card i {
+            font-size: 32px;
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            z-index: 1;
+        }
+
+        .mode-card h5,
+        .mode-card p {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Activity Feed Section */
+        .activity-feed-section {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all 0.3s ease;
+        }
+
+        .activity-feed-section:hover {
+            box-shadow: 0 12px 48px rgba(59, 130, 246, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .activity-feed {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .feed-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: #F3F4F6;
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .feed-item:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .feed-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .feed-icon.success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .feed-icon.info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .feed-icon.warning {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .feed-content {
+            flex: 1;
+        }
+
+        .feed-content p:first-child {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .feed-content p:last-child {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .feed-time {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-light);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .feature-value {
+            font-size: 18px;
+            font-weight: 600;
+            margin: var(--spacing-sm) 0;
+        }
+
+        /* Gradient color for icons and values */
+        .gradient-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-value {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-heart-pulse"></i>
+                <h1>ElderCare AI</h1>
+            </div>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+        <div class="header-center">
+            <h1><i class="fas fa-robot"></i> Robot Caregiver Control Center</h1>
+        </div>
+        <div class="header-right">
+            <button class="emergency-btn" onclick="triggerEmergency()">
+                <i class="fas fa-exclamation-triangle"></i>
+                EMERGENCY SOS
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-main">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <!-- Elderly Profiles Section -->
+            <div class="elderly-profile" style="padding: var(--spacing-md);">
+                <h2 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-sm); text-align: center;">
+                    <i class="fas fa-users"></i> Residents (4)
+                </h2>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; border-left: 3px solid #3B82F6;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #3B82F6; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px;">AC</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600;">Ah Chong</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Age: 78 <span style="color: #10B981;">●</span></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(139, 92, 246, 0.1); border-radius: 6px; border-left: 3px solid #8B5CF6;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #8B5CF6; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px;">ML</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600;">Mei Ling</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Age: 72 <span style="color: #10B981;">●</span></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(20, 184, 166, 0.1); border-radius: 6px; border-left: 3px solid #14B8A6;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #14B8A6; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px;">KR</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600;">Kumar</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Age: 81 <span style="color: #F59E0B;">●</span></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(245, 158, 11, 0.1); border-radius: 6px; border-left: 3px solid #F59E0B;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #F59E0B; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px;">FI</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600;">Fatimah</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Age: 75 <span style="color: #10B981;">●</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="height: 1px; background: rgba(0, 0, 0, 0.1); margin: var(--spacing-md);"></div>
+            <nav>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="health-analytics.html" class="nav-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Analytics</span>
+                </a>
+                <a href="robot-control.html" class="nav-item active">
+                    <i class="fas fa-robot"></i>
+                    <span>Robot Control</span>
+                </a>
+                <a href="smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Smart Home IoT</span>
+                </a>
+                <a href="emergency.html" class="nav-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Safety & Emergency</span>
+                </a>
+                <a href="medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i>
+                    <span>Medication</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area" style="padding: var(--spacing-xl);">
+        <!-- Main Control Interface -->
+        <div class="robot-main-control">
+            <!-- Robot Camera View -->
+            <div class="robot-viewport">
+                <h3 style="margin-bottom: var(--spacing-lg);"><i class="fas fa-video"></i> Robot Camera Feed</h3>
+                <div class="robot-camera-view" id="cameraView">
+                    <!-- Background Image -->
+                    <img src="../assets/robot.png" alt="Robot POV Camera Feed">
+
+                    <!-- Camera Stopped Placeholder -->
+                    <div class="camera-stopped-placeholder">
+                        <i class="fas fa-video-slash"></i>
+                        <p>Camera Stopped</p>
+                    </div>
+
+                    <!-- Camera Grid Overlay -->
+                    <div class="camera-grid"></div>
+
+                    <!-- Top Left: Recording Indicator -->
+                    <div class="camera-overlay">
+                        <div class="recording-indicator"></div>
+                        <span>LIVE</span>
+                    </div>
+
+                    <!-- Top Right: Stats -->
+                    <div class="hud-overlay">
+                        <div class="hud-stat">
+                            <i class="fas fa-ruler"></i>
+                            <span><span class="hud-stat-label">Distance:</span> <span class="hud-stat-value">2.3m</span></span>
+                        </div>
+                        <div class="hud-stat">
+                            <i class="fas fa-battery-three-quarters"></i>
+                            <span><span class="hud-stat-label">Battery:</span> <span class="hud-stat-value" id="hudBatteryText">87%</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Person Detection Box -->
+                    <div class="person-detection-box">
+                        <div class="detection-label">
+                            <i class="fas fa-check-circle"></i>
+                            Person Detected
+                        </div>
+                    </div>
+
+                    <!-- Bottom: Info Cards -->
+                    <div class="bottom-hud">
+                        <div class="hud-info-card">
+                            <i class="fas fa-user-check"></i>
+                            <div class="hud-info-label">Status</div>
+                            <div class="hud-info-value">Identified</div>
+                        </div>
+                        <div class="hud-info-card">
+                            <i class="fas fa-home"></i>
+                            <div class="hud-info-label">Location</div>
+                            <div class="hud-info-value">Living Room</div>
+                        </div>
+                        <div class="hud-info-card">
+                            <i class="fas fa-heartbeat"></i>
+                            <div class="hud-info-label">Posture</div>
+                            <div class="hud-info-value">Normal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movement Controls -->
+                <h4 style="margin-bottom: var(--spacing-md);"><i class="fas fa-gamepad"></i> Movement Control</h4>
+                <div class="movement-controls">
+                    <div></div>
+                    <button class="move-btn" onclick="moveRobot('forward')" title="Move Forward">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                    <div></div>
+
+                    <button class="move-btn" onclick="moveRobot('left')" title="Turn Left">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="move-btn" onclick="moveRobot('stop')" title="Stop" style="background: var(--danger-color); color: white; border-color: var(--danger-color);">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                    <button class="move-btn" onclick="moveRobot('right')" title="Turn Right">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+
+                    <div></div>
+                    <button class="move-btn" onclick="moveRobot('backward')" title="Move Backward">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                    <div></div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <h3><i class="fas fa-sliders-h"></i> Robot Status</h3>
+
+                <div class="robot-status-grid">
+                    <div class="status-item">
+                        <div class="status-label">Status</div>
+                        <div class="status-value" style="color: var(--success-color);">
+                            <i class="fas fa-check-circle"></i> Active
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Location</div>
+                        <div class="status-value">Living Room</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Current Mode</div>
+                        <div class="status-value" id="currentModeText">Companion</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Last Updated</div>
+                        <div class="status-value" id="lastUpdatedTime">--:--:--</div>
+                    </div>
+                </div>
+
+                <!-- Battery -->
+                <div style="margin: var(--spacing-lg) 0;">
+                    <div class="status-label">Battery Level</div>
+                    <div class="battery-indicator">
+                        <div class="battery-fill" id="batteryFill"></div>
+                        <div class="battery-text" id="batteryText">87%</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <h4 style="margin-bottom: var(--spacing-md);"><i class="fas fa-bolt"></i> Quick Actions</h4>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="robotAction('speak', event)">
+                        <i class="fas fa-volume-up"></i>
+                        <span>Speak</span>
+                    </button>
+                    <button class="control-btn" onclick="robotAction('call', event)">
+                        <i class="fas fa-video"></i>
+                        <span>Video Call</span>
+                    </button>
+                    <button class="control-btn" onclick="robotAction('medicine', event)">
+                        <i class="fas fa-pills"></i>
+                        <span>Medicine Reminder</span>
+                    </button>
+                    <button class="control-btn" onclick="robotAction('patrol', event)">
+                        <i class="fas fa-route"></i>
+                        <span>Patrol Mode</span>
+                    </button>
+                    <button class="control-btn" onclick="robotAction('music', event)">
+                        <i class="fas fa-music"></i>
+                        <span>Play Music</span>
+                    </button>
+                    <button class="control-btn" onclick="robotAction('fetch', event)">
+                        <i class="fas fa-hand-holding"></i>
+                        <span>Fetch Item</span>
+                    </button>
+                </div>
+
+                <!-- Robot Modes -->
+                <h4 style="margin-bottom: var(--spacing-md);"><i class="fas fa-cogs"></i> Operation Modes</h4>
+                <div class="robot-modes">
+                    <div class="mode-card active" onclick="setMode(this, 'companion')">
+                        <i class="fas fa-heart"></i>
+                        <h5>Companion Mode</h5>
+                        <p style="font-size: 13px; margin-top: 4px;">Social interaction & monitoring</p>
+                    </div>
+                    <div class="mode-card" onclick="setMode(this, 'assistant')">
+                        <i class="fas fa-hands-helping"></i>
+                        <h5>Assistant Mode</h5>
+                        <p style="font-size: 13px; margin-top: 4px;">Help with daily tasks</p>
+                    </div>
+                    <div class="mode-card" onclick="setMode(this, 'security')">
+                        <i class="fas fa-shield-alt"></i>
+                        <h5>Security Mode</h5>
+                        <p style="font-size: 13px; margin-top: 4px;">Patrol & surveillance</p>
+                    </div>
+                    <div class="mode-card" onclick="setMode(this, 'emergency')">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h5>Emergency Mode</h5>
+                        <p style="font-size: 13px; margin-top: 4px;">Alert & rapid response</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Robot Capabilities -->
+        <!-- <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> Robot Capabilities</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #E74C3C;">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h4>AI Conversation</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Natural language interaction with elderly using GPT-powered AI</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #3498DB;">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h4>Computer Vision</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Fall detection, facial recognition, object identification</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #F39C12;">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h4>Smart Reminders</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Medication, appointments, and activity reminders</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #9B59B6;">
+                        <i class="fas fa-hand-holding-medical"></i>
+                    </div>
+                    <h4>Physical Assistance</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Fetch items, open doors, emergency button access</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #27AE60;">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h4>Vital Monitoring</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Integrated sensors for basic vital signs monitoring</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #E67E22;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Family Connection</h4>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Video calls, photo sharing, activity updates to family</p>
+                </div>
+            </div>
+        </section> -->
+
+        <!-- Robot Task Scheduling -->
+        <section class="dashboard-section" style="background: rgba(255, 255, 255, 0.98); box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08); border-radius: var(--radius-lg); padding: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+                <h2><i class="fas fa-calendar-alt"></i> Robot Task Scheduler</h2>
+                <button class="view-all-btn" onclick="openScheduleModal()" style="background: linear-gradient(135deg, #10B981, #059669); border: none; padding: 10px 20px; border-radius: var(--radius-md); color: white; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-plus"></i> Add New Schedule
+                </button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead>
+                        <tr style="background: rgba(0,0,0,0.03); border-bottom: 2px solid rgba(0,0,0,0.1);">
+                            <th style="padding: 12px; text-align: left; font-weight: 600;">Time</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600;">Task</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600;">For Resident</th>
+                            <th style="padding: 12px; text-align: center; font-weight: 600;">Repeat</th>
+                            <th style="padding: 12px; text-align: center; font-weight: 600;">Status</th>
+                            <th style="padding: 12px; text-align: center; font-weight: 600;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <td style="padding: 12px; font-weight: 600;">08:00 AM</td>
+                            <td style="padding: 12px;"><i class="fas fa-utensils" style="color: #F59E0B; margin-right: 8px;"></i>Cook Meal</td>
+                            <td style="padding: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #3B82F6;"></span>
+                                    <span>Ah Chong</span>
+                                </div>
+                            </td>
+                            <td style="padding: 12px; text-align: center;"><span style="color: #10B981; font-size: 11px;">✓ Daily</span></td>
+                            <td style="padding: 12px; text-align: center;"><span style="background: #D1FAE5; color: #065F46; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">✓ Done</span></td>
+                            <td style="padding: 12px; text-align: center;">
+                                <button onclick="editSchedule(1)" style="background: transparent; border: none; color: #3B82F6; cursor: pointer; margin: 0 4px;"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteSchedule(1)" style="background: transparent; border: none; color: #DC2626; cursor: pointer; margin: 0 4px;"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <td style="padding: 12px; font-weight: 600;">09:30 AM</td>
+                            <td style="padding: 12px;"><i class="fas fa-pills" style="color: #DC2626; margin-right: 8px;"></i>Medication Reminder</td>
+                            <td style="padding: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #14B8A6;"></span>
+                                    <span>Kumar</span>
+                                </div>
+                            </td>
+                            <td style="padding: 12px; text-align: center;"><span style="color: #10B981; font-size: 11px;">✓ Daily</span></td>
+                            <td style="padding: 12px; text-align: center;"><span style="background: #D1FAE5; color: #065F46; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">✓ Done</span></td>
+                            <td style="padding: 12px; text-align: center;">
+                                <button onclick="editSchedule(2)" style="background: transparent; border: none; color: #3B82F6; cursor: pointer; margin: 0 4px;"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteSchedule(2)" style="background: transparent; border: none; color: #DC2626; cursor: pointer; margin: 0 4px;"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <td style="padding: 12px; font-weight: 600;">12:00 PM</td>
+                            <td style="padding: 12px;"><i class="fas fa-tint" style="color: #3B82F6; margin-right: 8px;"></i>Bring Water</td>
+                            <td style="padding: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #8B5CF6;"></span>
+                                    <span>Mei Ling</span>
+                                </div>
+                            </td>
+                            <td style="padding: 12px; text-align: center;"><span style="color: #10B981; font-size: 11px;">✓ Daily</span></td>
+                            <td style="padding: 12px; text-align: center;"><span style="background: #DBEAFE; color: #1E40AF; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">● Active</span></td>
+                            <td style="padding: 12px; text-align: center;">
+                                <button onclick="editSchedule(3)" style="background: transparent; border: none; color: #3B82F6; cursor: pointer; margin: 0 4px;"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteSchedule(3)" style="background: transparent; border: none; color: #DC2626; cursor: pointer; margin: 0 4px;"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <td style="padding: 12px; font-weight: 600;">02:00 PM</td>
+                            <td style="padding: 12px;"><i class="fas fa-heartbeat" style="color: #DC2626; margin-right: 8px;"></i>Check Vitals</td>
+                            <td style="padding: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #F59E0B;"></span>
+                                    <span>Fatimah</span>
+                                </div>
+                            </td>
+                            <td style="padding: 12px; text-align: center;"><span style="color: #10B981; font-size: 11px;">✓ Daily</span></td>
+                            <td style="padding: 12px; text-align: center;"><span style="background: #F3F4F6; color: #6B7280; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Pending</span></td>
+                            <td style="padding: 12px; text-align: center;">
+                                <button onclick="editSchedule(4)" style="background: transparent; border: none; color: #3B82F6; cursor: pointer; margin: 0 4px;"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteSchedule(4)" style="background: transparent; border: none; color: #DC2626; cursor: pointer; margin: 0 4px;"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <td style="padding: 12px; font-weight: 600;">03:00 PM</td>
+                            <td style="padding: 12px;"><i class="fas fa-walking" style="color: #10B981; margin-right: 8px;"></i>Assist Walking</td>
+                            <td style="padding: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #14B8A6;"></span>
+                                    <span>Kumar</span>
+                                </div>
+                            </td>
+                            <td style="padding: 12px; text-align: center;"><span style="color: #94A3B8; font-size: 11px;">Mon, Wed, Fri</span></td>
+                            <td style="padding: 12px; text-align: center;"><span style="background: #F3F4F6; color: #6B7280; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Pending</span></td>
+                            <td style="padding: 12px; text-align: center;">
+                                <button onclick="editSchedule(5)" style="background: transparent; border: none; color: #3B82F6; cursor: pointer; margin: 0 4px;"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteSchedule(5)" style="background: transparent; border: none; color: #DC2626; cursor: pointer; margin: 0 4px;"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <td style="padding: 12px; font-weight: 600;">06:00 PM</td>
+                            <td style="padding: 12px;"><i class="fas fa-broom" style="color: #8B5CF6; margin-right: 8px;"></i>Clean Room</td>
+                            <td style="padding: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #8B5CF6;"></span>
+                                    <span>Mei Ling</span>
+                                </div>
+                            </td>
+                            <td style="padding: 12px; text-align: center;"><span style="color: #94A3B8; font-size: 11px;">Tue, Thu</span></td>
+                            <td style="padding: 12px; text-align: center;"><span style="background: #F3F4F6; color: #6B7280; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Pending</span></td>
+                            <td style="padding: 12px; text-align: center;">
+                                <button onclick="editSchedule(6)" style="background: transparent; border: none; color: #3B82F6; cursor: pointer; margin: 0 4px;"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteSchedule(6)" style="background: transparent; border: none; color: #DC2626; cursor: pointer; margin: 0 4px;"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Recent Robot Activities -->
+        <section class="dashboard-section activity-feed-section">
+            <div class="section-header">
+                <h2><i class="fas fa-history"></i> Recent Robot Activities</h2>
+                <button class="view-all-btn">View All <i class="fas fa-arrow-right" style="color: white;"></i></button>
+            </div>
+            <div class="activity-feed">
+                <div class="feed-item">
+                    <div class="feed-icon success">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <div class="feed-content">
+                        <p><strong>Medication Reminder Delivered</strong></p>
+                        <p>Reminded to take blood pressure medicine at 2:00 PM</p>
+                    </div>
+                    <span class="feed-time">15 mins ago</span>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-icon info">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="feed-content">
+                        <p><strong>Conversation Session</strong></p>
+                        <p>Chatted about family memories for 20 minutes</p>
+                    </div>
+                    <span class="feed-time">1 hour ago</span>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-icon success">
+                        <i class="fas fa-hand-holding"></i>
+                    </div>
+                    <div class="feed-content">
+                        <p><strong>Item Fetch Completed</strong></p>
+                        <p>Brought water bottle from kitchen</p>
+                    </div>
+                    <span class="feed-time">2 hours ago</span>
+                </div>
+                <div class="feed-item">
+                    <div class="feed-icon warning">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feed-content">
+                        <p><strong>Safety Patrol Completed</strong></p>
+                        <p>Checked all rooms, no hazards detected</p>
+                    </div>
+                    <span class="feed-time">3 hours ago</span>
+                </div>
+            </div>
+        </section>
+        </div>
+    </main>
+
+    <script src="../js/script.js"></script>
+    <script>
+        let currentMode = 'companion';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeClock();
+            updateBattery();
+            setInterval(updateBattery, 30000);
+        });
+
+        let isCameraActive = true;
+
+        function moveRobot(direction) {
+            const actions = {
+                'forward': 'Moving forward...',
+                'backward': 'Moving backward...',
+                'left': 'Turning left...',
+                'right': 'Turning right...',
+                'stop': 'Stopped'
+            };
+
+            // Handle camera toggle when stop is clicked
+            if (direction === 'stop') {
+                const cameraView = document.getElementById('cameraView');
+                isCameraActive = !isCameraActive;
+
+                if (isCameraActive) {
+                    cameraView.classList.remove('camera-stopped');
+                    if (window.dashboardUtils) {
+                        window.dashboardUtils.showNotification('Camera started', 'info');
+                    } else {
+                        alert('Camera started');
+                    }
+                } else {
+                    cameraView.classList.add('camera-stopped');
+                    if (window.dashboardUtils) {
+                        window.dashboardUtils.showNotification('Camera stopped', 'info');
+                    } else {
+                        alert('Camera stopped');
+                    }
+                }
+
+                console.log(`Camera ${isCameraActive ? 'started' : 'stopped'}`);
+                return;
+            }
+
+            if (window.dashboardUtils) {
+                window.dashboardUtils.showNotification(
+                    `Robot ${actions[direction]}`,
+                    'info'
+                );
+            } else {
+                alert(`Robot ${actions[direction]}`);
+            }
+
+            console.log(`Robot command: ${direction}`);
+        }
+
+        function robotAction(action, event) {
+            const clickedButton = event.currentTarget;
+
+            const actions = {
+                'speak': 'Robot is speaking to the elderly...',
+                'call': 'Initiating video call...',
+                'medicine': 'Delivering medication reminder...',
+                'patrol': 'Starting patrol route...',
+                'music': 'Playing relaxing music...',
+                'fetch': 'Robot will fetch the requested item...'
+            };
+
+            const stopMessages = {
+                'speak': 'Stopped speaking',
+                'call': 'Video call ended',
+                'medicine': 'Medication reminder cancelled',
+                'patrol': 'Patrol stopped',
+                'music': 'Music stopped',
+                'fetch': 'Fetch task cancelled'
+            };
+
+            // Check if button is already active
+            if (clickedButton.classList.contains('active')) {
+                // DESELECT - Stop the action (NO trigger)
+                clickedButton.classList.remove('active');
+
+                if (window.dashboardUtils) {
+                    window.dashboardUtils.showNotification(stopMessages[action], 'info');
+                } else {
+                    alert(stopMessages[action]);
+                }
+
+                console.log(`Robot action stopped: ${action}`);
+                return; // Exit early - don't trigger action
+            }
+
+            // SELECT - Remove active from all buttons, activate clicked button
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            clickedButton.classList.add('active');
+
+            // Trigger the action
+            if (window.dashboardUtils) {
+                window.dashboardUtils.showNotification(actions[action], 'info');
+            } else {
+                alert(actions[action]);
+            }
+
+            console.log(`Robot action: ${action}`);
+        }
+
+        function setMode(element, mode) {
+            // Remove active class from all modes
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('active');
+            });
+
+            // Add active class to selected mode
+            element.classList.add('active');
+            currentMode = mode;
+
+            const modeNames = {
+                'companion': 'Companion Mode',
+                'assistant': 'Assistant Mode',
+                'security': 'Security Mode',
+                'emergency': 'Emergency Mode'
+            };
+
+            // Update Current Mode display in Robot Status
+            const currentModeElement = document.getElementById('currentModeText');
+            if (currentModeElement) {
+                currentModeElement.textContent = modeNames[mode].replace(' Mode', '');
+            }
+
+            if (window.dashboardUtils) {
+                window.dashboardUtils.showNotification(
+                    `Robot switched to ${modeNames[mode]}`,
+                    'info'
+                );
+            }
+        }
+
+        function updateLastUpdated() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            // Convert to 12-hour format
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be 12
+            const hoursStr = String(hours).padStart(2, '0');
+
+            const timeString = `${hoursStr}:${minutes}:${seconds} ${ampm}`;
+
+            const lastUpdatedElement = document.getElementById('lastUpdatedTime');
+            if (lastUpdatedElement) {
+                lastUpdatedElement.textContent = timeString;
+            }
+        }
+
+        function updateBattery() {
+            const batteryElement = document.getElementById('batteryFill');
+            const textElement = document.getElementById('batteryText');
+            const hudBatteryElement = document.getElementById('hudBatteryText');
+            const currentBattery = parseInt(textElement.textContent);
+
+            // Simulate battery decrease
+            if (Math.random() > 0.7 && currentBattery > 20) {
+                const newBattery = currentBattery - 1;
+                batteryElement.style.width = newBattery + '%';
+                textElement.textContent = newBattery + '%';
+
+                // Sync HUD battery display
+                if (hudBatteryElement) {
+                    hudBatteryElement.textContent = newBattery + '%';
+                }
+
+                // Change color based on battery level
+                if (newBattery < 30) {
+                    batteryElement.style.background = '#E74C3C';
+                } else if (newBattery < 50) {
+                    batteryElement.style.background = '#F39C12';
+                } else {
+                    batteryElement.style.background = '#10B981';
+                }
+            }
+
+            // Update the last updated timestamp whenever battery updates
+            updateLastUpdated();
+        }
+
+        function updateClock() {
+            const now = new Date();
+
+            // Format date as dd/mm/yyyy
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+
+            // Format time as h:mm AM/PM (no seconds)
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            // Convert to 12-hour format
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            // Combine: "27/11/2025, 4:03 PM"
+            const formattedDateTime = `${day}/${month}/${year}, ${hours}:${minutes} ${ampm}`;
+
+            document.getElementById('currentTime').textContent = formattedDateTime;
+        }
+
+        function initializeClock() {
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // Schedule Management Functions
+        function openScheduleModal() {
+            const tasks = [
+                'Cook Meal',
+                'Bring Water',
+                'Medication Reminder',
+                'Check Vitals',
+                'Clean Room',
+                'Assist Walking',
+                'Emergency Alert'
+            ];
+
+            const elderly = [
+                { id: 1, name: 'Ah Chong', color: '#3B82F6' },
+                { id: 2, name: 'Mei Ling', color: '#8B5CF6' },
+                { id: 3, name: 'Kumar', color: '#14B8A6' },
+                { id: 4, name: 'Fatimah', color: '#F59E0B' }
+            ];
+
+            alert('Add New Schedule Form:\n\nTime: [Time Picker]\nTask: ' + tasks.join(', ') + '\nFor Resident: ' + elderly.map(e => e.name).join(', ') + '\nRepeat: Daily / Weekly / Custom\n\n(This would open a modal form in a real application)');
+
+            if (window.dashboardUtils) {
+                window.dashboardUtils.showNotification('Schedule form would open here', 'info');
+            }
+        }
+
+        function editSchedule(id) {
+            if (window.dashboardUtils) {
+                window.dashboardUtils.showNotification(`Editing schedule #${id}`, 'info');
+            } else {
+                alert(`Edit schedule #${id}\n\n(This would open an edit form in a real application)`);
+            }
+        }
+
+        function deleteSchedule(id) {
+            if (confirm(`Are you sure you want to delete this scheduled task?`)) {
+                if (window.dashboardUtils) {
+                    window.dashboardUtils.showNotification(`Schedule #${id} deleted`, 'info');
+                } else {
+                    alert(`Schedule #${id} has been deleted`);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

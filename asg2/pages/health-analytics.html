@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Analytics - Elderly Care Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* Health Grid - Gestalt: Proximity & Similarity */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-xs);
+        }
+
+        /* Health Card - Gestalt: Figure-Ground */
+        .health-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.3s ease;
+        }
+
+        .health-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Health Card Header - Gestalt: Proximity */
+        .health-card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .health-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .health-value-display {
+            text-align: center;
+            padding: var(--spacing-lg);
+            background: #F3F4F6;
+            border-radius: var(--radius-md);
+            margin: var(--spacing-md) 0;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            /* border-left: 3px solid var(--primary-color); */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        .health-value-display:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-light);
+        }
+
+        .health-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .health-range {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: var(--spacing-sm);
+        }
+
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .trend-up {
+            color: #E74C3C;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .trend-down {
+            color: #27AE60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .trend-stable {
+            color: #3498DB;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .ai-insights-section {
+            background: var(--primary-color);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .ai-insights-section h2 {
+            text-align: center;
+        }
+
+        .ai-prediction-score {
+            font-size: 64px;
+            font-weight: 700;
+            margin: var(--spacing-md) 0;
+        }
+
+        /* Prediction List - Gestalt: Proximity & Similarity */
+        .prediction-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-xs);
+        }
+
+        .prediction-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(10px);
+        }
+
+        .health-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-md);
+        }
+
+        .health-history-table th,
+        .health-history-table td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .health-history-table th {
+            background: var(--bg-primary);
+            font-weight: 600;
+        }
+
+        /* Wearable Devices - Gestalt: Proximity & Similarity */
+        .wearable-devices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-sm);
+            padding: var(--spacing-xs);
+        }
+
+        .wearable-card {
+            background: rgba(255, 255, 255, 0.98);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-left: 3px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .wearable-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-light);
+        }
+
+        .wearable-icon {
+            font-size: 40px;
+            margin-bottom: var(--spacing-sm);
+            transition: transform 0.3s ease;
+        }
+
+        .wearable-card:hover .wearable-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .wearable-card .status-badge {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            margin-top: 0 !important;
+        }
+
+        /* Chart Container - Gestalt: Figure-Ground */
+        .chart-container-full {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .chart-container-full:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        canvas {
+            max-height: 300px !important;
+        }
+
+        body {
+            background-color: #F8FAFC;
+            background-image: url('https://images.unsplash.com/photo-1559027615-cd4628902d4a');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(248, 250, 252, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-heart-pulse"></i>
+                <h1>ElderCare AI</h1>
+            </div>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+        <div class="header-center">
+            <h1><i class="fas fa-heartbeat"></i> AI Health Analytics</h1>
+        </div>
+        <div class="header-right">
+            <button class="emergency-btn" onclick="triggerEmergency()">
+                <i class="fas fa-exclamation-triangle"></i>
+                EMERGENCY SOS
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-main">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <!-- Elderly Profile Section -->
+            <div class="elderly-profile" style="padding: var(--spacing-lg); text-align: center;">
+                <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952" alt="Elder" class="elder-avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto var(--spacing-md) auto; border: 3px solid var(--primary-color);" onerror="this.src='https://ui-avatars.com/api/?name=Ah+Chong&size=80&background=4A90E2&color=fff'">
+                <h2 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin: 0;">Ah Chong Tan</h2>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Age: 78</p>
+            </div>
+            <div style="height: 1px; background: rgba(0, 0, 0, 0.1); margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);"></div>
+            <nav>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="health-analytics.html" class="nav-item active">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Analytics</span>
+                </a>
+                <a href="robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Robot Control</span>
+                </a>
+                <a href="smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Smart Home IoT</span>
+                </a>
+                <a href="emergency.html" class="nav-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Safety & Emergency</span>
+                </a>
+                <a href="medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i>
+                    <span>Medication</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area" style="padding: var(--spacing-xl);">
+        <!-- AI-Powered Insights -->
+        <section class="ai-insights-section">
+            <h2><i class="fas fa-brain"></i> AI-Powered Health Prediction</h2>
+            <div style="text-align: center;">
+                <div class="ai-prediction-score">95%</div>
+                <p style="font-size: 20px; margin-bottom: var(--spacing-lg);">Health Stability Score</p>
+                <p style="font-size: 16px; opacity: 0.9;">Based on 30-day continuous monitoring and machine learning analysis</p>
+            </div>
+
+            <div class="prediction-list">
+                <div class="prediction-item">
+                    <i class="fas fa-heart" style="font-size: 24px;"></i>
+                    <h4 style="margin: var(--spacing-sm) 0;">Cardiovascular</h4>
+                    <p style="font-size: 14px; opacity: 0.9;">92% stability predicted for next 7 days</p>
+                </div>
+                <div class="prediction-item">
+                    <i class="fas fa-lungs" style="font-size: 24px;"></i>
+                    <h4 style="margin: var(--spacing-sm) 0;">Respiratory</h4>
+                    <p style="font-size: 14px; opacity: 0.9;">97% stability - Excellent oxygen levels</p>
+                </div>
+                <div class="prediction-item">
+                    <i class="fas fa-brain" style="font-size: 24px;"></i>
+                    <h4 style="margin: var(--spacing-sm) 0;">Cognitive</h4>
+                    <p style="font-size: 14px; opacity: 0.9;">Good engagement - Social interaction recommended</p>
+                </div>
+                <div class="prediction-item">
+                    <i class="fas fa-chart-line" style="font-size: 24px;"></i>
+                    <h4 style="margin: var(--spacing-sm) 0;">Overall Trend</h4>
+                    <p style="font-size: 14px; opacity: 0.9;">Improving - Continue current care plan</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-Time Vital Signs -->
+        <section class="health-grid">
+            <!-- Heart Rate -->
+            <div class="health-card">
+                <div class="health-card-header">
+                    <div class="health-card-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div>
+                        <h3>Heart Rate</h3>
+                        <span class="trend-indicator trend-stable">
+                            <i class="fas fa-minus"></i> Stable
+                        </span>
+                    </div>
+                </div>
+                <div class="health-value-display">
+                    <div class="health-value" id="detailHeartRate">72 bpm</div>
+                    <div class="health-range">Normal: 60-100 bpm</div>
+                </div>
+                <div style="margin-top: var(--spacing-md);">
+                    <p><strong>Last Hour:</strong></p>
+                    <p>Min: 68 bpm | Max: 76 bpm | Avg: 72 bpm</p>
+                </div>
+            </div>
+
+            <!-- Blood Pressure -->
+            <div class="health-card">
+                <div class="health-card-header">
+                    <div class="health-card-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-syringe"></i>
+                    </div>
+                    <div>
+                        <h3>Blood Pressure</h3>
+                        <span class="trend-indicator trend-down">
+                            <i class="fas fa-arrow-down"></i> Improved
+                        </span>
+                    </div>
+                </div>
+                <div class="health-value-display">
+                    <div class="health-value" id="detailBloodPressure">120/80</div>
+                    <div class="health-range">Normal: <120/80 mmHg</div>
+                </div>
+                <div style="margin-top: var(--spacing-md);">
+                    <p><strong>Weekly Average:</strong></p>
+                    <p>Systolic: 122 | Diastolic: 81</p>
+                </div>
+            </div>
+
+            <!-- Blood Sugar Level -->
+            <div class="health-card">
+                <div class="health-card-header">
+                    <div class="health-card-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div>
+                        <h3>Blood Sugar</h3>
+                        <span class="trend-indicator trend-stable">
+                            <i class="fas fa-check"></i> Normal
+                        </span>
+                    </div>
+                </div>
+                <div class="health-value-display">
+                    <div class="health-value" id="detailBloodSugar">5.8 mmol/L</div>
+                    <div class="health-range">Normal: 4.0-6.0 mmol/L</div>
+                </div>
+                <div style="margin-top: var(--spacing-md);">
+                    <p><strong>Status:</strong></p>
+                    <p>Within normal fasting range - Good control</p>
+                </div>
+            </div>
+
+            <!-- Temperature -->
+            <div class="health-card">
+                <div class="health-card-header">
+                    <div class="health-card-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div>
+                        <h3>Body Temperature</h3>
+                        <span class="trend-indicator trend-stable">
+                            <i class="fas fa-minus"></i> Normal
+                        </span>
+                    </div>
+                </div>
+                <div class="health-value-display">
+                    <div class="health-value" id="detailTemperature">36.8°C</div>
+                    <div class="health-range">Normal: 36.1-37.2°C</div>
+                </div>
+                <div style="margin-top: var(--spacing-md);">
+                    <p><strong>Daily Range:</strong></p>
+                    <p>Min: 36.5°C | Max: 37.0°C</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Multi-Vital Charts - Gestalt: Proximity -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md); padding: var(--spacing-xs);">
+            <div class="chart-container-full">
+                <h3><i class="fas fa-chart-line"></i> 24-Hour Heart Rate Trend</h3>
+                <canvas id="heartRateChart"></canvas>
+            </div>
+            <div class="chart-container-full">
+                <h3><i class="fas fa-chart-area"></i> Blood Pressure Trend</h3>
+                <canvas id="bloodPressureChart"></canvas>
+            </div>
+            <div class="chart-container-full">
+                <h3><i class="fas fa-chart-line"></i> Blood Sugar Level Trend</h3>
+                <canvas id="bloodSugarChart"></canvas>
+            </div>
+            <div class="chart-container-full">
+                <h3><i class="fas fa-thermometer-half"></i> Body Temperature Trend</h3>
+                <canvas id="temperatureChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Wearable Devices - Moved to smart-home.html
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Connected Wearable Devices</h2>
+            </div>
+            <div class="wearable-devices">
+                <div class="wearable-card">
+                    <div class="wearable-icon"><i class="fas fa-clock" style="color: #E74C3C; font-size: 36px;"></i></div>
+                    <h4>Smart Watch</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</p>
+                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                </div>
+                <div class="wearable-card">
+                    <div class="wearable-icon"><i class="fas fa-shoe-prints" style="color: #3498DB; font-size: 36px;"></i></div>
+                    <h4>Smart Shoes</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Gait Analysis, Fall Detection</p>
+                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                </div>
+                <div class="wearable-card">
+                    <div class="wearable-icon"><i class="fas fa-ring" style="color: #9B59B6; font-size: 36px;"></i></div>
+                    <h4>Smart Ring</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Body Temperature, Sleep Quality</p>
+                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                </div>
+                <div class="wearable-card">
+                    <div class="wearable-icon"><i class="fas fa-bed" style="color: #F39C12; font-size: 36px;"></i></div>
+                    <h4>Smart Bed Sensor</h4>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Sleep Monitoring, Pressure Points</p>
+                    <div class="status-badge active" style="margin-top: var(--spacing-sm);">Connected</div>
+                </div>
+            </div>
+        </section>
+        -->
+
+        <!-- Health History -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-history"></i> Recent Health Events</h2>
+                <button class="view-all-btn">View All <i class="fas fa-arrow-right" style="color: white;"></i></button>
+            </div>
+            <table class="health-history-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Event Type</th>
+                        <th>Details</th>
+                        <th>Action Taken</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-11-25, 08:30</td>
+                        <td><i class="fas fa-pills"></i> Medication</td>
+                        <td>Blood Pressure Medicine Taken</td>
+                        <td>Automated Reminder</td>
+                        <td><span class="status-badge active">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-11-24, 14:00</td>
+                        <td><i class="fas fa-heartbeat"></i> Vital Check</td>
+                        <td>All vitals within normal range</td>
+                        <td>Routine Monitoring</td>
+                        <td><span class="status-badge active">Normal</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-11-23, 22:00</td>
+                        <td><i class="fas fa-bed"></i> Sleep Analysis</td>
+                        <td>7.5 hours, Good quality</td>
+                        <td>Automated Analysis</td>
+                        <td><span class="status-badge active">Good</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-11-22, 10:00</td>
+                        <td><i class="fas fa-user-md"></i> Doctor Visit</td>
+                        <td>Regular checkup with Dr. Ahmad</td>
+                        <td>Blood test ordered</td>
+                        <td><span class="status-badge active">Completed</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        </div>
+    </main>
+
+    <script src="../js/script.js"></script>
+    <script>
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeClock();
+            initializeDetailCharts();
+            startRealTimeUpdates();
+        });
+
+        function initializeDetailCharts() {
+            // Heart Rate Chart
+            const hrCtx = document.getElementById('heartRateChart');
+            new Chart(hrCtx, {
+                type: 'line',
+                data: {
+                    labels: window.dashboardUtils.generateTimeLabels(24),
+                    datasets: [{
+                        label: 'Heart Rate (bpm)',
+                        data: window.dashboardUtils.generateHeartRateData(),
+                        borderColor: '#E74C3C',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                display: true
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Blood Pressure Chart
+            const bpCtx = document.getElementById('bloodPressureChart');
+            new Chart(bpCtx, {
+                type: 'line',
+                data: {
+                    labels: window.dashboardUtils.generateTimeLabels(24),
+                    datasets: [
+                        {
+                            label: 'Systolic',
+                            data: window.dashboardUtils.generateBloodPressureData(),
+                            borderColor: '#9B59B6',
+                            backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Diastolic',
+                            data: window.dashboardUtils.generateBloodPressureData().map(v => Math.round(v * 0.67)),
+                            borderColor: '#3498DB',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                display: true
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Blood Sugar Chart
+            const bsCtx = document.getElementById('bloodSugarChart');
+            new Chart(bsCtx, {
+                type: 'line',
+                data: {
+                    labels: window.dashboardUtils.generateTimeLabels(24),
+                    datasets: [{
+                        label: 'Blood Sugar (mmol/L)',
+                        data: window.dashboardUtils.generateBloodSugarData(),
+                        borderColor: '#94C9A9',
+                        backgroundColor: 'rgba(148, 201, 169, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#94C9A9'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                display: true
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Body Temperature Chart
+            const tempCtx = document.getElementById('temperatureChart');
+            new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: window.dashboardUtils.generateTimeLabels(24),
+                    datasets: [{
+                        label: 'Body Temperature (°C)',
+                        data: window.dashboardUtils.generateTemperatureData(),
+                        borderColor: '#F39C12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#F39C12'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                display: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateClock() {
+            const now = new Date();
+
+            // Format date as dd/mm/yyyy
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+
+            // Format time as h:mm AM/PM (no seconds)
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            // Convert to 12-hour format
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            // Combine: "27/11/2025, 4:03 PM"
+            const formattedDateTime = `${day}/${month}/${year}, ${hours}:${minutes} ${ampm}`;
+
+            document.getElementById('currentTime').textContent = formattedDateTime;
+        }
+
+        function startRealTimeUpdates() {
+            setInterval(() => {
+                updateClock();
+                updateDetailedVitals();
+            }, 5000);
+        }
+
+        function updateDetailedVitals() {
+            // Update detailed vitals with small variations
+            const hr = document.getElementById('detailHeartRate');
+            const bp = document.getElementById('detailBloodPressure');
+            const bs = document.getElementById('detailBloodSugar');
+            const temp = document.getElementById('detailTemperature');
+
+            hr.textContent = (72 + Math.round((Math.random() - 0.5) * 4)) + ' bpm';
+            bp.textContent = `${120 + Math.round((Math.random() - 0.5) * 4)}/${80 + Math.round((Math.random() - 0.5) * 2)}`;
+            bs.textContent = (5.8 + (Math.random() - 0.5) * 0.3).toFixed(1) + ' mmol/L';
+            temp.textContent = (36.8 + (Math.random() - 0.5) * 0.2).toFixed(1) + '°C';
+        }
+
+        function initializeClock() {
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+    </script>
+</body>
+</html>

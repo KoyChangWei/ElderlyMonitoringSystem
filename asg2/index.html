@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elderly Care Monitoring Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-heart-pulse"></i>
+                <h1>ElderCare AI</h1>
+            </div>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+        <div class="header-center">
+            <h1><i class="fas fa-th-large"></i> Overview</h1>
+        </div>
+        <div class="header-right">
+            <button class="emergency-btn" onclick="triggerEmergency()">
+                <i class="fas fa-exclamation-triangle"></i>
+                EMERGENCY SOS
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-main">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <!-- Elderly Profiles Section -->
+            <div class="elderly-profile" style="padding: var(--spacing-md);">
+                <h2 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-sm); text-align: center;">
+                    <i class="fas fa-users"></i> Residents (4)
+                </h2>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; border-left: 3px solid #3B82F6;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #3B82F6; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px;">AC</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600;">Ah Chong</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Age: 78 <span style="color: #10B981;">●</span></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(139, 92, 246, 0.1); border-radius: 6px; border-left: 3px solid #8B5CF6;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #8B5CF6; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px;">ML</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600;">Mei Ling</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Age: 72 <span style="color: #10B981;">●</span></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(20, 184, 166, 0.1); border-radius: 6px; border-left: 3px solid #14B8A6;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #14B8A6; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px;">KR</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600;">Kumar</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Age: 81 <span style="color: #F59E0B;">●</span></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(245, 158, 11, 0.1); border-radius: 6px; border-left: 3px solid #F59E0B;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #F59E0B; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 11px;">FI</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; font-weight: 600;">Fatimah</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Age: 75 <span style="color: #10B981;">●</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="height: 1px; background: rgba(0, 0, 0, 0.1); margin: var(--spacing-md);"></div>
+            <nav>
+                <a href="#overview" class="nav-item active">
+                    <i class="fas fa-th-large"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="pages/health-analytics.html" class="nav-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Analytics</span>
+                </a>
+                <a href="pages/robot-control.html" class="nav-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Robot Control</span>
+                </a>
+                <a href="pages/smart-home.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Smart Home IoT</span>
+                </a>
+                <a href="pages/emergency.html" class="nav-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Safety & Emergency</span>
+                </a>
+                <a href="pages/medication.html" class="nav-item">
+                    <i class="fas fa-pills"></i>
+                    <span>Medication</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Critical Alerts Banner -->
+            <section class="alerts-banner" id="alertsBanner" style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="alert-item alert-warning" style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #14B8A6;"></span>
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span><strong>Kumar:</strong> High BP detected - 135/88 mmHg</span>
+                    <button class="dismiss-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="alert-item alert-warning" style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #14B8A6;"></span>
+                    <i class="fas fa-pills"></i>
+                    <span><strong>Kumar:</strong> Low activity today - Only 1,823 steps</span>
+                    <button class="dismiss-btn"><i class="fas fa-times"></i></button>
+                </div>
+            </section>
+
+            <!-- AI Health Status Cards -->
+            <section class="status-cards">
+                <div class="status-card health-status" onclick="navigateTo('pages/health-analytics.html')" style="max-height: 400px;">
+                    <div class="card-content" style="padding: var(--spacing-md);">
+                        <h3 style="font-size: 16px; margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-heartbeat"></i>
+                            AI Health Analytics - All Residents
+                        </h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <thead>
+                                    <tr style="background: rgba(0,0,0,0.03); border-bottom: 2px solid rgba(0,0,0,0.1);">
+                                        <th style="padding: 6px; text-align: left; font-weight: 600;">Name</th>
+                                        <th style="padding: 6px; text-align: center; font-weight: 600;">HR</th>
+                                        <th style="padding: 6px; text-align: center; font-weight: 600;">BP</th>
+                                        <th style="padding: 6px; text-align: center; font-weight: 600;">Sugar</th>
+                                        <th style="padding: 6px; text-align: center; font-weight: 600;">Temp</th>
+                                        <th style="padding: 6px; text-align: center; font-weight: 600;">AI</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="healthTableBody">
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #3B82F6;"></span>
+                                            Ah Chong
+                                        </td>
+                                        <td style="padding: 8px; text-align: center;">72 <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">120/80 <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">5.8 <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">36.8°C <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center; font-weight: 600; color: #10B981;">95%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #8B5CF6;"></span>
+                                            Mei Ling
+                                        </td>
+                                        <td style="padding: 8px; text-align: center;">68 <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">118/78 <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">5.2 <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">36.6°C <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center; font-weight: 600; color: #10B981;">92%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #14B8A6;"></span>
+                                            Kumar
+                                        </td>
+                                        <td style="padding: 8px; text-align: center;">78 <span style="color: #F59E0B;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">135/88 <span style="color: #F59E0B;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">6.5 <span style="color: #F59E0B;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">36.9°C <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center; font-weight: 600; color: #F59E0B;">78%</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;"></span>
+                                            Fatimah
+                                        </td>
+                                        <td style="padding: 8px; text-align: center;">70 <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">122/82 <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">5.5 <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;">37.0°C <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center; font-weight: 600; color: #10B981;">88%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-card robot-status" onclick="navigateTo('pages/robot-control.html')" style="max-height: 400px;">
+                    <div class="card-content" style="padding: var(--spacing-md);">
+                        <h3 style="font-size: 16px; margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-robot"></i>
+                            Robot Scheduling & Control
+                        </h3>
+                        <div style="font-size: 11px; margin-bottom: var(--spacing-sm);">
+                            <div style="display: flex; justify-content: space-between; padding: 6px; background: rgba(155, 89, 182, 0.1); border-radius: 6px;">
+                                <span><strong>Status:</strong> <span style="color: #10B981;">Active</span></span>
+                                <span><strong>Battery:</strong> 87%</span>
+                            </div>
+                        </div>
+                        <div style="overflow-y: auto; max-height: 280px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <thead style="position: sticky; top: 0; background: white;">
+                                    <tr style="background: rgba(0,0,0,0.03); border-bottom: 2px solid rgba(0,0,0,0.1);">
+                                        <th style="padding: 6px; text-align: left; font-weight: 600;">Time</th>
+                                        <th style="padding: 6px; text-align: left; font-weight: 600;">Task</th>
+                                        <th style="padding: 6px; text-align: left; font-weight: 600;">For</th>
+                                        <th style="padding: 6px; text-align: center; font-weight: 600;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 6px;">08:00 AM</td>
+                                        <td style="padding: 6px;">Cook Meal</td>
+                                        <td style="padding: 6px; display: flex; align-items: center; gap: 4px;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #3B82F6;"></span>Ah Chong
+                                        </td>
+                                        <td style="padding: 6px; text-align: center;"><span style="color: #10B981; font-size: 10px;">✓ Done</span></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 6px;">09:30 AM</td>
+                                        <td style="padding: 6px;">Medication Reminder</td>
+                                        <td style="padding: 6px; display: flex; align-items: center; gap: 4px;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #14B8A6;"></span>Kumar
+                                        </td>
+                                        <td style="padding: 6px; text-align: center;"><span style="color: #10B981; font-size: 10px;">✓ Done</span></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 6px;">12:00 PM</td>
+                                        <td style="padding: 6px;">Bring Water</td>
+                                        <td style="padding: 6px; display: flex; align-items: center; gap: 4px;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #8B5CF6;"></span>Mei Ling
+                                        </td>
+                                        <td style="padding: 6px; text-align: center;"><span style="color: #3B82F6; font-size: 10px;">● Active</span></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 6px;">02:00 PM</td>
+                                        <td style="padding: 6px;">Check Vitals</td>
+                                        <td style="padding: 6px; display: flex; align-items: center; gap: 4px;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #F59E0B;"></span>Fatimah
+                                        </td>
+                                        <td style="padding: 6px; text-align: center;"><span style="color: #94A3B8; font-size: 10px;">Pending</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px;">03:00 PM</td>
+                                        <td style="padding: 6px;">Assist Walking</td>
+                                        <td style="padding: 6px; display: flex; align-items: center; gap: 4px;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #14B8A6;"></span>Kumar
+                                        </td>
+                                        <td style="padding: 6px; text-align: center;"><span style="color: #94A3B8; font-size: 10px;">Pending</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-card activity-status" onclick="navigateTo('pages/emergency.html')" style="max-height: 400px;">
+                    <div class="card-content" style="padding: var(--spacing-md);">
+                        <h3 style="font-size: 16px; margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-shield-alt"></i>
+                            Safety & Activity Monitoring
+                        </h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <thead>
+                                    <tr style="background: rgba(0,0,0,0.03); border-bottom: 2px solid rgba(0,0,0,0.1);">
+                                        <th style="padding: 6px; text-align: left; font-weight: 600;">Name</th>
+                                        <th style="padding: 6px; text-align: center; font-weight: 600;">Steps</th>
+                                        <th style="padding: 6px; text-align: center; font-weight: 600;">Sleep</th>
+                                        <th style="padding: 6px; text-align: center; font-weight: 600;">Falls</th>
+                                        <th style="padding: 6px; text-align: left; font-weight: 600;">Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #3B82F6;"></span>
+                                            Ah Chong
+                                        </td>
+                                        <td style="padding: 8px; text-align: center;">2,847</td>
+                                        <td style="padding: 8px; text-align: center;">7.5h <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;"><span style="color: #10B981;">0</span></td>
+                                        <td style="padding: 8px;">Living Room</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #8B5CF6;"></span>
+                                            Mei Ling
+                                        </td>
+                                        <td style="padding: 8px; text-align: center;">3,124</td>
+                                        <td style="padding: 8px; text-align: center;">8.2h <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;"><span style="color: #10B981;">0</span></td>
+                                        <td style="padding: 8px;">Bedroom</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <td style="padding: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #14B8A6;"></span>
+                                            Kumar
+                                        </td>
+                                        <td style="padding: 8px; text-align: center;">1,823</td>
+                                        <td style="padding: 8px; text-align: center;">6.5h <span style="color: #F59E0B;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;"><span style="color: #10B981;">0</span></td>
+                                        <td style="padding: 8px;">Dining Room</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;"></span>
+                                            Fatimah
+                                        </td>
+                                        <td style="padding: 8px; text-align: center;">2,456</td>
+                                        <td style="padding: 8px; text-align: center;">7.8h <span style="color: #10B981;">●</span></td>
+                                        <td style="padding: 8px; text-align: center;"><span style="color: #10B981;">0</span></td>
+                                        <td style="padding: 8px;">Garden</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IoT Smart Home Control -->
+            <section class="dashboard-section smart-home-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-home"></i> Smart Home IoT Control</h2>
+                    <button class="view-all-btn" onclick="navigateTo('pages/smart-home.html')">View All <i class="fas fa-arrow-right"></i></button>
+                </div>
+                <div class="iot-grid">
+                    <div class="iot-device">
+                        <div class="device-icon lights">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="device-info">
+                            <h4>Smart Lights</h4>
+                            <p>Living Room</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDevice(this, 'lights')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="iot-device">
+                        <div class="device-icon temperature">
+                            <i class="fas fa-temperature-half"></i>
+                        </div>
+                        <div class="device-info">
+                            <h4>Air Conditioning</h4>
+                            <p>24°C - Auto Mode</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDevice(this, 'ac')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="iot-device">
+                        <div class="device-icon camera">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="device-info">
+                            <h4>AI Camera</h4>
+                            <p>4 Active Cameras</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDevice(this, 'camera')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="iot-device">
+                        <div class="device-icon door">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="device-info">
+                            <h4>Smart Door Lock</h4>
+                            <p>Secured</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDevice(this, 'door')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="iot-device">
+                        <div class="device-icon voice">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <div class="device-info">
+                            <h4>Voice Assistant</h4>
+                            <p>Listening...</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked onchange="toggleDevice(this, 'voice')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Two Column Layout: Charts & Medication -->
+            <section class="two-column-section">
+                <!-- Health Trends -->
+                <div class="chart-container health-chart-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-line"></i> Health Trends (24 Hours)</h2>
+                        <select id="chartSelector" onchange="updateChart()">
+                            <option value="heartRate">Heart Rate</option>
+                            <option value="bloodPressure">Blood Pressure</option>
+                            <option value="bloodSugar">Blood Sugar</option>
+                            <option value="temperature">Body Temperature</option>
+                        </select>
+                    </div>
+                    <canvas id="healthChart"></canvas>
+                </div>
+
+                <!-- Medication Schedule -->
+                <div class="medication-schedule medication-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-pills"></i> Today's Medication</h2>
+                        <button class="view-all-btn" onclick="navigateTo('pages/medication.html')">View All <i class="fas fa-arrow-right" style="color: white;"></i></button>
+                    </div>
+                    <div class="medication-list" style="font-size: 12px;">
+                        <div class="med-item completed" style="padding: 10px;">
+                            <div class="med-time" style="font-size: 11px;">08:00 AM</div>
+                            <div class="med-details">
+                                <h4 style="font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #3B82F6;"></span>
+                                    Blood Pressure - Ah Chong
+                                </h4>
+                                <p style="font-size: 11px;">Amlodipine 5mg - 1 tablet</p>
+                            </div>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="med-item completed" style="padding: 10px;">
+                            <div class="med-time" style="font-size: 11px;">09:00 AM</div>
+                            <div class="med-details">
+                                <h4 style="font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #8B5CF6;"></span>
+                                    Arthritis - Mei Ling
+                                </h4>
+                                <p style="font-size: 11px;">Ibuprofen 400mg - 1 tablet</p>
+                            </div>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="med-item upcoming" style="padding: 10px;">
+                            <div class="med-time" style="font-size: 11px;">02:00 PM</div>
+                            <div class="med-details">
+                                <h4 style="font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #14B8A6;"></span>
+                                    Heart - Kumar
+                                </h4>
+                                <p style="font-size: 11px;">Metoprolol 50mg - 1 tablet</p>
+                            </div>
+                            <div class="countdown" style="font-size: 10px;">in 15 min</div>
+                        </div>
+                        <div class="med-item pending" style="padding: 10px;">
+                            <div class="med-time" style="font-size: 11px;">06:00 PM</div>
+                            <div class="med-details">
+                                <h4 style="font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #F59E0B;"></span>
+                                    Memory - Fatimah
+                                </h4>
+                                <p style="font-size: 11px;">Donepezil 5mg - 1 tablet</p>
+                            </div>
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Insights & Predictive Analytics
+            <section class="dashboard-section ai-insights-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-brain"></i> AI-Powered Insights & Predictions</h2>
+                </div>
+                <div class="insights-grid">
+                    <div class="insight-card prediction">
+                        <i class="fas fa-chart-area"></i>
+                        <h3>Health Prediction</h3>
+                        <p>Based on 30-day analysis, predicted blood pressure stability: <strong>92%</strong></p>
+                        <span class="insight-tag positive">Positive Trend</span>
+                    </div>
+                    <div class="insight-card warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Activity Alert</h3>
+                        <p>Steps decreased by 15% this week. Recommend light exercise.</p>
+                        <span class="insight-tag caution">Needs Attention</span>
+                    </div>
+                    <div class="insight-card recommendation">
+                        <i class="fas fa-utensils"></i>
+                        <h3>Nutrition Suggestion</h3>
+                        <p>Low vitamin D detected. Recommend sunlight exposure & supplements.</p>
+                        <span class="insight-tag info">Recommendation</span>
+                    </div>
+                    <div class="insight-card social">
+                        <i class="fas fa-users"></i>
+                        <h3>Social Engagement</h3>
+                        <p>No family visits this week. Mood score decreased slightly.</p>
+                        <button class="action-btn-small">Schedule Video Call</button>
+                    </div>
+                </div>
+            </section>
+            -->
+
+            <!-- AI Chat Mental Health Monitoring
+            <section class="dashboard-section mental-health-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-comments"></i> AI Mental Health Monitoring</h2>
+                    <div class="mental-health-status" id="mentalHealthStatus">
+                        <i class="fas fa-smile"></i>
+                        <span>Emotional State: <strong>Positive</strong></span>
+                    </div>
+                </div>
+
+                <div class="mental-health-grid"> -->
+                    <!-- Chat History Panel -->
+                    <!-- <div class="chat-history-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-robot"></i> Recent Conversations</h3>
+                            <span class="last-chat-time" id="lastChatTime">Last chat: 2 hours ago</span>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">-->
+                            <!-- Static conversation example for prototype -->
+                            <!--<div class="chat-message robot">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p>Hello Ah Chong! How are you today?</p>
+                                    <span class="message-time">2:15 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:15:32</span>
+                                </div>
+                            </div>
+                            <div class="chat-message elderly">
+                                <div class="message-content has-emotion-positive">
+                                    <span class="message-emotion-indicator positive"><i class="fas fa-smile"></i> POSITIVE</span>
+                                    <p>I am good, thank you! I wanna eat something.</p>
+                                    <span class="message-time">2:16 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:16:15</span>
+                                </div>
+                                <div class="message-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="chat-message robot">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p>That's great! What would you like to eat? Are you feeling hungry now?</p>
+                                    <span class="message-time">2:16 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:16:48</span>
+                                </div>
+                            </div>
+                            <div class="chat-message elderly">
+                                <div class="message-content has-emotion-positive">
+                                    <span class="message-emotion-indicator positive"><i class="fas fa-smile"></i> POSITIVE</span>
+                                    <p>Yes, I feel a bit hungry. Maybe some noodles or rice would be nice.</p>
+                                    <span class="message-time">2:17 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:17:22</span>
+                                </div>
+                                <div class="message-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="chat-message robot">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p>Noodles sound delicious! Have you had your lunch already, or is this for a snack?</p>
+                                    <span class="message-time">2:18 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:18:05</span>
+                                </div>
+                            </div>
+                            <div class="chat-message elderly">
+                                <div class="message-content has-emotion-positive">
+                                    <span class="message-emotion-indicator positive"><i class="fas fa-smile"></i> POSITIVE</span>
+                                    <p>I had lunch earlier, but I feel like having something light now. Maybe some soup noodles.</p>
+                                    <span class="message-time">2:19 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:19:11</span>
+                                </div>
+                                <div class="message-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="chat-message robot">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p>Soup noodles are a good choice! They're light and easy to digest. Do you have any at home, or would you like me to help you order some?</p>
+                                    <span class="message-time">2:20 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:20:33</span>
+                                </div>
+                            </div>
+                            <div class="chat-message elderly">
+                                <div class="message-content has-emotion-positive">
+                                    <span class="message-emotion-indicator positive"><i class="fas fa-smile"></i> POSITIVE</span>
+                                    <p>I think I have some instant noodles in the kitchen. That should be fine for now.</p>
+                                    <span class="message-time">2:21 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:21:08</span>
+                                </div>
+                                <div class="message-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="chat-message robot">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p>Good! Just remember to be careful with hot water when preparing them. Would you like me to remind you about your medication schedule after you eat?</p>
+                                    <span class="message-time">2:22 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:22:18</span>
+                                </div>
+                            </div>
+                            <div class="chat-message elderly">
+                                <div class="message-content has-emotion-positive">
+                                    <span class="message-emotion-indicator positive"><i class="fas fa-smile"></i> POSITIVE</span>
+                                    <p>Yes, that would be helpful. Thank you for reminding me!</p>
+                                    <span class="message-time">2:23 PM</span>
+                                    <span class="message-full-time">2025-11-25 14:23:02</span>
+                                </div>
+                                <div class="message-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <!-- Mental Health Analysis Panel -->
+                    <!-- <div class="mental-health-analysis">
+                        <div class="analysis-card emotional-state">
+                            <h3><i class="fas fa-brain"></i> Emotional Analysis</h3>
+                            <div class="emotion-indicators">
+                                <div class="emotion-bar">
+                                    <span class="emotion-label">Happiness</span>
+                                    <div class="emotion-progress">
+                                        <div class="emotion-fill happiness" style="width: 85%"></div>
+                                    </div>
+                                    <span class="emotion-value">85%</span>
+                                </div>
+                                <div class="emotion-bar">
+                                    <span class="emotion-label">Anxiety</span>
+                                    <div class="emotion-progress">
+                                        <div class="emotion-fill anxiety" style="width: 15%"></div>
+                                    </div>
+                                    <span class="emotion-value">15%</span>
+                                </div>
+                                <div class="emotion-bar">
+                                    <span class="emotion-label">Sadness</span>
+                                    <div class="emotion-progress">
+                                        <div class="emotion-fill sadness" style="width: 10%"></div>
+                                    </div>
+                                    <span class="emotion-value">10%</span>
+                                </div>
+                                <div class="emotion-bar">
+                                    <span class="emotion-label">Engagement</span>
+                                    <div class="emotion-progress">
+                                        <div class="emotion-fill engagement" style="width: 80%"></div>
+                                    </div>
+                                    <span class="emotion-value">80%</span>
+                                </div>
+                            </div>
+                            <div class="overall-assessment">
+                                <div class="assessment-badge positive">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Healthy Mental State</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analysis-card conversation-summary">
+                            <h3><i class="fas fa-file-alt"></i> Conversation Summary</h3>
+                            <div class="summary-content">
+                                <div class="summary-item">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <div>
+                                        <strong>Today's Sessions:</strong>
+                                        <p>3 conversations (avg. 8 minutes each)</p>
+                                    </div>
+                                </div>
+                                <div class="summary-item">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <div>
+                                        <strong>Key Topics:</strong>
+                                        <p>Family, meals, sleep quality, daily activities</p>
+                                    </div>
+                                </div>
+                                <div class="summary-item">
+                                    <i class="fas fa-chart-line"></i>
+                                    <div>
+                                        <strong>Mood Trend (7 days):</strong>
+                                        <p>Consistently positive with stable engagement</p>
+                                    </div>
+                                </div>
+                                <div class="summary-item">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <div>
+                                        <strong>Concerns Detected:</strong>
+                                        <p class="no-concerns">None - All indicators normal</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analysis-card ai-recommendations">
+                            <h3><i class="fas fa-robot"></i> AI Recommendations</h3>
+                            <ul class="recommendations-list">
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <span>Continue regular conversations to maintain social engagement</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <span>Encourage discussion about family visits to boost mood</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    <span>Monitor sleep patterns - currently optimal</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            --> 
+
+            <!-- Mood-Adaptive Smart Home Automation
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-magic"></i> Mood-Adaptive Home Automation</h2>
+                    <div class="automation-status active" id="automationStatus">
+                        <i class="fas fa-check-circle"></i>
+                        <span>AI Automation Active</span>
+                    </div>
+                </div>
+
+                <div class="mood-automation-info">
+                    <p style="font-size: 16px; color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+                        <i class="fas fa-info-circle"></i>
+                        Smart home automatically adjusts environment based on detected emotional state from AI conversations to ensure comfort and safety.
+                    </p>
+                </div>
+
+                <div class="mood-automation-grid">-->
+                    <!-- Current Mood Profile --> 
+                    <!-- <div class="mood-profile-card">
+                        <h3><i class="fas fa-smile-beam"></i> Current Mood Profile</h3>
+                        <div class="mood-profile-display" id="moodProfileDisplay">
+                            <div class="mood-indicator positive">
+                                <i class="fas fa-smile"></i>
+                                <span>Positive & Relaxed</span>
+                            </div>
+                            <p style="margin-top: var(--spacing-sm); color: var(--text-secondary);">
+                                Last updated: 2 hours ago via AI chat analysis
+                            </p>
+                        </div>
+                        <div class="mood-history">
+                            <h4>Today's Mood Timeline</h4>
+                            <div class="mood-timeline">
+                                <div class="timeline-item positive">
+                                    <span class="timeline-time">8:00 AM</span>
+                                    <div class="timeline-dot"></div>
+                                    <span class="timeline-mood">Cheerful</span>
+                                </div>
+                                <div class="timeline-item positive">
+                                    <span class="timeline-time">12:30 PM</span>
+                                    <div class="timeline-dot"></div>
+                                    <span class="timeline-mood">Content</span>
+                                </div>
+                                <div class="timeline-item neutral">
+                                    <span class="timeline-time">2:15 PM</span>
+                                    <div class="timeline-dot"></div>
+                                    <span class="timeline-mood">Relaxed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <!-- Automatic Adjustments Panel -->
+                    <!-- <div class="auto-adjustments-panel">
+                        <h3><i class="fas fa-cog"></i> Active Mood-Based Adjustments</h3>
+                        <div class="adjustments-list" id="adjustmentsList">
+                            <div class="adjustment-item active">
+                                <div class="adjustment-icon lighting">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <div class="adjustment-info">
+                                    <h4>Warm Lighting</h4>
+                                    <p>Brightness: 75% | Color Temp: Warm White</p>
+                                    <span class="adjustment-reason">Reason: Positive mood - Comfortable ambiance</span>
+                                </div>
+                                <div class="adjustment-status active">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="adjustment-item active">
+                                <div class="adjustment-icon temperature">
+                                    <i class="fas fa-temperature-half"></i>
+                                </div>
+                                <div class="adjustment-info">
+                                    <h4>Climate Control</h4>
+                                    <p>Temperature: 24°C | Fan Speed: Auto</p>
+                                    <span class="adjustment-reason">Reason: Relaxed state - Optimal comfort</span>
+                                </div>
+                                <div class="adjustment-status active">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="adjustment-item active">
+                                <div class="adjustment-icon music">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                                <div class="adjustment-info">
+                                    <h4>Background Music</h4>
+                                    <p>Playing: Soothing Classical | Volume: 20%</p>
+                                    <span class="adjustment-reason">Reason: Calm mood - Relaxation enhancement</span>
+                                </div>
+                                <div class="adjustment-status active">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="adjustment-item standby">
+                                <div class="adjustment-icon security">
+                                    <i class="fas fa-door-closed"></i>
+                                </div>
+                                <div class="adjustment-info">
+                                    <h4>Safety Door Lock</h4>
+                                    <p>Status: Unlocked | Mode: Standard</p>
+                                    <span class="adjustment-reason">Reason: Mental state healthy - Normal access</span>
+                                </div>
+                                <div class="adjustment-status standby">
+                                    <i class="fas fa-unlock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- Safety Protocol Alert Banner -->
+                <!-- <div class="safety-protocol-banner" id="safetyProtocolBanner" style="display: none;">
+                    <div class="protocol-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="protocol-content">
+                        <h3>Enhanced Safety Protocol Activated</h3>
+                        <p>Mental health concerns detected. Automatic safety measures enabled to prevent wandering and ensure wellbeing.</p>
+                        <div class="protocol-actions">
+                            <span><i class="fas fa-lock"></i> Doors Auto-Locked</span>
+                            <span><i class="fas fa-bell"></i> Family Notified</span>
+                            <span><i class="fas fa-video"></i> Monitoring Increased</span>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- Mood-Based Automation Rules
+                <div class="automation-rules-section">
+                    <h3><i class="fas fa-book"></i> Active Automation Rules</h3>
+                    <div class="rules-grid">
+                        <div class="rule-card">
+                            <div class="rule-header positive">
+                                <i class="fas fa-smile"></i>
+                                <h4>Happy / Positive Mood</h4>
+                            </div>
+                            <ul class="rule-actions">
+                                <li><i class="fas fa-check"></i> Bright warm lighting (70-80%)</li>
+                                <li><i class="fas fa-check"></i> Comfortable temperature (23-25°C)</li>
+                                <li><i class="fas fa-check"></i> Uplifting background music</li>
+                                <li><i class="fas fa-check"></i> Normal door access</li>
+                            </ul>
+                        </div>
+
+                        <div class="rule-card">
+                            <div class="rule-header neutral">
+                                <i class="fas fa-meh"></i>
+                                <h4>Calm / Neutral Mood</h4>
+                            </div>
+                            <ul class="rule-actions">
+                                <li><i class="fas fa-check"></i> Soft ambient lighting (60-70%)</li>
+                                <li><i class="fas fa-check"></i> Optimal temperature (24°C)</li>
+                                <li><i class="fas fa-check"></i> Gentle classical music</li>
+                                <li><i class="fas fa-check"></i> Standard security mode</li>
+                            </ul>
+                        </div>
+
+                        <div class="rule-card">
+                            <div class="rule-header warning">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <h4>Anxious / Stressed Mood</h4>
+                            </div>
+                            <ul class="rule-actions">
+                                <li><i class="fas fa-lock"></i> Doors auto-locked for safety</li>
+                                <li><i class="fas fa-check"></i> Calming blue lighting (50%)</li>
+                                <li><i class="fas fa-check"></i> Temperature lowered (22-23°C)</li>
+                                <li><i class="fas fa-check"></i> Meditation sounds activated</li>
+                                <li><i class="fas fa-bell"></i> Family notification sent</li>
+                            </ul>
+                        </div>
+
+                        <div class="rule-card">
+                            <div class="rule-header critical">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h4>Depressed / Critical State</h4>
+                            </div>
+                            <ul class="rule-actions">
+                                <li><i class="fas fa-lock"></i> All exits secured immediately</li>
+                                <li><i class="fas fa-lightbulb"></i> Bright therapeutic lighting</li>
+                                <li><i class="fas fa-video"></i> Enhanced monitoring active</li>
+                                <li><i class="fas fa-ambulance"></i> Emergency contacts alerted</li>
+                                <li><i class="fas fa-phone"></i> Doctor notification triggered</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section> -->
+           
+
+            <!-- Emergency Contacts & Quick Actions -->
+            <section class="dashboard-section emergency-contacts-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-phone-alt"></i> Emergency Contacts & Quick Actions</h2>
+                </div>
+                <div class="emergency-grid">
+                    <div class="contact-card">
+                        <div class="contact-avatar">
+                            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d" alt="Doctor" style="object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Ahmad&size=60&background=E74C3C&color=fff'">
+                        </div>
+                        <h4>Dr. Ahmad Hassan</h4>
+                        <p>Primary Physician</p>
+                        <button class="call-btn"><i class="fas fa-phone"></i> Call Now</button>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-avatar">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330" alt="Family" style="object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=Siti+Tan&size=60&background=3498DB&color=fff'">
+                        </div>
+                        <h4>Siti Tan</h4>
+                        <p>Daughter</p>
+                        <button class="call-btn"><i class="fas fa-video"></i> Video Call</button>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-avatar">
+                            <img src="https://ui-avatars.com/api/?name=Emergency&size=60&background=E67E22&color=fff" alt="Emergency">
+                        </div>
+                        <h4>Emergency 999</h4>
+                        <p>Ambulance Service</p>
+                        <button class="call-btn emergency"><i class="fas fa-ambulance"></i> Emergency</button>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-avatar">
+                            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2" alt="Nurse" style="object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=Nurse+Maya&size=60&background=9B59B6&color=fff'">
+                        </div>
+                        <h4>Nurse Maya</h4>
+                        <p>Home Care Nurse</p>
+                        <button class="call-btn"><i class="fas fa-phone"></i> Call Now</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-time Activity Feed -->
+            <section class="dashboard-section activity-feed-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-rss"></i> Real-time Activity Feed</h2>
+                    <button class="view-all-btn">View All <i class="fas fa-arrow-right" style="color: white;"></i></button>
+                </div>
+                <div class="activity-feed">
+                    <div class="feed-item">
+                        <div class="feed-icon success">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <div class="feed-content">
+                            <p><strong>Medication Taken</strong></p>
+                            <p>12:00 PM - Metformin 500mg taken successfully</p>
+                        </div>
+                        <span class="feed-time">1 hour ago</span>
+                    </div>
+                    <div class="feed-item">
+                        <div class="feed-icon info">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="feed-content">
+                            <p><strong>Meal Logged</strong></p>
+                            <p>Lunch completed - 650 calories, balanced nutrition</p>
+                        </div>
+                        <span class="feed-time">1.5 hours ago</span>
+                    </div>
+                    <div class="feed-item">
+                        <div class="feed-icon warning">
+                            <i class="fas fa-walking"></i>
+                        </div>
+                        <div class="feed-content">
+                            <p><strong>Low Activity Alert</strong></p>
+                            <p>Only 500 steps so far. Recommend light walk.</p>
+                        </div>
+                        <span class="feed-time">2 hours ago</span>
+                    </div>
+                    <div class="feed-item">
+                        <div class="feed-icon success">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="feed-content">
+                            <p><strong>Vital Signs Check</strong></p>
+                            <p>All vitals within normal range</p>
+                        </div>
+                        <span class="feed-time">3 hours ago</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
