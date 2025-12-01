@@ -12,7 +12,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
             padding: 0;
         }
 
@@ -62,9 +62,9 @@
             background: white;
             border-left: 4px solid;
             border-radius: var(--radius-md);
-            padding: 14px;
-            padding-left: 44px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            padding: 10px;
+            padding-left: 40px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
             border: 1px solid #e2e8f0;
             transition: all 0.2s ease;
         }
@@ -78,7 +78,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .timeline-time {
@@ -89,8 +89,8 @@
         .med-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .med-detail-item {
@@ -219,7 +219,7 @@
         }
     </style>
 </head>
-<body>
+<body class="compact-page">
     <!-- Sticky Top Header -->
     <div class="sticky-top-header" id="stickyHeader">
         <div class="sticky-header-content">
@@ -237,12 +237,15 @@
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo-section">
-                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            <div class="caregiver-section">
+                <div class="caregiver-avatar">
+                    <i class="fas fa-user-nurse"></i>
+                </div>
+                <div class="caregiver-name">Nurse Maya</div>
+                <div class="caregiver-role">On-duty Caregiver</div>
             </div>
 
             <nav class="nav-menu">
-                <h3>Navigation</h3>
                 <a href="../index.html" class="nav-item">
                     <i class="fas fa-th-large"></i> Overview
                 </a>
@@ -276,38 +279,17 @@
             </header>
 
             <div class="dashboard-grid">
-                <!-- Quick Actions -->
+                <!-- Row 1: Important Events Calendar -->
                 <div class="card card-full">
                     <div class="card-header">
-                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        <h3><i class="fas fa-calendar-alt"></i> Important Health & Medication Events</h3>
                     </div>
-                    <div class="card-content">
-                        <div class="quick-action-grid">
-                            <div class="quick-action-card" onclick="addMedication()">
-                                <i class="fas fa-plus-circle"></i>
-                                <div style="font-weight: 600; margin-bottom: 4px;">Add Medication</div>
-                                <div style="font-size: 11px; color: var(--text-secondary);">New prescription</div>
-                            </div>
-                            <div class="quick-action-card" onclick="markTaken()">
-                                <i class="fas fa-check-circle"></i>
-                                <div style="font-weight: 600; margin-bottom: 4px;">Mark as Taken</div>
-                                <div style="font-size: 11px; color: var(--text-secondary);">Confirm dosage</div>
-                            </div>
-                            <div class="quick-action-card" onclick="setReminder()">
-                                <i class="fas fa-bell"></i>
-                                <div style="font-weight: 600; margin-bottom: 4px;">Set Reminder</div>
-                                <div style="font-size: 11px; color: var(--text-secondary);">Custom alert</div>
-                            </div>
-                            <div class="quick-action-card" onclick="orderRefill()">
-                                <i class="fas fa-shopping-cart"></i>
-                                <div style="font-weight: 600; margin-bottom: 4px;">Order Refill</div>
-                                <div style="font-size: 11px; color: var(--text-secondary);">Pharmacy order</div>
-                            </div>
-                        </div>
+                    <div class="card-content" style="padding: 12px 18px 10px 18px;">
+                        <div id="medicationEventsCalendar"></div>
                     </div>
                 </div>
 
-                <!-- Row 1: Compliance & Medication Inventory -->
+                <!-- Row 2: Compliance & Medication Inventory -->
                 <div class="grid-row">
                     <!-- Weekly Compliance -->
                     <div class="card card-medium">
@@ -409,7 +391,7 @@
                     </div>
                 </div>
 
-                <!-- Row 2: Today's Medication Schedule (below Weekly Compliance) & Upcoming Reminders (below Medication Inventory) -->
+                <!-- Row 3: Today's Medication Schedule (below Weekly Compliance) & Upcoming Reminders (below Medication Inventory) -->
                 <div class="grid-row">
                     <!-- Today's Medication Schedule -->
                     <div class="card card-medium">
@@ -417,7 +399,7 @@
                         <h3><i class="fas fa-calendar-day"></i> Today's Medication Schedule</h3>
                         <span class="card-badge">8 Doses</span>
                     </div>
-                        <div class="card-content" style="max-height: 400px; overflow-y: auto;">
+                        <div class="card-content" style="max-height: 380px; overflow-y: auto;">
                         <div class="timeline" id="medicationTimeline" style="flex-direction: column;">
                             <!-- Populated by JavaScript -->
                         </div>
@@ -429,26 +411,26 @@
                         <div class="card-header">
                             <h3><i class="fas fa-bell"></i> Upcoming Reminders</h3>
                         </div>
-                        <div class="card-content" style="max-height: 400px; overflow-y: auto;">
-                            <div style="display: flex; flex-direction: column; gap: 12px;">
-                                <div style="padding: 14px; background: rgba(59, 130, 246, 0.05); border-left: 4px solid #3B82F6; border-radius: 8px;">
-                                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">11:15 AM</div>
-                                    <div style="font-size: 13px; margin-bottom: 4px;">Aspirin 75mg</div>
+                        <div class="card-content" style="max-height: 380px; overflow-y: auto;">
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="padding: 10px 12px; background: rgba(59, 130, 246, 0.05); border-left: 4px solid #3B82F6; border-radius: 8px;">
+                                    <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">11:15 AM</div>
+                                    <div style="font-size: 12px; margin-bottom: 2px;">Aspirin 75mg</div>
                                     <div style="font-size: 11px; color: var(--text-secondary);">Kumar Raj • Due in 30 min</div>
                                 </div>
-                                <div style="padding: 14px; background: rgba(245, 158, 11, 0.05); border-left: 4px solid #F59E0B; border-radius: 8px;">
-                                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">12:30 PM</div>
-                                    <div style="font-size: 13px; margin-bottom: 4px;">Calcium 600mg</div>
+                                <div style="padding: 10px 12px; background: rgba(245, 158, 11, 0.05); border-left: 4px solid #F59E0B; border-radius: 8px;">
+                                    <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">12:30 PM</div>
+                                    <div style="font-size: 12px; margin-bottom: 2px;">Calcium 600mg</div>
                                     <div style="font-size: 11px; color: var(--text-secondary);">Fatimah • Due in 1h 45min</div>
                                 </div>
-                                <div style="padding: 14px; background: rgba(139, 92, 246, 0.05); border-left: 4px solid #8B5CF6; border-radius: 8px;">
-                                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">14:00 PM</div>
-                                    <div style="font-size: 13px; margin-bottom: 4px;">Vitamin D 1000IU</div>
+                                <div style="padding: 10px 12px; background: rgba(139, 92, 246, 0.05); border-left: 4px solid #8B5CF6; border-radius: 8px;">
+                                    <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">14:00 PM</div>
+                                    <div style="font-size: 12px; margin-bottom: 2px;">Vitamin D 1000IU</div>
                                     <div style="font-size: 11px; color: var(--text-secondary);">Mei Ling • Pending</div>
                                 </div>
-                                <div style="padding: 14px; background: rgba(20, 184, 166, 0.05); border-left: 4px solid #14B8A6; border-radius: 8px;">
-                                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">18:00 PM</div>
-                                    <div style="font-size: 13px; margin-bottom: 4px;">Metformin 500mg</div>
+                                <div style="padding: 10px 12px; background: rgba(20, 184, 166, 0.05); border-left: 4px solid #14B8A6; border-radius: 8px;">
+                                    <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">18:00 PM</div>
+                                    <div style="font-size: 12px; margin-bottom: 2px;">Metformin 500mg</div>
                                     <div style="font-size: 11px; color: var(--text-secondary);">Ah Chong • Pending</div>
                                 </div>
                             </div>
@@ -456,12 +438,12 @@
                     </div>
                 </div>
 
-                <!-- Row 3: Active Medications -->
+                <!-- Row 4: Active Medications -->
                 <div class="card card-full">
                     <div class="card-header">
                         <h3><i class="fas fa-prescription-bottle"></i> Active Medications (All Residents)</h3>
                         <button class="btn-secondary" onclick="manageMedications()" style="padding: 6px 12px; font-size: 13px; border-radius: 6px; background: var(--status-info); color: white; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-cog" style="font-size: 14px; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; width: 14px; height: 14px; line-height: 14px;"></i>
+                            <i class="fas fa-sliders-h" style="font-size: 14px; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; font-family: 'Font Awesome 6 Free' !important; font-weight: 900 !important;"></i>
                             <span>Manage</span>
                         </button>
                     </div>
@@ -672,30 +654,6 @@
                     </div>
                 </div>
 
-                <!-- Row 4: Compliance Calendar -->
-                <div class="card card-full">
-                    <div class="card-header">
-                        <h3><i class="fas fa-calendar-check"></i> Medication Compliance Calendar (Last 7 Days)</h3>
-                    </div>
-                    <div class="card-content">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Resident</th>
-                                    <th>Mon</th>
-                                    <th>Tue</th>
-                                    <th>Wed</th>
-                                    <th>Thu</th>
-                                    <th>Fri</th>
-                                    <th>Sat</th>
-                                    <th>Sun</th>
-                                    <th>Compliance</th>
-                                </tr>
-                            </thead>
-                            <tbody id="complianceTable"></tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </main>
     </div>
@@ -707,7 +665,7 @@
                 renderResidentsList();
                 renderMedicationTimeline();
                 initializeComplianceChart();
-                renderComplianceCalendar();
+                renderMedicationEventsCalendar();
             }
         });
 
@@ -795,39 +753,162 @@
             });
         }
 
-        function renderComplianceCalendar() {
-            const tbody = document.getElementById('complianceTable');
-            if (!tbody || !window.elderlyData) return;
+        function renderMedicationEventsCalendar() {
+            const container = document.getElementById('medicationEventsCalendar');
+            if (!container || !window.elderlyData) return;
 
-            const complianceData = [
-                { days: ['✓', '✓', '✓', '✓', '✓', '✓', '✓'], rate: '100%' },
-                { days: ['✓', '✓', '✓', '✗', '✓', '✓', '✓'], rate: '86%' },
-                { days: ['✓', '✓', '✓', '✓', '✓', '✗', '✓'], rate: '86%' },
-                { days: ['✓', '✓', '✓', '✓', '✗', '✓', '✓'], rate: '86%' }
-            ];
+            const events = window.elderlyData.medicationEvents || [];
+            const residents = window.elderlyData.elderlyList || [];
 
-            tbody.innerHTML = window.elderlyData.elderlyList.map((resident, index) => `
-                <tr>
-                    <td>
-                        <div class="resident-name-cell">
-                            <div class="resident-color-dot" style="background: ${resident.personal.color}"></div>
-                            ${resident.personal.fullName}
+            // Map resident name -> color
+            const residentColorMap = {};
+            residents.forEach(r => {
+                residentColorMap[r.personal.fullName] = r.personal.color;
+            });
+
+            const enrichedEvents = events.map(event => ({
+                ...event,
+                color: residentColorMap[event.resident] || '#3B82F6'
+            }));
+
+            // Calendar configuration: December 2025 (matches reference design)
+            const year = 2025;
+            const monthIndex = 11; // December (0-based)
+            const firstDay = new Date(year, monthIndex, 1).getDay(); // 0 (Sun) - 6 (Sat)
+            const daysInMonth = 31;
+
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === monthIndex;
+            const todayDate = isCurrentMonth ? today.getDate() : null;
+
+            function getEventsForDay(day) {
+                const iso = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                return enrichedEvents.filter(e => e.date === iso);
+            }
+
+            let daysHtml = '';
+
+            // Empty cells before first real day
+            for (let i = 0; i < firstDay; i++) {
+                daysHtml += `<div style="padding: 12px; border-radius: var(--radius-sm); border: 1px solid transparent;"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEvents = getEventsForDay(day);
+                const hasEvents = dayEvents.length > 0;
+                const isToday = todayDate === day;
+
+                let cellStyle = `text-align: center; padding: 8px; border-radius: var(--radius-sm); border: 1px solid rgba(148, 163, 184, 0.6); font-size: 11px; position: relative; background: white;`;
+
+                if (hasEvents) {
+                    const primaryColor = dayEvents[0].color || '#3B82F6';
+                    cellStyle += `
+                        background: linear-gradient(135deg, ${primaryColor}1A, ${primaryColor}0D);
+                        border-width: 2px;
+                        border-color: ${primaryColor};
+                        font-weight: 600;
+                        color: #0f172a;
+                    `;
+                }
+                if (isToday) {
+                    cellStyle += ` box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25); border-color: #3B82F6;`;
+                }
+
+                let dotsHtml = '';
+                if (hasEvents) {
+                    const limitedEvents = dayEvents.slice(0, 4);
+                    dotsHtml = `
+                        <div style="position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); display: flex; gap: 3px;">
+                            ${limitedEvents.map(e => `
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background: ${e.color}; display: inline-block;"></span>
+                            `).join('')}
                         </div>
-                    </td>
-                    ${complianceData[index].days.map(day => `
-                        <td style="text-align: center;">
-                            <span style="font-size: 18px; color: ${day === '✓' ? 'var(--status-normal)' : 'var(--status-critical)'};">
-                                ${day}
-                            </span>
-                        </td>
-                    `).join('')}
-                    <td>
-                        <span class="status-badge ${complianceData[index].rate === '100%' ? 'status-normal' : 'status-warning'}">
-                            ${complianceData[index].rate}
-                        </span>
-                    </td>
-                </tr>
+                    `;
+                }
+
+                daysHtml += `
+                    <div style="${cellStyle}">
+                        ${day}
+                        ${dotsHtml}
+                    </div>
+                `;
+            }
+
+            const legendHtml = residents.map(r => `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: ${r.personal.color};"></div>
+                    <span style="font-size: 13px; color: var(--text-secondary);">${r.personal.fullName}</span>
+                </div>
             `).join('');
+
+            const upcomingHtml = enrichedEvents
+                .slice()
+                .sort((a, b) => a.date.localeCompare(b.date))
+                .map(event => {
+                    const dateObj = new Date(event.date);
+                    const dateLabel = dateObj.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+
+                    return `
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 8px 10px; background: rgba(248, 250, 252, 0.95); border-left: 3px solid ${event.color}; border-radius: var(--radius-sm);">
+                            <i class="fas fa-calendar-check" style="color: ${event.color}; font-size: 16px;"></i>
+                            <div style="flex: 1;">
+                                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">
+                                    ${event.title} • ${event.resident}
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">
+                                    ${dateLabel} • ${event.time}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            container.innerHTML = `
+                <div style="background: white; padding: 12px 14px; border-radius: var(--radius-lg); border: 1px solid rgba(148, 163, 184, 0.8);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <button style="background: none; border: none; color: var(--text-secondary); cursor: default; font-size: 18px;">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0;">December 2025</h3>
+                        <button style="background: none; border: none; color: var(--text-secondary); cursor: default; font-size: 18px;">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 6px;">
+                        <div style="text-align: center; font-weight: 700; font-size: 11px; color: var(--text-secondary); padding: 6px;">Sun</div>
+                        <div style="text-align: center; font-weight: 700; font-size: 11px; color: var(--text-secondary); padding: 6px;">Mon</div>
+                        <div style="text-align: center; font-weight: 700; font-size: 11px; color: var(--text-secondary); padding: 6px;">Tue</div>
+                        <div style="text-align: center; font-weight: 700; font-size: 11px; color: var(--text-secondary); padding: 6px;">Wed</div>
+                        <div style="text-align: center; font-weight: 700; font-size: 11px; color: var(--text-secondary); padding: 6px;">Thu</div>
+                        <div style="text-align: center; font-weight: 700; font-size: 11px; color: var(--text-secondary); padding: 6px;">Fri</div>
+                        <div style="text-align: center; font-weight: 700; font-size: 11px; color: var(--text-secondary); padding: 6px;">Sat</div>
+
+                        ${daysHtml}
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; padding-top: 8px; border-top: 1px solid rgba(148, 163, 184, 0.5); margin-top: 4px;">
+                        ${legendHtml}
+                        ${isCurrentMonth ? `
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 16px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(96, 165, 250, 0.1)); border: 2px solid #3B82F6; border-radius: 50%;"></div>
+                                <span style="font-size: 13px; color: var(--text-secondary); font-weight: 600;">Today</span>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <h4 style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Upcoming Events</h4>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            ${upcomingHtml || '<div style="font-size: 10px; color: var(--text-secondary);">No upcoming events scheduled.</div>'}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         function addMedication() {
@@ -857,27 +938,6 @@
         function manageMedications() {
             alert('Manage Medications:\n\n• Add/Remove medications\n• Update dosages and schedules\n• Set refill reminders\n• View medication history\n• Print medication list');
         }
-
-        // Sticky Header Scroll Behavior
-        let lastScrollTop = 0;
-        const stickyHeader = document.getElementById('stickyHeader');
-        const scrollThreshold = 100;
-
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scrollTop > scrollThreshold) {
-                if (scrollTop > lastScrollTop) {
-                    stickyHeader.classList.add('hidden');
-                } else {
-                    stickyHeader.classList.remove('hidden');
-                }
-            } else {
-                stickyHeader.classList.remove('hidden');
-            }
-
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        }, false);
 
         // Emergency SOS function
         function triggerSOS() {

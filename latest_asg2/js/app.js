@@ -160,13 +160,78 @@ const medicationSchedule = [
     { time: '20:00', medication: 'Donepezil 5mg', resident: 'Kumar', residentColor: '#14B8A6', status: 'pending', countdown: null }
 ];
 
+// === MEDICATION & HEALTH EVENTS (for calendar) ===
+const medicationEvents = [
+    {
+        date: '2025-12-05',
+        title: 'Cardiology Appointment',
+        time: '10:00 AM',
+        type: 'Cardiology',
+        resident: 'Kumar Raj'
+    },
+    {
+        date: '2025-12-12',
+        title: 'Annual Health Checkup',
+        time: '2:00 PM',
+        type: 'Health Checkup',
+        resident: 'Mei Ling Wong'
+    },
+    {
+        date: '2025-12-20',
+        title: 'Blood Test',
+        time: '9:00 AM',
+        type: 'Lab Test',
+        resident: 'Ah Chong Tan'
+    }
+];
+
 // === ACTIVITY FEED DATA ===
 let activityFeed = [
-    { icon: '💊', iconBg: '#8B5CF6', title: 'Medication Taken', description: 'Mei Ling Wong took Ibuprofen 400mg', time: '5 min ago', borderColor: '#8B5CF6' },
-    { icon: '🍽️', iconBg: '#3B82F6', title: 'Meal Logged', description: 'Ah Chong Tan finished breakfast', time: '12 min ago', borderColor: '#3B82F6' },
-    { icon: '🚶', iconBg: '#14B8A6', title: 'Activity Alert', description: 'Kumar Raj started morning walk', time: '25 min ago', borderColor: '#14B8A6' },
-    { icon: '❤️', iconBg: '#F59E0B', title: 'Vitals Check', description: 'Fatimah Ibrahim - All vitals normal', time: '42 min ago', borderColor: '#F59E0B' },
-    { icon: '💧', iconBg: '#14B8A6', title: 'Hydration', description: 'Kumar Raj drank water (250ml)', time: '1 hour ago', borderColor: '#14B8A6' }
+    {
+        icon: '💊',
+        iconBg: '#8B5CF6',
+        title: 'Medication Taken',
+        description: 'Mei Ling Wong took Ibuprofen 400mg',
+        time: '5 min ago',
+        borderColor: '#8B5CF6',
+        resident: 'Mei Ling Wong'
+    },
+    {
+        icon: '🍽️',
+        iconBg: '#3B82F6',
+        title: 'Meal Logged',
+        description: 'Ah Chong Tan finished breakfast',
+        time: '12 min ago',
+        borderColor: '#3B82F6',
+        resident: 'Ah Chong Tan'
+    },
+    {
+        icon: '🚶',
+        iconBg: '#14B8A6',
+        title: 'Activity Alert',
+        description: 'Kumar Raj started morning walk',
+        time: '25 min ago',
+        borderColor: '#14B8A6',
+        resident: 'Kumar Raj'
+    },
+    {
+        icon: '❤️',
+        iconBg: '#F59E0B',
+        title: 'Vitals Check',
+        description: 'Fatimah Ibrahim - All vitals normal',
+        time: '42 min ago',
+        borderColor: '#F59E0B',
+        resident: 'Fatimah Ibrahim'
+    },
+    {
+        icon: '💧',
+        iconBg: '#14B8A6',
+        title: 'Hydration',
+        description: 'Kumar Raj drank water (250ml)',
+        time: '1 hour ago',
+        borderColor: '#14B8A6',
+        resident: 'Kumar Raj'
+    }
 ];
 
 // === CHART DATA (24 Hours) ===
@@ -200,6 +265,7 @@ let healthChartData = {
 
 // === GLOBAL VARIABLES ===
 let healthChart = null;
+let activityFeedFilter = 'all';
 
 // === GLOBAL ELDERLY LIST ===
 let elderlyList = [];
@@ -214,6 +280,7 @@ window.elderlyData = {
     healthChartData: healthChartData,
     robotSchedule: robotSchedule,
     medicationSchedule: medicationSchedule,
+    medicationEvents: medicationEvents,
     activityFeed: activityFeed
 };
 
@@ -222,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('ElderCare AI Dashboard Initializing...');
 
     // Initialize all components
+    initializeStickyHeader();
     renderResidentsList();
     renderAlertsBanner();
     renderHealthTable();
@@ -239,6 +307,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('ElderCare AI Dashboard Ready!');
 });
+
+// === HEADER & SIDEBAR TRANSITIONS ===
+function initializeStickyHeader() {
+    const header = document.querySelector('.sticky-top-header');
+    if (!header) return;
+
+    // Ensure CSS variable matches actual header height
+    const headerHeight = header.offsetHeight || 80;
+    document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+
+    let lastScrollTop = 0;
+    const delta = 5;
+
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (Math.abs(scrollTop - lastScrollTop) <= delta) return;
+
+        if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
+            header.classList.add('hidden');
+            document.body.classList.add('header-hidden');
+        } else {
+            header.classList.remove('hidden');
+            document.body.classList.remove('header-hidden');
+        }
+
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    }, { passive: true });
+}
 
 // === RENDER FUNCTIONS ===
 
@@ -406,18 +503,76 @@ function renderActivityFeed() {
     const container = document.getElementById('activityFeed');
     if (!container) return;
 
-    container.innerHTML = activityFeed.map(activity => `
-        <div class="activity-item" style="border-left-color: ${activity.borderColor}">
-            <div class="activity-icon" style="background: ${activity.iconBg}">
-                ${activity.icon}
+    const filterContainer = document.getElementById('activityFilter');
+    const residents = elderlyList || [];
+
+    // Build filter chips dynamically
+    if (filterContainer && residents.length > 0) {
+        const names = ['all', ...residents.map(r => r.personal.fullName)];
+        filterContainer.innerHTML = names.map(name => {
+            const isAll = name === 'all';
+            const resident = residents.find(r => r.personal.fullName === name);
+            const color = resident ? resident.personal.color : '#64748b';
+            const label = isAll ? 'All' : name;
+            const activeClass = activityFeedFilter === name ? ' activity-filter-chip-active' : '';
+
+            return `
+                <button class="activity-filter-chip${activeClass}" onclick="setActivityFeedFilter('${name.replace(/'/g, "\\'")}')">
+                    ${!isAll ? `<span class="resident-color-dot" style="background: ${color}; width: 10px; height: 10px; border-radius: 50%;"></span>` : ''}
+                    <span>${label}</span>
+                </button>
+            `;
+        }).join('');
+    }
+
+    // Group activities by resident
+    const groups = {};
+    activityFeed.forEach(item => {
+        const key = item.resident || 'Other';
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(item);
+    });
+
+    let html = '';
+
+    Object.keys(groups).forEach(residentName => {
+        if (activityFeedFilter !== 'all' && residentName !== activityFeedFilter) {
+            return;
+        }
+        const items = groups[residentName];
+        if (!items || items.length === 0) return;
+
+        const resident = residents.find(r => r.personal.fullName === residentName);
+        const color = resident ? resident.personal.color : '#94a3b8';
+
+        html += `
+            <div class="activity-resident-group">
+                <div class="activity-resident-header">
+                    <span class="resident-color-dot" style="background: ${color};"></span>
+                    <span>${residentName}</span>
+                </div>
+                ${items.map(activity => `
+                    <div class="activity-item" style="border-left-color: ${activity.borderColor}">
+                        <div class="activity-icon" style="background: ${activity.iconBg}">
+                            ${activity.icon}
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">${activity.title}</div>
+                            <div class="activity-description">${activity.description}</div>
+                            <div class="activity-time">${activity.time}</div>
+                        </div>
+                    </div>
+                `).join('')}
             </div>
-            <div class="activity-details">
-                <div class="activity-title">${activity.title}</div>
-                <div class="activity-description">${activity.description}</div>
-                <div class="activity-time">${activity.time}</div>
-            </div>
-        </div>
-    `).join('');
+        `;
+    });
+
+    container.innerHTML = html || `<div style="font-size: 12px; color: var(--text-secondary);">No recent activities.</div>`;
+}
+
+function setActivityFeedFilter(name) {
+    activityFeedFilter = name;
+    renderActivityFeed();
 }
 
 // === CHART FUNCTIONS ===
@@ -601,6 +756,7 @@ if (typeof window !== 'undefined') {
         elderlyList,
         robotSchedule,
         medicationSchedule,
+        medicationEvents,
         activityFeed,
         healthChartData
     };

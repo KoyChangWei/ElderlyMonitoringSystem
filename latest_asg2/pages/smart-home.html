@@ -177,6 +177,7 @@
             background: var(--bg-secondary);
             outline: none;
             -webkit-appearance: none;
+            appearance: none;
         }
 
         .slider-control input[type="range"]::-webkit-slider-thumb {
@@ -294,13 +295,13 @@
         }
     </style>
 </head>
-<body>
+<body class="compact-page">
     <!-- Sticky Top Header -->
     <div class="sticky-top-header" id="stickyHeader">
         <div class="sticky-header-content">
             <div class="sticky-header-title">
                 <i class="fas fa-home"></i>
-                <h2>ElderCare AI - Smart Home IoT</h2>
+                <h2>ElderCare AI &mdash; Smart Home IoT</h2>
             </div>
             <button class="btn-sos-header" onclick="triggerSOS()">
                 <i class="fas fa-phone-alt"></i>
@@ -312,12 +313,15 @@
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo-section">
-                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            <div class="caregiver-section">
+                <div class="caregiver-avatar">
+                    <i class="fas fa-user-nurse"></i>
+                </div>
+                <div class="caregiver-name">Nurse Maya</div>
+                <div class="caregiver-role">On-duty Caregiver</div>
             </div>
 
             <nav class="nav-menu">
-                <h3>Navigation</h3>
                 <a href="../index.html" class="nav-item">
                     <i class="fas fa-th-large"></i> Overview
                 </a>
@@ -1290,27 +1294,6 @@
                 alert(`${rooms[roomId].name}: ${config.message}\n\nTemp: ${config.temp}°C\nLights: ${config.brightness}%`);
             }
         }
-
-        // Sticky Header Scroll Behavior
-        let lastScrollTop = 0;
-        const stickyHeader = document.getElementById('stickyHeader');
-        const scrollThreshold = 100;
-
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scrollTop > scrollThreshold) {
-                if (scrollTop > lastScrollTop) {
-                    stickyHeader.classList.add('hidden');
-                } else {
-                    stickyHeader.classList.remove('hidden');
-                }
-            } else {
-                stickyHeader.classList.remove('hidden');
-            }
-
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        }, false);
 
         // Manage Devices function
         function manageDevices() {

@@ -18,7 +18,7 @@
             border: 1px solid var(--border-color);
             border-left: 4px solid;
             border-radius: var(--radius-lg);
-            padding: 20px;
+            padding: 14px;
             margin-bottom: 0;
             transition: all 0.2s ease;
         }
@@ -33,31 +33,31 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
         }
 
         .user-avatar {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 22px;
             color: white;
-            margin-right: 16px;
+            margin-right: 10px;
         }
 
         .user-info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .info-item {
             background: rgba(255,255,255,0.03);
-            padding: 12px;
+            padding: 8px;
             border-radius: var(--radius-md);
         }
 
@@ -70,7 +70,7 @@
 
         .info-value {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .action-buttons {
@@ -79,17 +79,17 @@
         }
 
         .btn-action {
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
             background: var(--bg-secondary);
             color: var(--text-primary);
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 13px;
+            font-size: 12px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .btn-action:hover {
@@ -278,15 +278,15 @@
             background: var(--status-info);
             color: white;
             border: none;
-            padding: 16px 32px;
+            padding: 10px 20px;
             border-radius: var(--radius-lg);
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-add-large:hover {
@@ -298,29 +298,29 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .stat-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: var(--radius-lg);
-            padding: 20px;
+            padding: 14px;
             text-align: center;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         .stat-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
+            font-size: 26px;
+            margin-bottom: 8px;
             color: var(--status-info);
         }
 
         .stat-value {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .stat-label {
@@ -346,13 +346,13 @@
         }
     </style>
 </head>
-<body>
+<body class="compact-page">
     <!-- Sticky Top Header -->
     <div class="sticky-top-header" id="stickyHeader">
         <div class="sticky-header-content">
             <div class="sticky-header-title">
                 <i class="fas fa-users-cog"></i>
-                <h2>ElderCare AI - User Management</h2>
+                <h2>ElderCare AI &mdash; User Management</h2>
             </div>
             <button class="btn-sos-header" onclick="triggerSOS()">
                 <i class="fas fa-phone-alt"></i>
@@ -364,12 +364,15 @@
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo-section">
-                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            <div class="caregiver-section">
+                <div class="caregiver-avatar">
+                    <i class="fas fa-user-nurse"></i>
+                </div>
+                <div class="caregiver-name">Nurse Maya</div>
+                <div class="caregiver-role">On-duty Caregiver</div>
             </div>
 
             <nav class="nav-menu">
-                <h3>Navigation</h3>
                 <a href="../index.html" class="nav-item">
                     <i class="fas fa-th-large"></i> Overview
                 </a>
@@ -398,7 +401,7 @@
         <main class="main-content">
             <header class="dashboard-header">
                 <div class="header-title">
-                    <h1><i class="fas fa-users-cog"></i> User Management</h1>
+                    <h1 style="font-size: 20px;"><i class="fas fa-users-cog"></i> User Management</h1>
                 </div>
                 <button class="btn-add-large" onclick="openAddModal()">
                     <i class="fas fa-plus-circle"></i> Add New Resident
@@ -586,8 +589,8 @@
                                 <i class="fas fa-user"></i>
                             </div>
                             <div>
-                                <h3 style="font-size: 20px; margin-bottom: 4px;">${resident.personal.fullName}</h3>
-                                <div style="font-size: 13px; color: var(--text-secondary);">
+                                <h3 style="font-size: 16px; margin-bottom: 2px;">${resident.personal.fullName}</h3>
+                                <div style="font-size: 11px; color: var(--text-secondary);">
                                     <i class="fas fa-id-badge"></i> ${resident.personal.wristbandId} • Age ${resident.personal.age}
                                 </div>
                             </div>
@@ -622,8 +625,8 @@
                     </div>
 
                     ${resident.personal.conditions && resident.personal.conditions.length > 0 ? `
-                        <div style="margin-top: 12px;">
-                            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase;">Medical Conditions</div>
+                        <div style="margin-top: 8px;">
+                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase;">Medical Conditions</div>
                             <div class="conditions-tags">
                                 ${resident.personal.conditions.map(cond => `
                                     <span class="condition-tag">${cond}</span>
@@ -801,27 +804,6 @@
                 closeModal();
             }
         });
-
-        // Sticky Header Scroll Behavior
-        let lastScrollTop = 0;
-        const stickyHeader = document.getElementById('stickyHeader');
-        const scrollThreshold = 100;
-
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scrollTop > scrollThreshold) {
-                if (scrollTop > lastScrollTop) {
-                    stickyHeader.classList.add('hidden');
-                } else {
-                    stickyHeader.classList.remove('hidden');
-                }
-            } else {
-                stickyHeader.classList.remove('hidden');
-            }
-
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        }, false);
 
         // Emergency SOS function
         function triggerSOS() {

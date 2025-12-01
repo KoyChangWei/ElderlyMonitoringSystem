@@ -13,8 +13,8 @@
     <div class="sticky-top-header" id="stickyHeader">
         <div class="sticky-header-content">
             <div class="sticky-header-title">
-                <i class="fas fa-th-large"></i>
-                <h2>ElderCare AI - Dashboard</h2>
+                <i class="fas fa-heartbeat"></i>
+                <h2>ElderCare AI &mdash; Dashboard Overview</h2>
             </div>
             <button class="btn-sos-header" onclick="triggerSOS()">
                 <i class="fas fa-phone-alt"></i>
@@ -26,14 +26,17 @@
     <!-- Main Dashboard Container -->
     <div class="dashboard-container">
 
-        <!-- Sidebar - Elderly Residents -->
+        <!-- Sidebar - Navigation & Caregiver -->
         <aside class="sidebar">
-            <div class="logo-section">
-                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            <div class="caregiver-section">
+                <div class="caregiver-avatar">
+                    <i class="fas fa-user-nurse"></i>
+                </div>
+                <div class="caregiver-name">Nurse Maya</div>
+                <div class="caregiver-role">On-duty Caregiver</div>
             </div>
 
             <nav class="nav-menu">
-                <h3>Navigation</h3>
                 <a href="index.html" class="nav-item active">
                     <i class="fas fa-th-large"></i> Overview
                 </a>
@@ -59,7 +62,7 @@
         </aside>
 
         <!-- Main Content Area -->
-        <main class="main-content">
+        <main class="main-content overview-main">
 
             <!-- Header with Critical Alerts -->
             <header class="dashboard-header">
@@ -69,61 +72,68 @@
             </header>
 
             <!-- Critical Alerts Banner -->
-            <div id="alertsBanner" class="alerts-banner">
-                <!-- Populated by JavaScript -->
+            <div class="card" style="margin-bottom: 12px;">
+                <div class="card-header">
+                    <h3 style="color: #ef4444;"><i class="fas fa-exclamation-circle" style="color: #ef4444;"></i> Alerts & Notifications</h3>
+                </div>
+                <div class="card-content" style="padding: 10px 16px;">
+                    <div id="alertsBanner" class="alerts-banner">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
             </div>
 
-            <!-- User Management Card -->
-            <div class="card" style="margin-bottom: 16px;">
-                <div class="card-header">
-                    <h3><i class="fas fa-users-cog"></i> User Management</h3>
-                    <button onclick="window.location.href='pages/user-management.html'" style="background: #3B82F6; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);">
-                        <i class="fas fa-user-plus" style="font-size: 16px; color: white; display: inline-block; width: 16px; height: 16px; line-height: 16px;"></i>
+            <!-- User Management Summary Section -->
+            <div class="card card-section" style="margin-bottom: 12px;">
+                <div class="card-header" style="background: #e0f2fe;">
+                    <h3><i class="fas fa-users-cog"></i> User Management Overview</h3>
+                    <button onclick="window.location.href='pages/user-management.html'" style="background: #3B82F6; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);">
+                        <i class="fas fa-user-plus" style="font-size: 14px; color: white; display: inline-block; width: 16px; height: 16px; line-height: 16px;"></i>
                         Add New Resident
                     </button>
                 </div>
                 <div class="card-content">
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: center;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: center;">
                         <!-- Total Residents -->
-                        <div style="text-align: center; padding: 24px; background: rgba(59, 130, 246, 0.05); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                            <div style="width: 64px; height: 64px; margin: 0 auto 12px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-users" style="font-size: 28px; color: white;"></i>
+                        <div style="text-align: center; padding: 16px; background: rgba(59, 130, 246, 0.05); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                            <div style="width: 48px; height: 48px; margin: 0 auto 8px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-users" style="font-size: 22px; color: white;"></i>
                             </div>
-                            <div style="font-size: 36px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">4</div>
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Total Residents</div>
+                            <div style="font-size: 26px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">4</div>
+                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px;">Total Residents</div>
                         </div>
 
                         <!-- Active Wristbands -->
-                        <div style="text-align: center; padding: 24px; background: rgba(59, 130, 246, 0.05); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                            <div style="width: 64px; height: 64px; margin: 0 auto 12px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-id-card" style="font-size: 28px; color: white;"></i>
+                        <div style="text-align: center; padding: 16px; background: rgba(59, 130, 246, 0.05); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                            <div style="width: 48px; height: 48px; margin: 0 auto 8px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-id-card" style="font-size: 22px; color: white;"></i>
                             </div>
-                            <div style="font-size: 36px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">4</div>
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Active Smart Rings</div>
+                            <div style="font-size: 26px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">4</div>
+                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px;">Active Smart Rings</div>
                         </div>
 
                         <!-- Healthy Status -->
-                        <div style="text-align: center; padding: 24px; background: rgba(16, 185, 129, 0.05); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
-                            <div style="width: 64px; height: 64px; margin: 0 auto 12px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-heartbeat" style="font-size: 28px; color: white;"></i>
+                        <div style="text-align: center; padding: 16px; background: rgba(16, 185, 129, 0.05); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                            <div style="width: 48px; height: 48px; margin: 0 auto 8px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-heartbeat" style="font-size: 22px; color: white;"></i>
                             </div>
-                            <div style="font-size: 36px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">3</div>
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Healthy Status</div>
+                            <div style="font-size: 26px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">3</div>
+                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px;">Healthy Status</div>
                         </div>
 
                         <!-- Need Attention -->
-                        <div style="text-align: center; padding: 24px; background: rgba(245, 158, 11, 0.05); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
-                            <div style="width: 64px; height: 64px; margin: 0 auto 12px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-exclamation-triangle" style="font-size: 28px; color: white;"></i>
+                        <div style="text-align: center; padding: 16px; background: rgba(245, 158, 11, 0.05); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                            <div style="width: 48px; height: 48px; margin: 0 auto 8px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 22px; color: white;"></i>
                             </div>
-                            <div style="font-size: 36px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">1</div>
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Need Attention</div>
+                            <div style="font-size: 26px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">1</div>
+                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px;">Need Attention</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Dashboard Grid - PowerBI Style Compact Layout -->
+            <!-- Dashboard Grid -->
             <div class="dashboard-grid">
 
                 <!-- Row 1: AI Health Analytics & Robot Scheduling -->
@@ -134,7 +144,7 @@
                             <h3><i class="fas fa-brain"></i> AI Health Analytics</h3>
                             <span class="card-badge">Live</span>
                         </div>
-                        <div class="card-content">
+                        <div class="card-content" style="padding: 10px 16px;">
                             <table class="data-table">
                                 <thead>
                                     <tr>
@@ -159,7 +169,7 @@
                             <h3><i class="fas fa-robot"></i> Robot Scheduling</h3>
                             <span class="card-badge robot-active">Active</span>
                         </div>
-                        <div class="card-content">
+                        <div class="card-content" style="padding: 10px 16px;">
                             <div class="robot-status">
                                 <div class="status-item">
                                     <i class="fas fa-battery-three-quarters"></i>
@@ -187,247 +197,279 @@
                     </div>
                 </div>
 
-                <!-- Row 2: Safety & Activity Monitoring + Health Trends Chart -->
-                <div class="grid-row">
-                    <!-- Safety & Activity Monitoring Card -->
-                    <div class="card card-medium" onclick="navigateTo('pages/emergency.html')">
-                        <div class="card-header">
-                            <h3><i class="fas fa-shield-alt"></i> Safety & Activity</h3>
-                            <span class="card-badge safe">Safe</span>
+                <!-- Row 2: Safety & Activity stack + Smart Home IoT -->
+                <div class="grid-row" style="grid-template-columns: 1fr 1fr;">
+                    <div class="stacked-column">
+                        <!-- Safety & Activity Monitoring Card -->
+                        <div class="card card-medium" onclick="navigateTo('pages/emergency.html')">
+                            <div class="card-header">
+                                <h3><i class="fas fa-shield-alt"></i> Safety & Activity</h3>
+                                <span class="card-badge safe">Safe</span>
+                            </div>
+                            <div class="card-content" style="padding: 10px 16px;">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Steps</th>
+                                            <th>Sleep</th>
+                                            <th>Falls</th>
+                                            <th>Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activityTable">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="card-content">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Steps</th>
-                                        <th>Sleep</th>
-                                        <th>Falls</th>
-                                        <th>Location</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="activityTable">
+
+                        <!-- Today's Medication Overview -->
+                        <div class="card card-small" onclick="navigateTo('pages/medication.html')">
+                            <div class="card-header">
+                                <h3><i class="fas fa-pills"></i> Today's Medication</h3>
+                            </div>
+                            <div class="card-content">
+                                <div id="medicationList" class="medication-list">
                                     <!-- Populated by JavaScript -->
-                                </tbody>
-                            </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Health Trends Chart -->
-                    <div class="card card-medium">
-                        <div class="card-header">
-                            <h3><i class="fas fa-chart-area"></i> Health Trends (24h)</h3>
-                            <select id="chartMetric" class="metric-selector" onchange="updateChart()">
-                                <option value="heartRate">Heart Rate</option>
-                                <option value="bloodPressure">Blood Pressure</option>
-                                <option value="bloodSugar">Blood Sugar</option>
-                                <option value="temperature">Temperature</option>
-                            </select>
-                        </div>
-                        <div class="card-content">
-                            <canvas id="healthTrendChart" style="max-height: 300px; height: 300px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Row 3: Smart Home IoT Control + Medication Schedule -->
-                <div class="grid-row">
                     <!-- Smart Home IoT Control Card -->
                     <div class="card card-small" onclick="navigateTo('pages/smart-home.html')">
                         <div class="card-header">
                             <h3><i class="fas fa-home"></i> Smart Home IoT</h3>
                         </div>
-                        <div class="card-content">
-                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                    <div class="card-content" style="padding: 10px 16px;">
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
                                 <!-- Room A -->
-                                <div style="padding: 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; border-left: 4px solid #3B82F6; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)'">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="padding: 12px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; border-left: 4px solid #3B82F6; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.10)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.08)'">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                         <div style="display: flex; align-items: center; gap: 10px;">
-                                            <div style="width: 40px; height: 40px; background: #3B82F6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-bed" style="font-size: 18px; color: white;"></i>
+                                            <div style="width: 32px; height: 32px; background: #3B82F6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-bed" style="font-size: 16px; color: white;"></i>
                                             </div>
                                             <div>
-                                                <div style="font-weight: 600; font-size: 14px; color: #3B82F6;">Room A</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Ah Chong Tan</div>
+                                                <div style="font-weight: 600; font-size: 13px; color: #3B82F6;">Room A</div>
+                                                <div style="font-size: 10px; color: var(--text-secondary);">Ah Chong Tan</div>
                                             </div>
                                         </div>
                                         <span class="status-badge status-normal" style="font-size: 10px; padding: 4px 8px;">Occupied</span>
                                     </div>
                                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-thermometer-half" style="color: #3B82F6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Temp</div>
-                                            <div style="font-weight: 600; font-size: 13px;">22°C</div>
+                                        <div style="padding: 8px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-thermometer-half" style="color: #3B82F6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Temp:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">22°C</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-tint" style="color: #3B82F6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Humidity</div>
-                                            <div style="font-weight: 600; font-size: 13px;">45%</div>
+                                        <div style="padding: 8px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-tint" style="color: #3B82F6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Humidity:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">45%</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-lightbulb" style="color: #3B82F6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Light</div>
-                                            <div style="font-weight: 600; font-size: 13px;">320 lux</div>
+                                        <div style="padding: 8px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-lightbulb" style="color: #3B82F6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Light:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">320 lux</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-wind" style="color: #3B82F6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Air Quality</div>
-                                            <div style="font-weight: 600; font-size: 13px; color: var(--status-normal);">Good</div>
+                                        <div style="padding: 8px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-wind" style="color: #3B82F6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Air Quality:</span>
+                                                    <span style="font-size: 14px; color: var(--status-normal); font-weight: 700;">Good</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Room B -->
-                                <div style="padding: 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; border-left: 4px solid #8B5CF6; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)'">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="padding: 12px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; border-left: 4px solid #8B5CF6; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.10)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.08)'">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                         <div style="display: flex; align-items: center; gap: 10px;">
-                                            <div style="width: 40px; height: 40px; background: #8B5CF6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-bed" style="font-size: 18px; color: white;"></i>
+                                            <div style="width: 32px; height: 32px; background: #8B5CF6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-bed" style="font-size: 16px; color: white;"></i>
                                             </div>
                                             <div>
-                                                <div style="font-weight: 600; font-size: 14px; color: #8B5CF6;">Room B</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Mei Ling Wong</div>
+                                                <div style="font-weight: 600; font-size: 13px; color: #8B5CF6;">Room B</div>
+                                                <div style="font-size: 10px; color: var(--text-secondary);">Mei Ling Wong</div>
                                             </div>
                                         </div>
                                         <span class="status-badge status-normal" style="font-size: 10px; padding: 4px 8px;">Occupied</span>
                                     </div>
                                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-thermometer-half" style="color: #8B5CF6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Temp</div>
-                                            <div style="font-weight: 600; font-size: 13px;">23°C</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-thermometer-half" style="color: #8B5CF6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Temp:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">23°C</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-tint" style="color: #8B5CF6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Humidity</div>
-                                            <div style="font-weight: 600; font-size: 13px;">50%</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <i class="fas fa-tint" style="color: #8B5CF6; font-size: 16px;"></i>
+                                                    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                        <span>Humidity:</span>
+                                                        <span style="font-size: 14px; color: #0f172a; font-weight: 700;">50%</span>
+                                                    </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-lightbulb" style="color: #8B5CF6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Light</div>
-                                            <div style="font-weight: 600; font-size: 13px;">280 lux</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-lightbulb" style="color: #8B5CF6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Light:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">280 lux</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-wind" style="color: #8B5CF6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Air Quality</div>
-                                            <div style="font-weight: 600; font-size: 13px; color: var(--status-normal);">Good</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-wind" style="color: #8B5CF6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Air Quality:</span>
+                                                    <span style="font-size: 14px; color: var(--status-normal); font-weight: 700;">Good</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Room C -->
-                                <div style="padding: 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; border-left: 4px solid #14B8A6; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)'">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="padding: 12px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; border-left: 4px solid #14B8A6; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.10)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.08)'">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                         <div style="display: flex; align-items: center; gap: 10px;">
-                                            <div style="width: 40px; height: 40px; background: #14B8A6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-bed" style="font-size: 18px; color: white;"></i>
+                                            <div style="width: 32px; height: 32px; background: #14B8A6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-bed" style="font-size: 16px; color: white;"></i>
                                             </div>
                                             <div>
-                                                <div style="font-weight: 600; font-size: 14px; color: #14B8A6;">Room C</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Kumar Raj</div>
+                                                <div style="font-weight: 600; font-size: 13px; color: #14B8A6;">Room C</div>
+                                                <div style="font-size: 10px; color: var(--text-secondary);">Kumar Raj</div>
                                             </div>
                                         </div>
                                         <span class="status-badge status-normal" style="font-size: 10px; padding: 4px 8px;">Occupied</span>
                                     </div>
                                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-thermometer-half" style="color: #14B8A6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Temp</div>
-                                            <div style="font-weight: 600; font-size: 13px;">21°C</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-thermometer-half" style="color: #14B8A6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Temp:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">21°C</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-tint" style="color: #14B8A6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Humidity</div>
-                                            <div style="font-weight: 600; font-size: 13px;">48%</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-tint" style="color: #14B8A6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Humidity:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">48%</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-lightbulb" style="color: #14B8A6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Light</div>
-                                            <div style="font-weight: 600; font-size: 13px;">300 lux</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-lightbulb" style="color: #14B8A6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Light:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">300 lux</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-wind" style="color: #14B8A6; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Air Quality</div>
-                                            <div style="font-weight: 600; font-size: 13px; color: var(--status-normal);">Good</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-wind" style="color: #14B8A6; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Air Quality:</span>
+                                                    <span style="font-size: 14px; color: var(--status-normal); font-weight: 700;">Good</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Room D -->
-                                <div style="padding: 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; border-left: 4px solid #F59E0B; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)'">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="padding: 12px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; border-left: 4px solid #F59E0B; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.10)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.08)'">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                         <div style="display: flex; align-items: center; gap: 10px;">
-                                            <div style="width: 40px; height: 40px; background: #F59E0B; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-bed" style="font-size: 18px; color: white;"></i>
+                                            <div style="width: 32px; height: 32px; background: #F59E0B; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-bed" style="font-size: 16px; color: white;"></i>
                                             </div>
                                             <div>
-                                                <div style="font-weight: 600; font-size: 14px; color: #F59E0B;">Room D</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Fatimah Ibrahim</div>
+                                                <div style="font-weight: 600; font-size: 13px; color: #F59E0B;">Room D</div>
+                                                <div style="font-size: 10px; color: var(--text-secondary);">Fatimah Ibrahim</div>
                                             </div>
                                         </div>
                                         <span class="status-badge status-normal" style="font-size: 10px; padding: 4px 8px;">Occupied</span>
                                     </div>
                                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-thermometer-half" style="color: #F59E0B; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Temp</div>
-                                            <div style="font-weight: 600; font-size: 13px;">24°C</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-thermometer-half" style="color: #F59E0B; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Temp:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">24°C</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-tint" style="color: #F59E0B; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Humidity</div>
-                                            <div style="font-weight: 600; font-size: 13px;">52%</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-tint" style="color: #F59E0B; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Humidity:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">52%</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-lightbulb" style="color: #F59E0B; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Light</div>
-                                            <div style="font-weight: 600; font-size: 13px;">350 lux</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-lightbulb" style="color: #F59E0B; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Light:</span>
+                                                    <span style="font-size: 14px; color: #0f172a; font-weight: 700;">350 lux</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px; text-align: center;">
-                                            <i class="fas fa-wind" style="color: #F59E0B; font-size: 14px; margin-bottom: 4px;"></i>
-                                            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 2px;">Air Quality</div>
-                                            <div style="font-weight: 600; font-size: 13px; color: var(--status-normal);">Good</div>
+                                        <div style="padding: 10px; background: #f8fafc; border-radius: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <i class="fas fa-wind" style="color: #F59E0B; font-size: 16px;"></i>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                                                    <span>Air Quality:</span>
+                                                    <span style="font-size: 14px; color: var(--status-normal); font-weight: 700;">Good</span>
+                                                </div>
+                                            </div>
                                         </div>
                                 </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Today's Medication Schedule -->
-                    <div class="card card-small" onclick="navigateTo('pages/medication.html')">
-                        <div class="card-header">
-                            <h3><i class="fas fa-pills"></i> Today's Medication</h3>
-                        </div>
-                        <div class="card-content">
-                            <div id="medicationList" class="medication-list">
-                                <!-- Populated by JavaScript -->
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Row 4: Real-time Activity Feed + Emergency Contacts -->
-                <div class="grid-row" style="grid-template-columns: 1fr 1fr;">
-                    <!-- Real-time Activity Feed -->
-                    <div class="card">
+                <!-- Row 3: Emergency Contacts & Quick Actions (full width) -->
+                <div class="grid-row">
+                    <div class="card card-full">
                         <div class="card-header">
-                            <h3><i class="fas fa-stream"></i> Real-time Activity Feed</h3>
-                            <span class="card-badge">Live</span>
+                            <h3><i class="fas fa-phone-volume"></i> Emergency Contacts & Quick Actions</h3>
                         </div>
-                        <div class="card-content">
-                            <div id="activityFeed" class="activity-feed">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Emergency Contacts -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-phone"></i> Emergency Contacts</h3>
-                        </div>
-                        <div class="card-content">
+                        <div class="card-content" style="padding: 14px 18px;">
                             <div class="contacts-list">
                                 <div class="contact-item">
                                     <div class="contact-info">
@@ -446,19 +488,24 @@
                                         <i class="fas fa-user"></i>
                                         <div>
                                             <strong>Siti Tan</strong>
-                                            <span>Family (Daughter)</span>
+                                            <span>Daughter</span>
                                         </div>
                                     </div>
-                                    <button class="btn-call" onclick="callContact('family')">
-                                        <i class="fas fa-phone"></i>
-                                    </button>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button class="btn-call" onclick="callContact('family')">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                        <button class="btn-call" onclick="videoCall('family')">
+                                            <i class="fas fa-video"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="contact-item">
                                     <div class="contact-info">
                                         <i class="fas fa-ambulance"></i>
                                         <div>
                                             <strong>Emergency 999</strong>
-                                            <span>Ambulance</span>
+                                            <span>Ambulance Service</span>
                                         </div>
                                     </div>
                                     <button class="btn-call emergency" onclick="callContact('emergency')">
@@ -482,36 +529,28 @@
                     </div>
                 </div>
 
+                <!-- Row 4: Real-time Activity Feed (full width) -->
+                <div class="grid-row">
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3><i class="fas fa-stream"></i> Real-time Activity Feed</h3>
+                            <span class="card-badge">Live</span>
+                        </div>
+                        <div class="card-content" style="padding: 10px 16px;">
+                            <div id="activityFilter" class="activity-filter"></div>
+                            <div id="activityFeed" class="activity-feed">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
 
     <!-- JavaScript -->
     <script>
-        // Sticky Header Scroll Behavior
-        let lastScrollTop = 0;
-        const stickyHeader = document.getElementById('stickyHeader');
-        const scrollThreshold = 100;
-
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scrollTop > scrollThreshold) {
-                if (scrollTop > lastScrollTop) {
-                    // Scrolling down - hide header
-                    stickyHeader.classList.add('hidden');
-                } else {
-                    // Scrolling up - show header
-                    stickyHeader.classList.remove('hidden');
-                }
-            } else {
-                // At top of page - show header
-                stickyHeader.classList.remove('hidden');
-            }
-
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        }, false);
-
         // Emergency SOS function
         function triggerSOS() {
             if (confirm('⚠️ EMERGENCY SOS ACTIVATED\n\nThis will:\n✓ Call Emergency Services (999)\n✓ Alert All Family Members\n✓ Activate All Cameras\n✓ Unlock All Doors\n✓ Send Location to Responders\n\nDo you want to proceed?')) {

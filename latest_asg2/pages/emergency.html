@@ -205,13 +205,13 @@
         }
     </style>
 </head>
-<body>
+<body class="compact-page">
     <!-- Sticky Top Header -->
     <div class="sticky-top-header" id="stickyHeader">
         <div class="sticky-header-content">
             <div class="sticky-header-title">
                 <i class="fas fa-shield-alt"></i>
-                <h2>ElderCare AI - Safety & Emergency</h2>
+                <h2>ElderCare AI &mdash; Safety & Emergency</h2>
             </div>
             <button class="btn-sos-header" onclick="triggerSOS()">
                 <i class="fas fa-phone-alt"></i>
@@ -223,12 +223,15 @@
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo-section">
-                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            <div class="caregiver-section">
+                <div class="caregiver-avatar">
+                    <i class="fas fa-user-nurse"></i>
+                </div>
+                <div class="caregiver-name">Nurse Maya</div>
+                <div class="caregiver-role">On-duty Caregiver</div>
             </div>
 
             <nav class="nav-menu">
-                <h3>Navigation</h3>
                 <a href="../index.html" class="nav-item">
                     <i class="fas fa-th-large"></i> Overview
                 </a>
@@ -1185,30 +1188,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateIdleTimers();
         });
-
-        // Sticky Header Scroll Behavior
-        let lastScrollTop = 0;
-        const stickyHeader = document.getElementById('stickyHeader');
-        const scrollThreshold = 100;
-
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scrollTop > scrollThreshold) {
-                if (scrollTop > lastScrollTop) {
-                    // Scrolling down - hide header
-                    stickyHeader.classList.add('hidden');
-                } else {
-                    // Scrolling up - show header
-                    stickyHeader.classList.remove('hidden');
-                }
-            } else {
-                // At top of page - show header
-                stickyHeader.classList.remove('hidden');
-            }
-
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        }, false);
 
         // Emergency SOS function (global)
         function triggerSOS() {

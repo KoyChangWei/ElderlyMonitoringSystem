@@ -51,8 +51,8 @@
 
         .chart-container {
             position: relative;
-            height: 300px;
-            margin-bottom: 16px;
+            height: 200px;
+            margin-bottom: 12px;
         }
 
         .resident-selector {
@@ -78,7 +78,7 @@
         }
     </style>
 </head>
-<body>
+<body class="compact-page">
     <!-- Sticky Top Header -->
     <div class="sticky-top-header" id="stickyHeader">
         <div class="sticky-header-content">
@@ -96,12 +96,15 @@
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo-section">
-                <h2><i class="fas fa-heartbeat"></i> ElderCare AI</h2>
+            <div class="caregiver-section">
+                <div class="caregiver-avatar">
+                    <i class="fas fa-user-nurse"></i>
+                </div>
+                <div class="caregiver-name">Nurse Maya</div>
+                <div class="caregiver-role">On-duty Caregiver</div>
             </div>
 
             <nav class="nav-menu">
-                <h3>Navigation</h3>
                 <a href="../index.html" class="nav-item">
                     <i class="fas fa-th-large"></i> Overview
                 </a>
@@ -161,6 +164,7 @@
                         <span class="card-badge">Live</span>
                     </div>
                     <div class="card-content">
+                        <div id="currentVitalsAlert" style="margin-bottom: 10px;"></div>
                         <div class="health-metrics-grid" id="currentVitals"></div>
                     </div>
                 </div>
@@ -168,7 +172,7 @@
                 <!-- Row: Heart Rate & Blood Pressure Trends -->
                 <div class="grid-row">
                 <!-- Heart Rate Trend -->
-                <div class="card card-medium">
+                <div class="card card-medium" style="max-width: 640px;">
                     <div class="card-header">
                         <h3><i class="fas fa-heartbeat"></i> Heart Rate Trend (24h)</h3>
                     </div>
@@ -244,7 +248,19 @@
                 <!-- Health Summary Report -->
                 <div class="card card-full">
                     <div class="card-header">
-                        <h3><i class="fas fa-file-medical"></i> Weekly Health Summary</h3>
+                        <h3>
+                            <i class="fas fa-file-medical"></i> Weekly Health Summary
+                            <span id="weeklySummaryRange" style="font-size: 12px; color: var(--text-secondary); margin-left: 8px; font-weight: 500;"></span>
+                        </h3>
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 11px;">
+                            <label for="weeklyStartDate" style="color: var(--text-secondary);">From</label>
+                            <input type="date" id="weeklyStartDate" style="padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 11px;">
+                            <span style="color: var(--text-secondary);">to</span>
+                            <input type="date" id="weeklyEndDate" style="padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 11px;">
+                            <button type="button" onclick="applyWeeklySummaryRange()" style="padding: 4px 10px; border-radius: 6px; border: none; background: var(--status-info); color: white; font-size: 11px; font-weight: 600; cursor: pointer;">
+                                Apply
+                            </button>
+                        </div>
                     </div>
                     <div class="card-content">
                         <table class="data-table">
@@ -280,7 +296,83 @@
                 renderAIPredictionTable();
                 renderHealthSummaryTable();
             }
+            initializeWeeklySummaryRange();
         });
+
+        function getCurrentWeekRange() {
+            const today = new Date();
+            const day = today.getDay(); // 0 (Sun) - 6 (Sat)
+            // Treat Monday as the first day of the week
+            const diffToMonday = (day + 6) % 7;
+
+            const weekStart = new Date(today);
+            weekStart.setHours(0, 0, 0, 0);
+            weekStart.setDate(today.getDate() - diffToMonday);
+
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            weekEnd.setHours(23, 59, 59, 999);
+
+            return { weekStart, weekEnd };
+        }
+
+        function initializeWeeklySummaryRange() {
+            const startInput = document.getElementById('weeklyStartDate');
+            const endInput = document.getElementById('weeklyEndDate');
+
+            const { weekStart, weekEnd } = getCurrentWeekRange();
+
+            if (startInput && !startInput.value) {
+                startInput.value = weekStart.toISOString().slice(0, 10);
+            }
+            if (endInput && !endInput.value) {
+                endInput.value = weekEnd.toISOString().slice(0, 10);
+            }
+
+            updateWeeklySummaryRange(weekStart, weekEnd);
+        }
+
+        function updateWeeklySummaryRange(startDate, endDate) {
+            const label = document.getElementById('weeklySummaryRange');
+            if (!label) return;
+
+            const start = startDate ? new Date(startDate) : getCurrentWeekRange().weekStart;
+            const end = endDate ? new Date(endDate) : getCurrentWeekRange().weekEnd;
+
+            const startStr = start.toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short'
+            });
+
+            const endStr = end.toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+
+            label.textContent = `(Week: ${startStr} - ${endStr})`;
+        }
+
+        function applyWeeklySummaryRange() {
+            const startInput = document.getElementById('weeklyStartDate');
+            const endInput = document.getElementById('weeklyEndDate');
+            if (!startInput || !endInput) return;
+
+            if (!startInput.value || !endInput.value) {
+                alert('Please select both start and end dates for the weekly summary.');
+                return;
+            }
+
+            const startDate = new Date(startInput.value);
+            const endDate = new Date(endInput.value);
+
+            if (endDate < startDate) {
+                alert('End date cannot be earlier than start date.');
+                return;
+            }
+
+            updateWeeklySummaryRange(startDate, endDate);
+        }
 
         function renderResidentsList() {
             const container = document.getElementById('residentsList');
@@ -339,9 +431,32 @@
         }
 
         function renderCurrentVitals(residentId) {
+            const alertContainer = document.getElementById('currentVitalsAlert');
+
             if (residentId === 'all') {
                 // Show all residents
                 document.getElementById('selectedResidentName').textContent = 'All Residents';
+
+                // High blood pressure alert for any resident (human factors cue)
+                if (alertContainer) {
+                    const highBPResidents = window.elderlyData.elderlyList.filter(r => r.vitals.bloodPressure.status === 'warning');
+                    if (highBPResidents.length > 0) {
+                        const names = highBPResidents.map(r => r.personal.fullName).join(', ');
+                        alertContainer.innerHTML = `
+                            <div class="alert alert-warning" style="border-left-color: #ef4444;">
+                                <div class="alert-content">
+                                    <div class="alert-icon">⚠️</div>
+                                    <div class="alert-text">
+                                        <strong style="color: #ef4444;">High Blood Pressure Alert</strong>
+                                        <span>${names} currently has elevated blood pressure. Please monitor closely.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        alertContainer.innerHTML = '';
+                    }
+                }
 
                 const vitalsHtml = window.elderlyData.elderlyList.map(resident => `
                     <div class="metric-card" style="border-left: 3px solid ${resident.personal.color}">
@@ -372,6 +487,25 @@
                 // Show single resident
                 const resident = window.elderlyData.elderlyList[residentId - 1];
                 document.getElementById('selectedResidentName').textContent = resident.personal.fullName;
+
+                // Show alert only for this resident if needed
+                if (alertContainer) {
+                    if (resident.vitals.bloodPressure.status === 'warning') {
+                        alertContainer.innerHTML = `
+                            <div class="alert alert-warning" style="border-left-color: #ef4444;">
+                                <div class="alert-content">
+                                    <div class="alert-icon">⚠️</div>
+                                    <div class="alert-text">
+                                        <strong style="color: #ef4444;">High Blood Pressure Alert</strong>
+                                        <span>${resident.personal.fullName} currently has elevated blood pressure. Please monitor closely.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        alertContainer.innerHTML = '';
+                    }
+                }
 
                 const vitalsHtml = `
                     <div class="metric-card">
@@ -723,27 +857,6 @@
                 </tr>
             `).join('');
         }
-
-        // Sticky Header Scroll Behavior
-        let lastScrollTop = 0;
-        const stickyHeader = document.getElementById('stickyHeader');
-        const scrollThreshold = 100;
-
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scrollTop > scrollThreshold) {
-                if (scrollTop > lastScrollTop) {
-                    stickyHeader.classList.add('hidden');
-                } else {
-                    stickyHeader.classList.remove('hidden');
-                }
-            } else {
-                stickyHeader.classList.remove('hidden');
-            }
-
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-        }, false);
 
         // Emergency SOS function
         function triggerSOS() {
