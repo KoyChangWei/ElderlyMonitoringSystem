@@ -442,15 +442,20 @@
                     const highBPResidents = window.elderlyData.elderlyList.filter(r => r.vitals.bloodPressure.status === 'warning');
                     if (highBPResidents.length > 0) {
                         const names = highBPResidents.map(r => r.personal.fullName).join(', ');
+                        const primaryColor = highBPResidents[0].personal.color;
+
                         alertContainer.innerHTML = `
-                            <div class="alert alert-warning" style="border-left-color: #ef4444;">
+                            <div class="alert alert-warning" style="border-left-color: ${primaryColor};">
                                 <div class="alert-content">
-                                    <div class="alert-icon">⚠️</div>
+                                    <div class="alert-icon" style="color: ${primaryColor};">⚠️</div>
                                     <div class="alert-text">
-                                        <strong style="color: #ef4444;">High Blood Pressure Alert</strong>
+                                        <strong>High Blood Pressure Alert</strong>
                                         <span>${names} currently has elevated blood pressure. Please monitor closely.</span>
                                     </div>
                                 </div>
+                                <button class="btn-dismiss" onclick="dismissHighBpAlert()">
+                                    Dismiss
+                                </button>
                             </div>
                         `;
                     } else {
@@ -491,15 +496,19 @@
                 // Show alert only for this resident if needed
                 if (alertContainer) {
                     if (resident.vitals.bloodPressure.status === 'warning') {
+                        const color = resident.personal.color;
                         alertContainer.innerHTML = `
-                            <div class="alert alert-warning" style="border-left-color: #ef4444;">
+                            <div class="alert alert-warning" style="border-left-color: ${color};">
                                 <div class="alert-content">
-                                    <div class="alert-icon">⚠️</div>
+                                    <div class="alert-icon" style="color: ${color};">⚠️</div>
                                     <div class="alert-text">
-                                        <strong style="color: #ef4444;">High Blood Pressure Alert</strong>
+                                        <strong>High Blood Pressure Alert</strong>
                                         <span>${resident.personal.fullName} currently has elevated blood pressure. Please monitor closely.</span>
                                     </div>
                                 </div>
+                                <button class="btn-dismiss" onclick="dismissHighBpAlert()">
+                                    Dismiss
+                                </button>
                             </div>
                         `;
                     } else {
@@ -856,6 +865,13 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function dismissHighBpAlert() {
+            const alertContainer = document.getElementById('currentVitalsAlert');
+            if (alertContainer) {
+                alertContainer.innerHTML = '';
+            }
         }
 
         // Emergency SOS function

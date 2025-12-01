@@ -69,7 +69,7 @@ body {
     min-height: 100vh;
     background: var(--bg-primary);
     padding-top: var(--header-height);
-    transition: padding-top 0.3s ease;
+    transition: padding-top 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 /* === SIDEBAR - Gestalt: Proximity (Grouped Navigation) === */
@@ -81,11 +81,25 @@ body {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xl);
-    position: sticky;
+    position: fixed;
+    left: 0;
     top: var(--header-height);
-    height: 100vh;
+    height: calc(100vh - var(--header-height));
     overflow-y: auto;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: top 0.4s cubic-bezier(0.4, 0.0, 0.2, 1),
+                height 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+    z-index: 900;
+}
+
+/* When header is hidden, sidebar moves up smoothly */
+body.header-hidden .dashboard-container {
+    padding-top: 0;
+}
+
+body.header-hidden .sidebar {
+    top: 0;
+    height: 100vh;
 }
 
 .logo-section h2 {
@@ -251,6 +265,7 @@ body {
     padding: var(--spacing-lg);
     overflow-y: auto;
     background: #edf1f6; /* Match overview grey */
+    margin-left: 220px; /* Offset fixed sidebar width */
 }
 
 /* === COMPACT PAGE VARIANT (subpages) === */
@@ -1102,7 +1117,7 @@ input:checked + .slider:before {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-height: 350px;
+    max-height: 320px;
     overflow-y: auto;
     padding-right: 4px;
 }

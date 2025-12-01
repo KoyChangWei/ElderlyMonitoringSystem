@@ -85,7 +85,7 @@
 
             <!-- User Management Summary Section -->
             <div class="card card-section" style="margin-bottom: 12px;">
-                <div class="card-header" style="background: #e0f2fe;">
+                <div class="card-header">
                     <h3><i class="fas fa-users-cog"></i> User Management Overview</h3>
                     <button onclick="window.location.href='pages/user-management.html'" style="background: #3B82F6; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);">
                         <i class="fas fa-user-plus" style="font-size: 14px; color: white; display: inline-block; width: 16px; height: 16px; line-height: 16px;"></i>
@@ -103,10 +103,10 @@
                             <div style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px;">Total Residents</div>
                         </div>
 
-                        <!-- Active Wristbands -->
+                        <!-- Active Smart Rings -->
                         <div style="text-align: center; padding: 16px; background: rgba(59, 130, 246, 0.05); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2);">
                             <div style="width: 48px; height: 48px; margin: 0 auto 8px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-id-card" style="font-size: 22px; color: white;"></i>
+                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
                             </div>
                             <div style="font-size: 26px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">4</div>
                             <div style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px;">Active Smart Rings</div>
@@ -537,7 +537,6 @@
                             <span class="card-badge">Live</span>
                         </div>
                         <div class="card-content" style="padding: 10px 16px;">
-                            <div id="activityFilter" class="activity-filter"></div>
                             <div id="activityFeed" class="activity-feed">
                                 <!-- Populated by JavaScript -->
                             </div>
