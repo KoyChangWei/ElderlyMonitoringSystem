@@ -353,7 +353,7 @@
                             </div>
                             <div>
                                 <div style="font-size: 10px; color: var(--text-secondary);">Blood Pressure</div>
-                                <div style="font-size: 16px; font-weight: 600;">${resident.vitals.bloodPressure.systolic}/${resident.vitals.bloodPressure.diastolic}</div>
+                                <div style="font-size: 16px; font-weight: 600; ${resident.vitals.bloodPressure.status === 'warning' ? 'color: #ef4444;' : ''}">${resident.vitals.bloodPressure.systolic}/${resident.vitals.bloodPressure.diastolic}</div>
                             </div>
                             <div>
                                 <div style="font-size: 10px; color: var(--text-secondary);">Blood Sugar</div>
@@ -382,7 +382,7 @@
                     </div>
                     <div class="metric-card">
                         <h4>Blood Pressure</h4>
-                        <div class="metric-value" style="color: ${resident.personal.color}">${resident.vitals.bloodPressure.systolic}/${resident.vitals.bloodPressure.diastolic}</div>
+                        <div class="metric-value" style="color: ${resident.vitals.bloodPressure.status === 'warning' ? '#ef4444' : resident.personal.color}">${resident.vitals.bloodPressure.systolic}/${resident.vitals.bloodPressure.diastolic}</div>
                         <div class="metric-unit">${resident.vitals.bloodPressure.unit}</div>
                         <div class="metric-status status-${resident.vitals.bloodPressure.status}">${resident.vitals.bloodPressure.status.toUpperCase()}</div>
                     </div>
