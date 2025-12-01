@@ -56,28 +56,28 @@
         /* Environmental Stats */
         .env-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 6px;
+            margin-bottom: 8px;
         }
 
         .env-stat {
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            padding: 16px;
+            padding: 8px 10px;
             text-align: center;
         }
 
         .env-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
+            font-size: 22px;
+            margin-bottom: 2px;
         }
 
         .env-value {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .env-label {
@@ -87,9 +87,9 @@
         }
 
         .env-status {
-            margin-top: 8px;
-            font-size: 11px;
-            padding: 4px 8px;
+            margin-top: 4px;
+            font-size: 10px;
+            padding: 3px 6px;
             border-radius: 4px;
             display: inline-block;
         }
@@ -263,9 +263,9 @@
         /* Preset Buttons */
         .preset-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 8px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 6px;
+            margin-bottom: 8px;
         }
 
         .preset-btn {
@@ -929,7 +929,7 @@
                         </div>
 
                         <!-- Quick Presets -->
-                        <h4 style="font-size: 14px; margin: 20px 0 12px; text-transform: uppercase; color: var(--text-secondary);">
+                        <h4 style="font-size: 13px; margin: 12px 0 6px; text-transform: uppercase; color: var(--text-secondary);">
                             <i class="fas fa-magic"></i> Quick Presets
                         </h4>
                         <div class="preset-buttons">
@@ -952,7 +952,7 @@
                         </div>
 
                         <!-- Devices -->
-                        <h4 style="font-size: 14px; margin: 20px 0 12px; text-transform: uppercase; color: var(--text-secondary);">
+                        <h4 style="font-size: 13px; margin: 12px 0 6px; text-transform: uppercase; color: var(--text-secondary);">
                             <i class="fas fa-plug"></i> Room Devices
                         </h4>
                         <div class="room-devices" id="roomADevices"></div>
@@ -1140,7 +1140,7 @@
 
                             ${roomId.startsWith('room') ? `
                             <!-- Quick Presets -->
-                            <h4 style="font-size: 14px; margin: 20px 0 12px; text-transform: uppercase; color: var(--text-secondary);">
+                            <h4 style="font-size: 13px; margin: 12px 0 6px; text-transform: uppercase; color: var(--text-secondary);">
                                 <i class="fas fa-magic"></i> Quick Presets
                             </h4>
                             <div class="preset-buttons">
@@ -1164,7 +1164,7 @@
                             ` : ''}
 
                             <!-- Devices -->
-                            <h4 style="font-size: 14px; margin: 20px 0 12px; text-transform: uppercase; color: var(--text-secondary);">
+                            <h4 style="font-size: 13px; margin: 12px 0 6px; text-transform: uppercase; color: var(--text-secondary);">
                                 <i class="fas fa-plug"></i> Room Devices
                             </h4>
                             <div class="room-devices">${renderDevices(room.devices, roomId)}</div>
