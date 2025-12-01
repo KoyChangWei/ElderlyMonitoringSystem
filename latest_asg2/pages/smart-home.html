@@ -356,19 +356,19 @@
 
             <!-- Room Tabs -->
             <div class="room-tabs">
-                <div class="room-tab active" onclick="switchRoom('overview')">
+                <div class="room-tab active" data-room="overview" onclick="switchRoom('overview')">
                     <i class="fas fa-layer-group"></i> Overview
                 </div>
-                <div class="room-tab" style="border-color: #3B82F6;" onclick="switchRoom('roomA')">
+                <div class="room-tab" data-room="roomA" style="border-color: #3B82F6;" onclick="switchRoom('roomA')">
                     <i class="fas fa-bed"></i> Room A
                 </div>
-                <div class="room-tab" style="border-color: #8B5CF6;" onclick="switchRoom('roomB')">
+                <div class="room-tab" data-room="roomB" style="border-color: #8B5CF6;" onclick="switchRoom('roomB')">
                     <i class="fas fa-bed"></i> Room B
                 </div>
-                <div class="room-tab" style="border-color: #14B8A6;" onclick="switchRoom('roomC')">
+                <div class="room-tab" data-room="roomC" style="border-color: #14B8A6;" onclick="switchRoom('roomC')">
                     <i class="fas fa-bed"></i> Room C
                 </div>
-                <div class="room-tab" style="border-color: #F59E0B;" onclick="switchRoom('roomD')">
+                <div class="room-tab" data-room="roomD" style="border-color: #F59E0B;" onclick="switchRoom('roomD')">
                     <i class="fas fa-bed"></i> Room D
                 </div>
             </div>
@@ -376,374 +376,6 @@
             <!-- Overview: Connected Wearable Devices -->
             <div class="room-content active" id="overview">
                 <div class="card card-full">
-                    <div class="card-header">
-                        <h3><i class="fas fa-clock"></i> Connected Wearable Devices</h3>
-                        <button class="btn-secondary" onclick="manageDevices()" style="padding: 8px 16px; font-size: 13px; border-radius: 8px; background: #3B82F6; color: white; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-sliders-h" style="font-size: 14px; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; font-family: 'Font Awesome 6 Free' !important; font-weight: 900 !important;"></i>
-                            <span>Manage Device</span>
-                        </button>
-                    </div>
-                    <div class="card-content">
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-
-                            <!-- Ah Chong Tan's Devices -->
-                            <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 14px;">
-                                <div style="text-align: center; margin-bottom: 16px;">
-                                    <div style="font-weight: 700; font-size: 14px; color: #3B82F6; margin-bottom: 4px;">Ah Chong Tan</div>
-                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
-                                </div>
-
-                                <!-- Smart Watch -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">78% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Smart Shoes -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">92% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Smart Ring -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-quarter" style="color: #EF4444; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #EF4444;">65% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Emergency Pendant -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">85% Battery</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Mei Ling Wong's Devices -->
-                            <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 14px;">
-                                <div style="text-align: center; margin-bottom: 16px;">
-                                    <div style="font-weight: 700; font-size: 14px; color: #8B5CF6; margin-bottom: 4px;">Mei Ling Wong</div>
-                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
-                                </div>
-
-                                <!-- Smart Watch -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">92% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Smart Shoes -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #6b7280; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Disconnected</span>
-                                    </div>
-                                    <div style="background: rgba(107, 114, 128, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-half" style="color: #6b7280; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #6b7280;">45% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Smart Ring -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">71% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Emergency Pendant -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">88% Battery</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Kumar Raj's Devices -->
-                            <div style="background: rgba(20, 184, 166, 0.05); border: 1px solid rgba(20, 184, 166, 0.2); border-radius: 12px; padding: 14px;">
-                                <div style="text-align: center; margin-bottom: 16px;">
-                                    <div style="font-weight: 700; font-size: 14px; color: #14B8A6; margin-bottom: 4px;">Kumar Raj</div>
-                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
-                                </div>
-
-                                <!-- Smart Watch -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">63% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Smart Shoes -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">87% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Smart Ring -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">79% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Emergency Pendant -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">94% Battery</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Fatimah Ibrahim's Devices -->
-                            <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 14px;">
-                                <div style="text-align: center; margin-bottom: 16px;">
-                                    <div style="font-weight: 700; font-size: 14px; color: #F59E0B; margin-bottom: 4px;">Fatimah Ibrahim</div>
-                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
-                                </div>
-
-                                <!-- Smart Watch -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f8b500 0%, #fceabb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">85% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Smart Shoes -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f8b500 0%, #fceabb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-quarter" style="color: #EF4444; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #EF4444;">22% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Smart Ring -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f8b500 0%, #fceabb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
-                                    </div>
-                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-half" style="color: #F59E0B; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">58% Battery</span>
-                                    </div>
-                                </div>
-
-                                <!-- Emergency Pendant -->
-                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
-                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
-                                            </div>
-                                        </div>
-                                        <span style="background: #6b7280; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Disconnected</span>
-                                    </div>
-                                    <div style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-battery-quarter" style="color: #EF4444; font-size: 16px;"></i>
-                                        <span style="font-size: 12px; font-weight: 600; color: #EF4444;">15% Battery</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Room Overview Cards -->
-                <div class="card card-full" style="margin-top: 20px;">
                     <div class="card-header">
                         <h3><i class="fas fa-door-open"></i> Room Overview</h3>
                         <span class="card-badge robot-active">4 Rooms</span>
@@ -890,8 +522,376 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
+                <div class="card card-full" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clock"></i> Connected Wearable Devices</h3>
+                        <button class="btn-secondary" onclick="manageDevices()" style="padding: 8px 16px; font-size: 13px; border-radius: 8px; background: #3B82F6; color: white; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-sliders-h" style="font-size: 14px; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; font-family: 'Font Awesome 6 Free' !important; font-weight: 900 !important;"></i>
+                            <span>Manage Device</span>
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+
+                            <!-- Ah Chong Tan's Devices -->
+                            <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="font-weight: 700; font-size: 14px; color: #3B82F6; margin-bottom: 4px;">Ah Chong Tan</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
+                                </div>
+
+                                <!-- Smart Watch -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">78% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Shoes -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(16, 185, 129, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">92% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Ring -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(245, 158, 11, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">65% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Emergency Pendant -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(16, 185, 129, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">85% Battery</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mei Ling Wong's Devices -->
+                            <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="font-weight: 700; font-size: 14px; color: #8B5CF6; margin-bottom: 4px;">Mei Ling Wong</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
+                                </div>
+
+                                <!-- Smart Watch -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #8B5CF6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(16, 185, 129, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">92% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Shoes -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #8B5CF6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #6b7280; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Disconnected</span>
+                                    </div>
+                                    <div style="background: rgba(245, 158, 11, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-half" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">45% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Ring -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #8B5CF6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">71% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Emergency Pendant -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #8B5CF6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(16, 185, 129, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">88% Battery</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kumar Raj's Devices -->
+                            <div style="background: rgba(20, 184, 166, 0.05); border: 1px solid rgba(20, 184, 166, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="font-weight: 700; font-size: 14px; color: #14B8A6; margin-bottom: 4px;">Kumar Raj</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
+                                </div>
+
+                                <!-- Smart Watch -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #14B8A6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">63% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Shoes -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #14B8A6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(16, 185, 129, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">87% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Ring -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #14B8A6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-three-quarters" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">79% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Emergency Pendant -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #14B8A6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(16, 185, 129, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">94% Battery</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fatimah Ibrahim's Devices -->
+                            <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 14px;">
+                                <div style="text-align: center; margin-bottom: 16px;">
+                                    <div style="font-weight: 700; font-size: 14px; color: #F59E0B; margin-bottom: 4px;">Fatimah Ibrahim</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">4 Devices Connected</div>
+                                </div>
+
+                                <!-- Smart Watch -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-clock" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Watch</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Heart Rate, Steps, Sleep</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(16, 185, 129, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-full" style="color: #10b981; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10b981;">85% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Shoes -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-shoe-prints" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Shoes</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Gait Analysis, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(245, 158, 11, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-quarter" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">22% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Smart Ring -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-ring" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Smart Ring</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">Body Temperature, Sleep Quality</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Connected</span>
+                                    </div>
+                                    <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-half" style="color: #F59E0B; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">58% Battery</span>
+                                    </div>
+                                </div>
+
+                                <!-- Emergency Pendant -->
+                                <div style="background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 16px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 50px; height: 50px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-star" style="font-size: 22px; color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">Emergency Pendant</div>
+                                                <div style="font-size: 11px; color: var(--text-secondary);">SOS Button, Fall Detection</div>
+                                            </div>
+                                        </div>
+                                        <span style="background: #6b7280; color: white; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600;">Disconnected</span>
+                                    </div>
+                                    <div style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-battery-quarter" style="color: #EF4444; font-size: 16px;"></i>
+                                        <span style="font-size: 12px; font-weight: 600; color: #EF4444;">15% Battery</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
             <!-- Room A (Ah Chong's Room) -->
             <div class="room-content" id="roomA">
                 <div class="card card-full">
@@ -1249,12 +1249,22 @@
 
         function switchRoom(roomId) {
             // Update tabs
-            document.querySelectorAll('.room-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.closest('.room-tab').classList.add('active');
+            document.querySelectorAll('.room-tab').forEach(tab => {
+                if (tab.dataset.room === roomId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
 
-            // Update content
-            document.querySelectorAll('.room-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(roomId).classList.add('active');
+            // Update content sections
+            document.querySelectorAll('.room-content').forEach(content => {
+                if (content.id === roomId) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
         }
 
         function toggleDevice(roomId, deviceId) {
