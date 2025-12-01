@@ -442,7 +442,12 @@ function renderHealthTable() {
                 </span>
             </td>
             <td>
-                <span class="status-badge status-${resident.vitals.bloodPressure.status}">
+                <span
+                    class="status-badge status-${resident.vitals.bloodPressure.status}"
+                    style="${resident.vitals.bloodPressure.status === 'warning'
+                        ? 'color: #ef4444; background: rgba(239,68,68,0.08); border-color: #ef4444;'
+                        : ''}"
+                >
                     ${resident.vitals.bloodPressure.systolic}/${resident.vitals.bloodPressure.diastolic}
                 </span>
             </td>
