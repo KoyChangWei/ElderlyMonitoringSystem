@@ -167,26 +167,26 @@
 
                 <!-- Row: Heart Rate & Blood Pressure Trends -->
                 <div class="grid-row">
-                    <!-- Heart Rate Trend -->
-                    <div class="card card-medium">
-                        <div class="card-header">
-                            <h3><i class="fas fa-heartbeat"></i> Heart Rate Trend (24h)</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="chart-container">
-                                <canvas id="heartRateChart"></canvas>
-                            </div>
+                <!-- Heart Rate Trend -->
+                <div class="card card-medium">
+                    <div class="card-header">
+                        <h3><i class="fas fa-heartbeat"></i> Heart Rate Trend (24h)</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="chart-container">
+                            <canvas id="heartRateChart"></canvas>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Blood Pressure Trend -->
-                    <div class="card card-medium">
-                        <div class="card-header">
-                            <h3><i class="fas fa-tint"></i> Blood Pressure Trend (24h)</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="chart-container">
-                                <canvas id="bloodPressureChart"></canvas>
+                <!-- Blood Pressure Trend -->
+                <div class="card card-medium">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tint"></i> Blood Pressure Trend (24h)</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="chart-container">
+                            <canvas id="bloodPressureChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -194,26 +194,26 @@
 
                 <!-- Row: Blood Sugar & Temperature Trends -->
                 <div class="grid-row">
-                    <!-- Blood Sugar Trend -->
-                    <div class="card card-medium">
-                        <div class="card-header">
-                            <h3><i class="fas fa-syringe"></i> Blood Sugar Trend (24h)</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="chart-container">
-                                <canvas id="bloodSugarChart"></canvas>
-                            </div>
+                <!-- Blood Sugar Trend -->
+                <div class="card card-medium">
+                    <div class="card-header">
+                        <h3><i class="fas fa-syringe"></i> Blood Sugar Trend (24h)</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="chart-container">
+                            <canvas id="bloodSugarChart"></canvas>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Temperature Trend -->
-                    <div class="card card-medium">
-                        <div class="card-header">
-                            <h3><i class="fas fa-thermometer-half"></i> Body Temperature Trend (24h)</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="chart-container">
-                                <canvas id="temperatureChart"></canvas>
+                <!-- Temperature Trend -->
+                <div class="card card-medium">
+                    <div class="card-header">
+                        <h3><i class="fas fa-thermometer-half"></i> Body Temperature Trend (24h)</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="chart-container">
+                            <canvas id="temperatureChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -488,80 +488,80 @@
                     options: getChartOptions('Temperature (°C)', true)
                 });
             } else {
-                const resident = window.elderlyData.elderlyList[selectedResident - 1];
-                const labels = window.elderlyData.healthChartData.labels;
+            const resident = window.elderlyData.elderlyList[selectedResident - 1];
+            const labels = window.elderlyData.healthChartData.labels;
 
-                // Heart Rate Chart
-                charts.heartRate = new Chart(document.getElementById('heartRateChart'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Heart Rate (bpm)',
-                            data: window.elderlyData.healthChartData.heartRate[resident.personal.name],
-                            borderColor: resident.personal.color,
-                            backgroundColor: resident.personal.color + '20',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
+            // Heart Rate Chart
+            charts.heartRate = new Chart(document.getElementById('heartRateChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Heart Rate (bpm)',
+                        data: window.elderlyData.healthChartData.heartRate[resident.personal.name],
+                        borderColor: resident.personal.color,
+                        backgroundColor: resident.personal.color + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
                     options: getChartOptions('Heart Rate (bpm)', false)
-                });
+            });
 
-                // Blood Pressure Chart
-                charts.bloodPressure = new Chart(document.getElementById('bloodPressureChart'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Systolic (mmHg)',
-                            data: window.elderlyData.healthChartData.bloodPressure[resident.personal.name],
-                            borderColor: resident.personal.color,
-                            backgroundColor: resident.personal.color + '20',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
+            // Blood Pressure Chart
+            charts.bloodPressure = new Chart(document.getElementById('bloodPressureChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Systolic (mmHg)',
+                        data: window.elderlyData.healthChartData.bloodPressure[resident.personal.name],
+                        borderColor: resident.personal.color,
+                        backgroundColor: resident.personal.color + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
                     options: getChartOptions('Blood Pressure (mmHg)', false)
-                });
+            });
 
-                // Blood Sugar Chart
-                charts.bloodSugar = new Chart(document.getElementById('bloodSugarChart'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Blood Sugar (mmol/L)',
-                            data: window.elderlyData.healthChartData.bloodSugar[resident.personal.name],
-                            borderColor: resident.personal.color,
-                            backgroundColor: resident.personal.color + '20',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
+            // Blood Sugar Chart
+            charts.bloodSugar = new Chart(document.getElementById('bloodSugarChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Blood Sugar (mmol/L)',
+                        data: window.elderlyData.healthChartData.bloodSugar[resident.personal.name],
+                        borderColor: resident.personal.color,
+                        backgroundColor: resident.personal.color + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
                     options: getChartOptions('Blood Sugar (mmol/L)', false)
-                });
+            });
 
-                // Temperature Chart
-                charts.temperature = new Chart(document.getElementById('temperatureChart'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Temperature (°C)',
-                            data: window.elderlyData.healthChartData.temperature[resident.personal.name],
-                            borderColor: resident.personal.color,
-                            backgroundColor: resident.personal.color + '20',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
+            // Temperature Chart
+            charts.temperature = new Chart(document.getElementById('temperatureChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: window.elderlyData.healthChartData.temperature[resident.personal.name],
+                        borderColor: resident.personal.color,
+                        backgroundColor: resident.personal.color + '20',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
                     options: getChartOptions('Temperature (°C)', false)
-                });
+            });
             }
         }
 
