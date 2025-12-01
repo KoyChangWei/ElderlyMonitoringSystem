@@ -453,6 +453,9 @@
                                         <span>${names} currently has elevated blood pressure. Please monitor closely.</span>
                                     </div>
                                 </div>
+                                <button class="btn-dismiss" onclick="dismissHighBpAlert()">
+                                    Dismiss
+                                </button>
                             </div>
                         `;
                     } else {
@@ -503,6 +506,9 @@
                                         <span>${resident.personal.fullName} currently has elevated blood pressure. Please monitor closely.</span>
                                     </div>
                                 </div>
+                                <button class="btn-dismiss" onclick="dismissHighBpAlert()">
+                                    Dismiss
+                                </button>
                             </div>
                         `;
                     } else {
@@ -859,6 +865,13 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function dismissHighBpAlert() {
+            const alertContainer = document.getElementById('currentVitalsAlert');
+            if (alertContainer) {
+                alertContainer.innerHTML = '';
+            }
         }
 
         // Emergency SOS function
