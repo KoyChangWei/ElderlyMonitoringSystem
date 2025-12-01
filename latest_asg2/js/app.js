@@ -311,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // === HEADER & SIDEBAR TRANSITIONS ===
 function initializeStickyHeader() {
     const header = document.querySelector('.sticky-top-header');
+    const sidebar = document.querySelector('.sidebar');
     if (!header) return;
 
     // Ensure CSS variable matches actual header height
@@ -318,23 +319,51 @@ function initializeStickyHeader() {
     document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
 
     let lastScrollTop = 0;
-    const delta = 5;
+    let ticking = false;
+    const showThreshold = 50; // pixels of upward scroll needed to show header
+    const hideThreshold = 100; // pixels scrolled down before hiding header
 
-    window.addEventListener('scroll', function() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const updateHeaderAndSidebar = () => {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollDiff = currentScroll - lastScrollTop;
 
-        if (Math.abs(scrollTop - lastScrollTop) <= delta) return;
-
-        if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
-            header.classList.add('hidden');
-            document.body.classList.add('header-hidden');
+        // Only proceed if we've scrolled past the hide threshold
+        if (currentScroll > hideThreshold) {
+            if (scrollDiff > 5) {
+                // Scrolling down - hide header
+                if (!header.classList.contains('hidden')) {
+                    header.classList.add('hidden');
+                    document.body.classList.add('header-hidden');
+                }
+            } else if (scrollDiff < -showThreshold) {
+                // Scrolling up significantly - show header
+                if (header.classList.contains('hidden')) {
+                    header.classList.remove('hidden');
+                    document.body.classList.remove('header-hidden');
+                }
+            }
         } else {
-            header.classList.remove('hidden');
-            document.body.classList.remove('header-hidden');
+            // At top of page - always show header
+            if (header.classList.contains('hidden')) {
+                header.classList.remove('hidden');
+                document.body.classList.remove('header-hidden');
+            }
         }
 
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-    }, { passive: true });
+        lastScrollTop = currentScroll;
+        ticking = false;
+    };
+
+    window.addEventListener(
+        'scroll',
+        () => {
+            if (!ticking) {
+                window.requestAnimationFrame(updateHeaderAndSidebar);
+                ticking = true;
+            }
+        },
+        { passive: true }
+    );
 }
 
 // === RENDER FUNCTIONS ===
@@ -502,77 +531,18 @@ function renderMedicationList() {
 function renderActivityFeed() {
     const container = document.getElementById('activityFeed');
     if (!container) return;
-
-    const filterContainer = document.getElementById('activityFilter');
-    const residents = elderlyList || [];
-
-    // Build filter chips dynamically
-    if (filterContainer && residents.length > 0) {
-        const names = ['all', ...residents.map(r => r.personal.fullName)];
-        filterContainer.innerHTML = names.map(name => {
-            const isAll = name === 'all';
-            const resident = residents.find(r => r.personal.fullName === name);
-            const color = resident ? resident.personal.color : '#64748b';
-            const label = isAll ? 'All' : name;
-            const activeClass = activityFeedFilter === name ? ' activity-filter-chip-active' : '';
-
-            return `
-                <button class="activity-filter-chip${activeClass}" onclick="setActivityFeedFilter('${name.replace(/'/g, "\\'")}')">
-                    ${!isAll ? `<span class="resident-color-dot" style="background: ${color}; width: 10px; height: 10px; border-radius: 50%;"></span>` : ''}
-                    <span>${label}</span>
-                </button>
-            `;
-        }).join('');
-    }
-
-    // Group activities by resident
-    const groups = {};
-    activityFeed.forEach(item => {
-        const key = item.resident || 'Other';
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(item);
-    });
-
-    let html = '';
-
-    Object.keys(groups).forEach(residentName => {
-        if (activityFeedFilter !== 'all' && residentName !== activityFeedFilter) {
-            return;
-        }
-        const items = groups[residentName];
-        if (!items || items.length === 0) return;
-
-        const resident = residents.find(r => r.personal.fullName === residentName);
-        const color = resident ? resident.personal.color : '#94a3b8';
-
-        html += `
-            <div class="activity-resident-group">
-                <div class="activity-resident-header">
-                    <span class="resident-color-dot" style="background: ${color};"></span>
-                    <span>${residentName}</span>
-                </div>
-                ${items.map(activity => `
-                    <div class="activity-item" style="border-left-color: ${activity.borderColor}">
-                        <div class="activity-icon" style="background: ${activity.iconBg}">
-                            ${activity.icon}
-                        </div>
-                        <div class="activity-details">
-                            <div class="activity-title">${activity.title}</div>
-                            <div class="activity-description">${activity.description}</div>
-                            <div class="activity-time">${activity.time}</div>
-                        </div>
-                    </div>
-                `).join('')}
+    container.innerHTML = activityFeed.map(activity => `
+        <div class="activity-item" style="border-left-color: ${activity.borderColor}">
+            <div class="activity-icon" style="background: ${activity.iconBg}">
+                ${activity.icon}
             </div>
-        `;
-    });
-
-    container.innerHTML = html || `<div style="font-size: 12px; color: var(--text-secondary);">No recent activities.</div>`;
-}
-
-function setActivityFeedFilter(name) {
-    activityFeedFilter = name;
-    renderActivityFeed();
+            <div class="activity-details">
+                <div class="activity-title">${activity.title}</div>
+                <div class="activity-description">${activity.description}</div>
+                <div class="activity-time">${activity.time}</div>
+            </div>
+        </div>
+    `).join('') || `<div style="font-size: 12px; color: var(--text-secondary);">No recent activities.</div>`;
 }
 
 // === CHART FUNCTIONS ===
